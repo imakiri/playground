@@ -40,7 +40,6 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-				case "POST":
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}
@@ -71,13 +70,42 @@ var View = RootRoute{
 	},
 }
 
+var Action = RootRoute{
+	PrefixPath: "/action",
+	Handler:    nil,
+	Routs: []Route{
+		{
+			Path: "/add/{entity}",
+			Handler: func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "POST":
+					switch mux.Vars(r)["entity"] {
+					case "user":
+					case "location":
+					case "visit":
+					}
+
+				default:
+					_, _ = io.WriteString(w, "Method is't implemented")
+				}
+			},
+		},
+	},
+}
+
 func RunREST(rr *mux.Router) error {
 	router := rr.PathPrefix("/api").Subrouter()
 
-	for n, r := range Routs {
+	for _, r := range View.Routs {
 		router.HandleFunc(r.Path, r.Handler)
 
-		fmt.Printf("Обработчик %s зарегестрирован на %s\n", n, r.Path)
+		fmt.Printf("Обработчик view зарегестрирован на %s\n", r.Path)
+	}
+
+	for _, r := range Action.Routs {
+		router.HandleFunc(r.Path, r.Handler)
+
+		fmt.Printf("Обработчик action зарегестрирован на %s\n", r.Path)
 	}
 
 	return nil

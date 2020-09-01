@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"imakiteki/playground/server/api"
+	"github.com/imakiri/playground/server/api"
 	"io"
 	"log"
 	"net/http"
@@ -19,11 +19,10 @@ func root(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	//_ = api.RunREST(Router)
-	_ = api.RunGraphQL(Router)
+	_ = api.RunREST(Router)
+	//_ = api.RunGraphQL(Router)
 
 	Router.HandleFunc("/", root)
-
 	server.Handler = Router
 
 	log.Fatal(server.ListenAndServe())

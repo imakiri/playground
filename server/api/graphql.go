@@ -26,7 +26,7 @@ var rQuery = graphql.ObjectConfig{
 	Name: "root",
 	Fields: graphql.Fields{
 		"foo": &graphql.Field{
-			Type:              foo,
+			Type:              graphql.String,
 			Args:              nil,
 			Resolve:           nil,
 			DeprecationReason: "",

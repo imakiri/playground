@@ -23,7 +23,7 @@ func Run() {}
 
 type Data struct {
 	User     user
-	Location location
+	Location site
 	Visit    visit
 }
 

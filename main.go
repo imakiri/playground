@@ -3,7 +3,8 @@ package main
 import (
 	"crypto/md5"
 	"fmt"
-	"imakiteki/playground/server/store"
+	"github.com/imakiri/playground/server"
+	_ "github.com/imakiri/playground/server/store"
 	"io"
 	"strings"
 )
@@ -23,7 +24,7 @@ func strFormat(str ...string) string {
 }
 
 func main() {
-	store.Run()
+	//store.Run()
 
-	//server.Run()
+	server.Run()
 }
