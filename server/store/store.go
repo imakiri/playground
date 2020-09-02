@@ -4,9 +4,47 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"log"
-	"net/mail"
-	"time"
 )
+
+type Thing struct {
+	Header string
+	Data   []byte
+	Error  error
+}
+
+func (th *Thing) GetHeader() string {
+	return th.Header
+}
+
+func (th *Thing) GetData() []byte {
+	return th.Data
+}
+
+func (th *Thing) GetError() error {
+	return th.Error
+}
+
+type local struct {
+	isInitialized bool
+}
+
+func (l local) GetThing(str string, c chan Thing) {
+
+}
+
+func (l local) DoThing(str string, c chan Thing) {
+
+}
+
+func (l local) ChangeThing(str string, th Thing, c chan Thing) {
+
+}
+
+func (l local) StoreThing(str string, th Thing, c chan Thing) {
+
+}
+
+var Local local
 
 var db *gorm.DB
 
@@ -17,44 +55,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	Local.isInitialized = true
 }
 
 func Run() {}
-
-type Data struct {
-	User     user
-	Location site
-	Visit    visit
-}
-
-type person struct {
-	name     [2]string
-	gender   uint8
-	birthday time.Time
-}
-
-type user struct {
-	id     uint
-	email  mail.Address
-	person person
-}
-
-type country struct {
-	country uint8
-}
-
-type site struct {
-	id          uint
-	name        string
-	country     *country
-	distance    float32
-	description string
-}
-
-type visit struct {
-	id   uint16
-	site *site
-	user *user
-	date time.Time
-	mark int8
-}
