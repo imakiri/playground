@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"github.com/imakiri/playground/server/api"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"log"
@@ -28,19 +29,19 @@ type local struct {
 	isInitialized bool
 }
 
-func (l local) GetThing(str string, c chan Thing) {
+func (l *local) GetThing(str string, c chan api.Thing) {
 
 }
 
-func (l local) DoThing(str string, c chan Thing) {
+func (l *local) DoThing(str string, c chan api.Thing) {
 
 }
 
-func (l local) ChangeThing(str string, th Thing, c chan Thing) {
+func (l *local) ChangeThing(str string, th api.Thing, c chan api.Thing) {
 
 }
 
-func (l local) StoreThing(str string, th Thing, c chan Thing) {
+func (l *local) StoreThing(str string, th api.Thing, c chan api.Thing) {
 
 }
 

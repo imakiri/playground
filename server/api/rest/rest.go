@@ -3,23 +3,11 @@ package rest
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/server/api"
 	"github.com/imakiri/playground/server/storage"
 	"io"
 	"net/http"
 )
-
-type Thing interface {
-	GetHeader() string
-	GetData() []byte
-	GetError() error
-}
-
-type Api interface {
-	GetThing(str string, c chan Thing)
-	DoThing(str string, c chan Thing)
-	ChangeThing(str string, th Thing, c chan Thing)
-	StoreThing(str string, th Thing, c chan Thing)
-}
 
 type Route struct {
 	Path    string
@@ -54,9 +42,10 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					w1 := make(chan Thing)
-					w2 := make(chan Thing)
-					Api.GetThing(&storage.Local, "example", w1)
+					w1 := make(chan api.Thing)
+					//w2 := make(chan Thing)
+					go api.Api.GetThing(&storage.Local, "example", w1)
+					//go api.Api.GetThing(, "example", w2)
 
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
