@@ -1,4 +1,4 @@
-package store
+package storage
 
 import (
 	"github.com/jinzhu/gorm"
@@ -51,7 +51,7 @@ var db *gorm.DB
 var err error
 
 func init() {
-	db, err = gorm.Open("sqlite3", "server/store.db")
+	db, err = gorm.Open("sqlite3", "server/storage.db")
 	if err != nil {
 		log.Fatal(err)
 	}

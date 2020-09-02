@@ -1,9 +1,9 @@
-package api
+package rest
 
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/server/store"
+	"github.com/imakiri/playground/server/storage"
 	"io"
 	"net/http"
 )
@@ -56,7 +56,7 @@ var View = RootRoute{
 				case "GET":
 					w1 := make(chan Thing)
 					w2 := make(chan Thing)
-					Api.GetThing(&store.Local, "example", w1)
+					Api.GetThing(&storage.Local, "example", w1)
 
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
