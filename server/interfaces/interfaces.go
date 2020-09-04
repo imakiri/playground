@@ -22,7 +22,7 @@ type Parcel struct {
 }
 
 type App interface {
-	Do(parcel Parcel)
+	Do0(parcel Parcel)
 	Do1(parcel Parcel)
 	Do2(parcel Parcel)
 	Do3(parcel Parcel)

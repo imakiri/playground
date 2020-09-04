@@ -22,7 +22,7 @@ type RootRoute struct {
 
 type Places map[string]interfaces.Api
 
-var App api.App
+var Api api.Api
 
 var globalPlaces = Places{
 	"local": &api.Local,

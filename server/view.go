@@ -10,7 +10,7 @@ var View = RootRoute{
 	Handler: func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			Resolve(globalPlaces, App.Do0, w, r)
+			Resolve(globalPlaces, Api.Do0, w, r)
 		default:
 			_, _ = io.WriteString(w, "Method is't implemented")
 		}
@@ -21,7 +21,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, App.Do1, w, r)
+					Resolve(globalPlaces, Api.Do1, w, r)
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}
@@ -32,7 +32,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, App.Do2, w, r)
+					Resolve(globalPlaces, Api.Do2, w, r)
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}
@@ -43,7 +43,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, App.Do3, w, r)
+					Resolve(globalPlaces, Api.Do3, w, r)
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}

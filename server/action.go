@@ -17,11 +17,11 @@ var Action = RootRoute{
 				case "POST":
 					switch mux.Vars(r)["entity"] {
 					case "user":
-						Resolve(globalPlaces, App.Do4, w, r)
+						Resolve(globalPlaces, Api.Do4, w, r)
 					case "location":
-						Resolve(globalPlaces, App.Do4, w, r)
+						Resolve(globalPlaces, Api.Do4, w, r)
 					case "visit":
-						Resolve(globalPlaces, App.Do4, w, r)
+						Resolve(globalPlaces, Api.Do4, w, r)
 					}
 
 				default:
