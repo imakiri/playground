@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/server/api"
 	"io"
 	"log"
 	"net/http"
@@ -19,7 +18,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	_ = api.RunREST(Router)
+	_ = RegisterApiHandlers(Router)
 
 	Router.HandleFunc("/", root)
 	server.Handler = Router

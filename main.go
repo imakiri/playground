@@ -6,8 +6,6 @@ import (
 )
 
 func main() {
-	//storage.Run()
-
 	server.Run()
 	//goroutines.Vu()
 }
