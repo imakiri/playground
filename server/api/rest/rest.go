@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api"
-	"github.com/imakiri/playground/server/app"
 	"github.com/imakiri/playground/server/app/apiApp"
 	"github.com/imakiri/playground/server/storage"
-	"go/types"
 	"io"
 	"net/http"
 	"sync"
@@ -50,7 +48,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					places := []interface{}{
+					places := []api.Api{
 						&storage.Local,
 					}
 					l := len(places)
@@ -60,7 +58,7 @@ var View = RootRoute{
 					wg.Add(l)
 
 					for _, p := range places {
-						go func(p interface{}) {
+						go func(p api.Api) {
 							defer wg.Done()
 							api.Api.GetThing(p, "example", c)
 						}(p)
@@ -72,6 +70,8 @@ var View = RootRoute{
 						Request:        r,
 						ResponseWriter: w,
 					})
+
+					_, _ = io.WriteString(w, "Done")
 
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
@@ -127,16 +127,16 @@ var Action = RootRoute{
 }
 
 func RunREST(rr *mux.Router) error {
-	router := rr.PathPrefix("/apiApp").Subrouter()
+	router := rr.PathPrefix("/api").Subrouter()
 
 	for _, r := range View.Routs {
-		router.HandleFunc(r.Path, r.Handler)
+		router.PathPrefix("/view").Subrouter().HandleFunc(r.Path, r.Handler)
 
 		fmt.Printf("Обработчик view зарегестрирован на %s\n", r.Path)
 	}
 
 	for _, r := range Action.Routs {
-		router.HandleFunc(r.Path, r.Handler)
+		router.PathPrefix("/action").Subrouter().HandleFunc(r.Path, r.Handler)
 
 		fmt.Printf("Обработчик action зарегестрирован на %s\n", r.Path)
 	}
