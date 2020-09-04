@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api"
+	"github.com/imakiri/playground/server/app"
+	"github.com/imakiri/playground/server/app/apiApp"
 	"github.com/imakiri/playground/server/storage"
+	"go/types"
 	"io"
 	"net/http"
+	"sync"
 )
 
 type Route struct {
@@ -19,6 +23,10 @@ type RootRoute struct {
 	Handler    func(w http.ResponseWriter, r *http.Request)
 	Routs      []Route
 }
+
+var wg = sync.WaitGroup{}
+
+var App apiApp.App
 
 var View = RootRoute{
 	PrefixPath: "/view",
@@ -42,10 +50,28 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					w1 := make(chan api.Thing)
-					//w2 := make(chan Thing)
-					go api.Api.GetThing(&storage.Local, "example", w1)
-					//go api.Api.GetThing(, "example", w2)
+					places := []interface{}{
+						&storage.Local,
+					}
+					l := len(places)
+
+					c := make(chan api.Thing, l)
+					defer close(c)
+					wg.Add(l)
+
+					for _, p := range places {
+						go func(p interface{}) {
+							defer wg.Done()
+							api.Api.GetThing(p, "example", c)
+						}(p)
+					}
+					wg.Wait()
+
+					App.MatchUp(api.Parcel{
+						Channel:        c,
+						Request:        r,
+						ResponseWriter: w,
+					})
 
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
@@ -101,7 +127,7 @@ var Action = RootRoute{
 }
 
 func RunREST(rr *mux.Router) error {
-	router := rr.PathPrefix("/api").Subrouter()
+	router := rr.PathPrefix("/apiApp").Subrouter()
 
 	for _, r := range View.Routs {
 		router.HandleFunc(r.Path, r.Handler)

@@ -20,7 +20,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 
 func init() {
 	_ = rest.RunREST(Router)
-	//_ = api.RunGraphQL(Router)
+	//_ = apiApp.RunGraphQL(Router)
 
 	Router.HandleFunc("/", root)
 	server.Handler = Router

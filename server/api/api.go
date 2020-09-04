@@ -1,5 +1,7 @@
 package api
 
+import "net/http"
+
 type Thing interface {
 	GetHeader() string
 	GetData() []byte
@@ -11,4 +13,10 @@ type Api interface {
 	DoThing(str string, c chan Thing)
 	ChangeThing(str string, th Thing, c chan Thing)
 	StoreThing(str string, th Thing, c chan Thing)
+}
+
+type Parcel struct {
+	Channel        chan Thing
+	Request        *http.Request
+	ResponseWriter http.ResponseWriter
 }
