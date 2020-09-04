@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/server/api/rest"
+	"github.com/imakiri/playground/server/api"
 	"io"
 	"log"
 	"net/http"
@@ -19,8 +19,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	_ = rest.RunREST(Router)
-	//_ = apiApp.RunGraphQL(Router)
+	_ = api.RunREST(Router)
 
 	Router.HandleFunc("/", root)
 	server.Handler = Router

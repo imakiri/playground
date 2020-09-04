@@ -1,10 +1,8 @@
 package storage
 
 import (
-	"github.com/imakiri/playground/server/api"
-	"github.com/jinzhu/gorm"
+	"github.com/imakiri/playground/server/interfaces"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"log"
 )
 
 type Thing struct {
@@ -25,38 +23,20 @@ func (th *Thing) GetError() error {
 	return th.Error
 }
 
-type local struct {
-	isInitialized bool
-}
+type Local bool
 
-func (l *local) GetThing(str string, c chan api.Thing) {
+func (l *Local) GetThing(str string, c chan interfaces.Thing) {
 
 }
 
-func (l *local) DoThing(str string, c chan api.Thing) {
+func (l *Local) DoThing(str string, c chan interfaces.Thing) {
 
 }
 
-func (l *local) ChangeThing(str string, th api.Thing, c chan api.Thing) {
+func (l *Local) ChangeThing(str string, th interfaces.Thing, c chan interfaces.Thing) {
 
 }
 
-func (l *local) StoreThing(str string, th api.Thing, c chan api.Thing) {
+func (l *Local) StoreThing(str string, th interfaces.Thing, c chan interfaces.Thing) {
 
 }
-
-var Local local
-
-var db *gorm.DB
-
-var err error
-
-func init() {
-	db, err = gorm.Open("sqlite3", "server/storage.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	Local.isInitialized = true
-}
-
-func Run() {}
