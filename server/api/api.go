@@ -8,27 +8,45 @@ import (
 
 var Local storage.Local
 
-type Api bool
+type v0 bool
 
-func (Api) Do0(parcel interfaces.Parcel) {
+func (v0) Resolve(parcel interfaces.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done Do0")
 }
 
-func (Api) Do1(parcel interfaces.Parcel) {
+var V0 v0
+
+type v1 bool
+
+func (v1) Resolve(parcel interfaces.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done Do1")
 }
 
-func (Api) Do2(parcel interfaces.Parcel) {
+var V1 v1
+
+type v2 bool
+
+func (v2) Resolve(parcel interfaces.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done Do2")
 }
 
-func (Api) Do3(parcel interfaces.Parcel) {
+var V2 v2
+
+type v3 bool
+
+func (v3) Resolve(parcel interfaces.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done Do3")
 }
 
-func (Api) Do4(parcel interfaces.Parcel) {
+var V3 v3
+
+type v4 bool
+
+func (v4) Resolve(parcel interfaces.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done Do4")
 }
+
+var V4 v4
 
 func init() {
 	Local = true

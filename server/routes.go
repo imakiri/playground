@@ -1,6 +1,8 @@
 package server
 
 import (
+	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/server/api"
 	"io"
 	"net/http"
 )
@@ -10,7 +12,7 @@ var View = RootRoute{
 	Handler: func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			Resolve(globalPlaces, Api.Do0, w, r)
+			Resolve(globalPlaces, api.V0, Sender, w, r)
 		default:
 			_, _ = io.WriteString(w, "Method is't implemented")
 		}
@@ -21,7 +23,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, Api.Do1, w, r)
+					Resolve(globalPlaces, api.V1, Sender, w, r)
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}
@@ -32,7 +34,7 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, Api.Do2, w, r)
+					Resolve(globalPlaces, api.V2, Sender, w, r)
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}
@@ -43,7 +45,33 @@ var View = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
-					Resolve(globalPlaces, Api.Do3, w, r)
+					Resolve(globalPlaces, api.V3, Sender, w, r)
+				default:
+					_, _ = io.WriteString(w, "Method is't implemented")
+				}
+			},
+		},
+	},
+}
+
+var Action = RootRoute{
+	PrefixPath: "/action",
+	Handler:    nil,
+	Routs: []Route{
+		{
+			Path: "/add/{entity}",
+			Handler: func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case "POST":
+					switch mux.Vars(r)["entity"] {
+					case "user":
+						Resolve(globalPlaces, api.V4, Sender, w, r)
+					case "location":
+						Resolve(globalPlaces, api.V4, Sender, w, r)
+					case "visit":
+						Resolve(globalPlaces, api.V4, Sender, w, r)
+					}
+
 				default:
 					_, _ = io.WriteString(w, "Method is't implemented")
 				}

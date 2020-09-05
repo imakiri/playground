@@ -21,12 +21,12 @@ type Parcel struct {
 	ResponseWriter http.ResponseWriter
 }
 
-type App interface {
-	Do0(parcel Parcel)
-	Do1(parcel Parcel)
-	Do2(parcel Parcel)
-	Do3(parcel Parcel)
-	Do4(parcel Parcel)
+type Places map[string]Api
+
+type Resolver interface {
+	Resolve(p Parcel)
 }
 
-type Resolver func(p Parcel)
+type Sender interface {
+	Send(api Api, k string, c chan Thing)
+}

@@ -20,15 +20,11 @@ type RootRoute struct {
 	Routs      []Route
 }
 
-type Places map[string]interfaces.Api
-
-var Api api.Api
-
-var globalPlaces = Places{
+var globalPlaces = interfaces.Places{
 	"local": &api.Local,
 }
 
-func Resolve(p Places, resolver interfaces.Resolver, w http.ResponseWriter, r *http.Request) {
+func Resolve(p interfaces.Places, resolver interfaces.Resolver, sender interfaces.Sender, w http.ResponseWriter, r *http.Request) {
 	wg := sync.WaitGroup{}
 	l := len(p)
 
@@ -39,12 +35,12 @@ func Resolve(p Places, resolver interfaces.Resolver, w http.ResponseWriter, r *h
 	for k, p := range p {
 		go func(k string, p interfaces.Api) {
 			defer wg.Done()
-			interfaces.Api.GetThing(p, k, c)
+			sender.Send(p, k, c)
 		}(k, p)
 	}
 	wg.Wait()
 
-	resolver(interfaces.Parcel{
+	resolver.Resolve(interfaces.Parcel{
 		Channel:        c,
 		Request:        r,
 		ResponseWriter: w,
@@ -55,19 +51,21 @@ func RegisterApiHandlers(rr *mux.Router) error {
 	router := rr.PathPrefix("/api").Subrouter()
 
 	router.HandleFunc(View.PrefixPath, View.Handler)
+	fmt.Printf("Обработчик /view зарегистрирован")
+
 	router.HandleFunc(Action.PrefixPath, Action.Handler)
+	fmt.Printf("Обработчик /action зарегистрирован")
 
 	for _, r := range View.Routs {
 		router.PathPrefix("/view").Subrouter().HandleFunc(r.Path, r.Handler)
 
-		fmt.Printf("Обработчик view зарегестрирован на %s\n", r.Path)
+		fmt.Printf("Обработчик view зарегистрирован на %s\n", r.Path)
 	}
 
 	for _, r := range Action.Routs {
 		router.PathPrefix("/action").Subrouter().HandleFunc(r.Path, r.Handler)
 
-		fmt.Printf("Обработчик action зарегестрирован на %s\n", r.Path)
+		fmt.Printf("Обработчик action зарегистрирован на %s\n", r.Path)
 	}
-
 	return nil
 }
