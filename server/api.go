@@ -43,10 +43,10 @@ func RegisterApiHandlers(rr *mux.Router) error {
 	router := rr.PathPrefix("/api").Subrouter()
 
 	router.HandleFunc(View.PrefixPath, View.Handler)
-	fmt.Printf("Обработчик /view зарегистрирован")
+	fmt.Printf("Обработчик /view зарегистрирован\n")
 
 	router.HandleFunc(Action.PrefixPath, Action.Handler)
-	fmt.Printf("Обработчик /action зарегистрирован")
+	fmt.Printf("Обработчик /action зарегистрирован\n")
 
 	for _, r := range View.Routs {
 		router.PathPrefix("/view").Subrouter().HandleFunc(r.Path, r.Handler)
