@@ -9,17 +9,6 @@ import (
 	"sync"
 )
 
-type Route struct {
-	Path    string
-	Handler func(w http.ResponseWriter, r *http.Request)
-}
-
-type RootRoute struct {
-	PrefixPath string
-	Handler    func(w http.ResponseWriter, r *http.Request)
-	Routs      []Route
-}
-
 var globalPlaces = interfaces.Places{
 	"local": &api.Local,
 }
@@ -28,7 +17,10 @@ func Resolve(p interfaces.Places, resolver interfaces.Resolver, sender interface
 	wg := sync.WaitGroup{}
 	l := len(p)
 
+	//////////////////////////////////////////////////////////////
+	// Сомнительная конструкция
 	c := make(chan interfaces.Thing, l)
+	//////////////////////////////////////////////////////////////
 	defer close(c)
 	wg.Add(l)
 

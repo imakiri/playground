@@ -7,6 +7,17 @@ import (
 	"net/http"
 )
 
+type Route struct {
+	Path    string
+	Handler func(w http.ResponseWriter, r *http.Request)
+}
+
+type RootRoute struct {
+	PrefixPath string
+	Handler    func(w http.ResponseWriter, r *http.Request)
+	Routs      []Route
+}
+
 var View = RootRoute{
 	PrefixPath: "/view",
 	Handler: func(w http.ResponseWriter, r *http.Request) {
