@@ -1,13 +1,13 @@
-package api
+package resolvers
 
 import (
-	"github.com/imakiri/playground/server/interfaces"
+	"github.com/imakiri/playground/server/core"
 	"io"
 )
 
 type v10 bool
 
-func (v10) Resolve(parcel interfaces.Parcel) {
+func (v10) Resolve(parcel core.Parcel) {
 	_, _ = io.WriteString(parcel.ResponseWriter, "Done View1 v0")
 }
 
