@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api/resolvers"
-	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/server/remote/casters"
 	"net/http"
 )
 
@@ -21,31 +21,31 @@ type RootRoute struct {
 var View = RootRoute{
 	PrefixPath: "/view",
 	Handler: func(w http.ResponseWriter, r *http.Request) {
-		Resolve(globalPlaces, resolvers.Location, core.SenderImp, w, r)
+		Resolve(resolvers.Location, []casters.Caster{casters.LookUp}, w, r)
 	},
 	Routs: []Route{
 		{
 			Path: "/user/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(globalPlaces, resolvers.Location, core.SenderImp, w, r)
+				Resolve(resolvers.Location, []casters.Caster{casters.LookUp}, w, r)
 			},
 		},
 		{
 			Path: "/location",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(globalPlaces, resolvers.Location, core.SenderImp, w, r)
+				Resolve(resolvers.Location, []casters.Caster{casters.LookUp}, w, r)
 			},
 		},
 		{
 			Path: "/location/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(globalPlaces, resolvers.Location, core.SenderImp, w, r)
+				Resolve(resolvers.Location, []casters.Caster{casters.LookUp}, w, r)
 			},
 		},
 		{
 			Path: "/visit/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(globalPlaces, resolvers.Location, core.SenderImp, w, r)
+				Resolve(resolvers.Location, []casters.Caster{casters.LookUp}, w, r)
 			},
 		},
 	},
@@ -60,11 +60,11 @@ var Action = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch mux.Vars(r)["entity"] {
 				case "user":
-					Resolve(globalPlaces, resolvers.V4, core.SenderImp, w, r)
+					Resolve(resolvers.V4, []casters.Caster{casters.LookUp}, w, r)
 				case "location":
-					Resolve(globalPlaces, resolvers.V4, core.SenderImp, w, r)
+					Resolve(resolvers.V4, []casters.Caster{casters.LookUp}, w, r)
 				case "visit":
-					Resolve(globalPlaces, resolvers.V4, core.SenderImp, w, r)
+					Resolve(resolvers.V4, []casters.Caster{casters.LookUp}, w, r)
 				}
 			},
 		},

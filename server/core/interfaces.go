@@ -1,6 +1,8 @@
 package core
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type Thing interface {
 	GetHeader() string
@@ -16,17 +18,7 @@ type Api interface {
 }
 
 type Parcel struct {
-	Channel        chan Thing
+	Channel        *chan ThingImp
 	Request        *http.Request
 	ResponseWriter http.ResponseWriter
-}
-
-type Places map[string]Api
-
-type Resolver interface {
-	Resolve(p Parcel)
-}
-
-type Sender interface {
-	Send(api Api, k string, c chan Thing)
 }

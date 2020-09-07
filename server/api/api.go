@@ -3,39 +3,28 @@ package api
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/server/api/resolvers"
 	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/server/remote/casters"
 	"net/http"
 	"sync"
 )
 
-var globalPlaces = core.Places{}
-
-func Resolve(
-	places core.Places,
-	resolver core.Resolver,
-	sender core.Sender,
-	w http.ResponseWriter,
-	r *http.Request,
-) {
+func Resolve(resolver resolvers.Resolver, casters []casters.Caster, w http.ResponseWriter, r *http.Request) {
+	l := len(casters)
 
 	wg := sync.WaitGroup{}
-	l := len(places)
-
-	c := make(chan core.Thing, l)
-
-	defer close(c)
 	wg.Add(l)
+	c := make(chan core.ThingImp, l)
+	defer close(c)
 
-	for k, p := range places {
-		go func(k string, p core.Api) {
-			defer wg.Done()
-			sender.Send(p, k, c)
-		}(k, p)
+	for _, caster := range casters {
+		go caster.Cast(&wg, c)
 	}
 	wg.Wait()
 
 	resolver.Resolve(core.Parcel{
-		Channel:        c,
+		Channel:        &c,
 		Request:        r,
 		ResponseWriter: w,
 	})
