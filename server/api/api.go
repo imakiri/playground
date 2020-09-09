@@ -5,12 +5,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api/resolvers"
 	"github.com/imakiri/playground/server/core"
-	"github.com/imakiri/playground/server/remote/casters"
+	"github.com/imakiri/playground/server/data/remote/casters"
 	"net/http"
 	"sync"
 )
 
 func Resolve(resolver resolvers.Resolver, casters []casters.Caster, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/json; charset=UTF-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
+
 	l := len(casters)
 
 	wg := sync.WaitGroup{}
@@ -30,7 +34,7 @@ func Resolve(resolver resolvers.Resolver, casters []casters.Caster, w http.Respo
 	})
 }
 
-func RegisterApiHandlers(rr *mux.Router) error {
+func Run(rr *mux.Router) error {
 	router := rr.PathPrefix("/api").Subrouter()
 
 	viewRouter := router.Methods("GET").Subrouter()

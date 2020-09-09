@@ -10,13 +10,6 @@ type Thing interface {
 	GetError() error
 }
 
-type Api interface {
-	GetThing(str string, c chan Thing)
-	DoThing(str string, c chan Thing)
-	ChangeThing(str string, th Thing, c chan Thing)
-	StoreThing(str string, th Thing, c chan Thing)
-}
-
 type Parcel struct {
 	Channel        *chan ThingImp
 	Request        *http.Request

@@ -1,30 +1,24 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api"
-	"io"
+	"github.com/imakiri/playground/server/web"
 	"log"
 	"net/http"
 )
 
 var Router = mux.NewRouter().Schemes("http").Subrouter()
 
-var server = &http.Server{}
-
-func root(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	_, _ = io.WriteString(w, fmt.Sprintf("User: %s, Location: %s, Visit: %s", q["user"], q["location"], q["visit"]))
+var Server = &http.Server{
+	Addr: ":80",
 }
 
-func init() {
-	_ = api.RegisterApiHandlers(Router)
+func Run() {
+	_ = api.Run(Router)
+	_ = web.Run(Router)
 
-	Router.HandleFunc("/", root)
-	server.Handler = Router
+	Server.Handler = Router
 
-	log.Fatal(server.ListenAndServe())
+	log.Fatal(Server.ListenAndServe())
 }
-
-func Run() {}

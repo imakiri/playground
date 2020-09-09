@@ -3,15 +3,15 @@ package casters
 import (
 	"fmt"
 	"github.com/imakiri/playground/server/core"
-	"github.com/imakiri/playground/server/remote"
+	"github.com/imakiri/playground/server/data/remote"
 	"sync"
 )
 
-var LookUp caster
+var PlaceSearch placeSearch0
 
-type caster bool
+type placeSearch0 bool
 
-func (caster) Cast(group *sync.WaitGroup, c chan core.ThingImp) {
+func (placeSearch0) Cast(group *sync.WaitGroup, c chan core.ThingImp) {
 	defer group.Done()
 
 	resp, err := remote.Client.Get("http://google.com")
