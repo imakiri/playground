@@ -5,7 +5,7 @@ import (
 )
 
 type Methods interface {
-	addUser
+	AddUser
 	AuthUser
 	DeleteUser
 	GetAllUsers
@@ -14,7 +14,7 @@ type Methods interface {
 	GetAllPicturesByUser
 }
 
-type addUser interface {
+type AddUser interface {
 	AddUser()
 }
 

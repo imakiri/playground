@@ -2,9 +2,8 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/server/api/resolvers"
-	"github.com/imakiri/playground/server/data/remote/casters"
-
+	"github.com/imakiri/playground/server/api/endpoints"
+	"github.com/imakiri/playground/server/app/methods/remote"
 	"net/http"
 )
 
@@ -22,31 +21,31 @@ type RootRoute struct {
 var View = RootRoute{
 	PrefixPath: "/view",
 	Handler: func(w http.ResponseWriter, r *http.Request) {
-		Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+		Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 	},
 	Routs: []Route{
 		{
 			Path: "/user/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 			},
 		},
 		{
 			Path: "/location",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 			},
 		},
 		{
 			Path: "/location/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 			},
 		},
 		{
 			Path: "/visit/{id}",
 			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 			},
 		},
 	},
@@ -61,11 +60,11 @@ var Action = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch mux.Vars(r)["entity"] {
 				case "user":
-					Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 				case "location":
-					Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 				case "visit":
-					Resolve(resolvers.Location, []casters.Caster{casters.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
 				}
 			},
 		},

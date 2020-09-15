@@ -1,4 +1,4 @@
-package handlers
+package models
 
 type a0 struct{}
 

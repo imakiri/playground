@@ -1,4 +1,4 @@
-package resolvers
+package endpoints
 
 import (
 	"github.com/imakiri/playground/server/core"

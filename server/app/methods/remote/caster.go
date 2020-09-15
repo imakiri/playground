@@ -1,4 +1,4 @@
-package casters
+package remote
 
 import (
 	"github.com/imakiri/playground/server/core"

@@ -1,9 +1,8 @@
-package casters
+package remote
 
 import (
 	"fmt"
 	"github.com/imakiri/playground/server/core"
-	"github.com/imakiri/playground/server/data/remote"
 	"sync"
 )
 
@@ -14,7 +13,7 @@ type placeSearch0 bool
 func (placeSearch0) Cast(group *sync.WaitGroup, c chan core.ThingImp) {
 	defer group.Done()
 
-	resp, err := remote.Client.Get("http://google.com")
+	resp, err := Client.Get("http://google.com")
 	if err != nil {
 		fmt.Println(err)
 		return
