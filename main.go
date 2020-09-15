@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/imakiri/playground/server"
+	"github.com/imakiri/playground/db"
 	"net/http"
 )
 
 func main() {
-	server.Run()
+	db.Run()
+	//server.Run()
 	//goroutines.Vu()
 
 }

@@ -1,4 +1,4 @@
-package methods
+package local
 
 type getAllUsers0 struct{}
 

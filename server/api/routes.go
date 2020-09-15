@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/server/api/endpoints"
-	"github.com/imakiri/playground/server/app/methods/remote"
+	"github.com/imakiri/playground/server/app/remote"
 	"net/http"
 )
 
