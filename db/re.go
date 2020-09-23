@@ -1,15 +1,5 @@
 package db
 
-func (re *Re) Read(p []byte) (n int, err error) {
-
-	return
-}
-
-func (re *Re) Write(p []byte) (n int, err error) {
-
-	return
-}
-
 func (re *Re) Error() string {
 	return re.Err.Error()
 }

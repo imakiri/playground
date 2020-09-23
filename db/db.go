@@ -1,9 +1,9 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 	"sync"
 	"time"
@@ -26,19 +26,19 @@ type check interface {
 }
 
 type User struct {
-	id      uint
-	login   string
-	avatar  []byte
-	name    string
-	encPass []byte
+	Id       uint   `db:"id"`
+	Login    string `db:"login"`
+	Avatar   []byte `db:"avatar"`
+	Name     string `db:"name"`
+	PassHash []byte `db:"passHash"`
 }
 
 type Data struct {
-	id     uint
-	date   time.Time
-	query  string
-	pic    []byte
-	userId uint
+	Id     uint      `db:"id"`
+	Date   time.Time `db:"date"`
+	Query  string    `db:"query"`
+	Pic    []byte    `db:"pic"`
+	UserId uint      `db:"userId"`
 }
 
 type Re struct {
@@ -48,8 +48,7 @@ type Re struct {
 }
 
 var f []byte
-var main *sql.DB
-var ro *sql.Rows
+var main *sqlx.DB
 var re Re
 var err error
 var c checkImp
@@ -60,7 +59,7 @@ func init() {
 	f, err = ioutil.ReadFile("dsn")
 	check.DSN(c, err)
 
-	main, err = sql.Open("mysql", string(f))
+	main, err = sqlx.Open("mysql", string(f))
 	check.Connection(c, err)
 
 	err = main.Ping()
@@ -69,27 +68,18 @@ func init() {
 	f, err = ioutil.ReadFile("salt")
 	check.Salt(c, err)
 	salt = string(f)
-
-	f, err = ioutil.ReadFile("server/app/local/sql/getPassHash.sql")
-	check.HashQ(c, err)
-	query.getPassHash = string(f)
-
-	f, err = ioutil.ReadFile("server/app/local/sql/getProfile.sql")
-	check.ProfileQ(c, err)
-	query.getProfile = string(f)
 }
 
-func Run() {
-	re := User{}
-	ro, err = main.Query(query.getProfile)
-	checkImp.Query(c, err)
-	defer func() {
-		ro.Close()
-	}()
+func RunTest() {
+	wg := sync.WaitGroup{}
+	c := make(chan Re, 1)
 
-	ro.Next()
-	_ = ro.Scan(&re.id, &re.name, &re.encPass)
-	fmt.Printf("User/id: %v, name: %s, encPass: %b", re.id, re.name, re.encPass)
+	wg.Add(1)
+	GetPassHash("imakiri", &wg, c)
+	wg.Wait()
+
+	res := <-c
+	fmt.Printf("PassHash: %s", res.PassHash)
 }
 
 func GetSalt() string {
@@ -99,14 +89,7 @@ func GetSalt() string {
 func GetUserProfile(login string, wg *sync.WaitGroup, c chan Re) {
 	defer wg.Done()
 
-	const qGetProfile = "SELECT name, avatar FROM main.users WHERE login = ?"
-	ro, err = main.Query(qGetProfile, login)
-	if re.Check(err, c) {
-		return
-	}
-
-	ro.Next()
-	err = ro.Scan(&re.User.name, &re.User.avatar)
+	err = main.Get(&re.User, "SELECT name, avatar FROM main.users WHERE login = ?", login)
 	if re.Check(err, c) {
 		return
 	}
@@ -114,30 +97,10 @@ func GetUserProfile(login string, wg *sync.WaitGroup, c chan Re) {
 	c <- re
 }
 
-//func SetProfile(login string, uData User, wg *sync.WaitGroup, c chan Re) {
-//	defer wg.Done()
-//
-//
-//	ro, err = main.Query(, login)
-//	if re.Check(err, c) {
-//		return
-//	}
-//
-//	c <- re
-//}
-
-// Login procedure
 func GetPassHash(login string, wg *sync.WaitGroup, c chan Re) {
 	defer wg.Done()
 
-	const qGetPassHash = "SELECT passHash FROM main.users WHERE name = ?"
-	ro, err = main.Query(qGetPassHash, login)
-	if re.Check(err, c) {
-		return
-	}
-
-	ro.Next()
-	err = ro.Scan(&re.Data)
+	err = main.Get(&re.User, "SELECT passHash FROM main.users WHERE name = ?", login)
 	if re.Check(err, c) {
 		return
 	}

@@ -1,29 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"github.com/imakiri/playground/db"
 	"net/http"
 )
 
-var err error
-var port int
-
 func main() {
-	_, _ = fmt.Print("Enter port: ")
-	_, err = fmt.Scanf("%d", &port)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	server := http.Server{Addr: fmt.Sprintf(":%d", port)}
-	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		_, _ = fmt.Fprintln(writer, "Кибер-сычевальня Мага полупопия")
-	})
-
-	_, _ = fmt.Printf("\nServer is running on port %d", port)
-	log.Fatal(server.ListenAndServe())
-	//
+	db.RunTest()
 	//t1()
 	//server.Run()
 	//goroutines.Vu()
