@@ -3,18 +3,16 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/imakiri/playground/server/core"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"io/ioutil"
 	"sync"
 	"time"
 )
 
-var main *sql.DB
-var ro *sql.Rows
-var err error
-var c checkImp
-var salt string
+type q struct {
+	getPassHash string
+	getProfile  string
+}
 
 type check interface {
 	DSN(err error)
@@ -23,10 +21,14 @@ type check interface {
 	Query(err error)
 	Salt(err error)
 	Hash(err error)
+	HashQ(err error)
+	ProfileQ(err error)
 }
 
 type User struct {
 	id      uint
+	login   string
+	avatar  []byte
 	name    string
 	encPass []byte
 }
@@ -39,8 +41,22 @@ type Data struct {
 	userId uint
 }
 
+type Re struct {
+	User
+	Data
+	Err error
+}
+
+var f []byte
+var main *sql.DB
+var ro *sql.Rows
+var re Re
+var err error
+var c checkImp
+var query q
+var salt string
+
 func init() {
-	var f []byte
 	f, err = ioutil.ReadFile("dsn")
 	check.DSN(c, err)
 
@@ -53,11 +69,19 @@ func init() {
 	f, err = ioutil.ReadFile("salt")
 	check.Salt(c, err)
 	salt = string(f)
+
+	f, err = ioutil.ReadFile("server/app/local/sql/getPassHash.sql")
+	check.HashQ(c, err)
+	query.getPassHash = string(f)
+
+	f, err = ioutil.ReadFile("server/app/local/sql/getProfile.sql")
+	check.ProfileQ(c, err)
+	query.getProfile = string(f)
 }
 
 func Run() {
 	re := User{}
-	ro, err = main.Query("SELECT id, name, encPass FROM main.users")
+	ro, err = main.Query(query.getProfile)
 	checkImp.Query(c, err)
 	defer func() {
 		ro.Close()
@@ -68,16 +92,51 @@ func Run() {
 	fmt.Printf("User/id: %v, name: %s, encPass: %b", re.id, re.name, re.encPass)
 }
 
-func GetPassHash(name string, wg *sync.WaitGroup, c chan core.Re) {
+func GetSalt() string {
+	return salt
+}
+
+func GetUserProfile(login string, wg *sync.WaitGroup, c chan Re) {
 	defer wg.Done()
 
-	var re core.Re
-	var ro *sql.Rows
-	ro, err = main.Query("SELECT encPass FROM main.users where name = ?", name)
+	const qGetProfile = "SELECT name, avatar FROM main.users WHERE login = ?"
+	ro, err = main.Query(qGetProfile, login)
 	if re.Check(err, c) {
 		return
 	}
 
+	ro.Next()
+	err = ro.Scan(&re.User.name, &re.User.avatar)
+	if re.Check(err, c) {
+		return
+	}
+
+	c <- re
+}
+
+//func SetProfile(login string, uData User, wg *sync.WaitGroup, c chan Re) {
+//	defer wg.Done()
+//
+//
+//	ro, err = main.Query(, login)
+//	if re.Check(err, c) {
+//		return
+//	}
+//
+//	c <- re
+//}
+
+// Login procedure
+func GetPassHash(login string, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	const qGetPassHash = "SELECT passHash FROM main.users WHERE name = ?"
+	ro, err = main.Query(qGetPassHash, login)
+	if re.Check(err, c) {
+		return
+	}
+
+	ro.Next()
 	err = ro.Scan(&re.Data)
 	if re.Check(err, c) {
 		return
