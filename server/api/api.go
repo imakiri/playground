@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/server/api/endpoints"
 	"github.com/imakiri/playground/server/app/remote"
-	"github.com/imakiri/playground/server/core"
 	"net/http"
 	"sync"
 )

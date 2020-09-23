@@ -2,7 +2,7 @@ package remote
 
 import (
 	"fmt"
-	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/core"
 	"sync"
 )
 

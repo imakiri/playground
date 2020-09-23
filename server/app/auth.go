@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/core"
 	"golang.org/x/crypto/bcrypt"
 	"sync"
 )

@@ -1,7 +1,7 @@
 package endpoints
 
 import (
-	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/core"
 	"io"
 )
 

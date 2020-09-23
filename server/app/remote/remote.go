@@ -1,7 +1,7 @@
 package remote
 
 import (
-	"github.com/imakiri/playground/server/core"
+	"github.com/imakiri/playground/core"
 	"net"
 	"net/http"
 	"sync"
