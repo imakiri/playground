@@ -2,21 +2,21 @@ package server
 
 import (
 	"github.com/gorilla/mux"
-	_ "github.com/imakiri/playground/server/api"
-	"github.com/imakiri/playground/server/web"
-	_ "github.com/imakiri/playground/server/web"
+	_ "github.com/imakiri/playground/api"
+	"github.com/imakiri/playground/web"
+	_ "github.com/imakiri/playground/web"
 	"log"
 	"net/http"
 )
 
+var r = mux.NewRouter()
+
 func RunS() {
-	//_ = api.Run(Router)
+	var s = &http.Server{}
 
-	var Router = mux.NewRouter()
-	var Server = &http.Server{}
+	//_ = api.Run(r)
+	_ = web.Run(r)
+	s.Handler = r
 
-	_ = web.Run(Router)
-	Server.Handler = Router
-
-	log.Fatal(Server.ListenAndServeTLS("C:/Certbot/live/imakiri.ddns.net/cert.pem", "C:/Certbot/live/imakiri.ddns.net/privkey.pem"))
+	log.Fatal(s.ListenAndServeTLS("C:/Certbot/live/imakiri.ddns.net/cert.pem", "C:/Certbot/live/imakiri.ddns.net/privkey.pem"))
 }

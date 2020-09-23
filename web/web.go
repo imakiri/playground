@@ -3,7 +3,7 @@ package web
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/server/web/models"
+	"github.com/imakiri/playground/web/models"
 	"net/http"
 )
 
