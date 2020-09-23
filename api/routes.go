@@ -20,35 +20,8 @@ type RootRoute struct {
 
 var View = RootRoute{
 	PrefixPath: "/view",
-	Handler: func(w http.ResponseWriter, r *http.Request) {
-		Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
-	},
-	Routs: []Route{
-		{
-			Path: "/user/{id}",
-			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
-			},
-		},
-		{
-			Path: "/location",
-			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
-			},
-		},
-		{
-			Path: "/location/{id}",
-			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
-			},
-		},
-		{
-			Path: "/visit/{id}",
-			Handler: func(w http.ResponseWriter, r *http.Request) {
-				Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
-			},
-		},
-	},
+	Handler:    nil,
+	Routs:      []Route{},
 }
 
 var Action = RootRoute{
