@@ -48,7 +48,7 @@ var c checkImp
 var salt string
 
 func init() {
-	f, err = ioutil.ReadFile("dsn")
+	f, err = ioutil.ReadFile("db/dsn")
 	check.DSN(c, err)
 
 	main, err = sqlx.Open("mysql", string(f))
@@ -57,7 +57,7 @@ func init() {
 	err = main.Ping()
 	check.Ping(c, err)
 
-	f, err = ioutil.ReadFile("salt")
+	f, err = ioutil.ReadFile("db/salt")
 	check.Salt(c, err)
 	salt = string(f)
 }
