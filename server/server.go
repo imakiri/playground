@@ -13,7 +13,7 @@ func RunS() {
 	//_ = api.Run(Router)
 
 	var Router = mux.NewRouter()
-	var Server = http.Server{}
+	var Server = &http.Server{}
 
 	_ = web.Run(Router)
 	Server.Handler = Router
