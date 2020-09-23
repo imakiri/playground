@@ -2,7 +2,7 @@ package a
 
 import (
 	"fmt"
-	"github.com/imakiri/playground/goroutines/inter"
+	"github.com/imakiri/playground/misc/inter"
 )
 
 type Foo bool
