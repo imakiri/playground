@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-type q struct {
-	getPassHash string
-	getProfile  string
-}
-
 type check interface {
 	DSN(err error)
 	Connection(err error)
@@ -21,8 +16,6 @@ type check interface {
 	Query(err error)
 	Salt(err error)
 	Hash(err error)
-	HashQ(err error)
-	ProfileQ(err error)
 }
 
 type User struct {
@@ -52,7 +45,6 @@ var main *sqlx.DB
 var re Re
 var err error
 var c checkImp
-var query q
 var salt string
 
 func init() {
@@ -75,10 +67,11 @@ func RunTest() {
 	c := make(chan Re, 1)
 
 	wg.Add(1)
-	GetPassHash("imakiri", &wg, c)
+	GetUserPassHash("imakiri", &wg, c)
 	wg.Wait()
 
 	res := <-c
+
 	fmt.Printf("PassHash: %s", res.PassHash)
 }
 
@@ -86,7 +79,7 @@ func GetSalt() string {
 	return salt
 }
 
-func GetUserProfile(login string, wg *sync.WaitGroup, c chan Re) {
+func GetUser(login string, wg *sync.WaitGroup, c chan Re) {
 	defer wg.Done()
 
 	err = main.Get(&re.User, "SELECT name, avatar FROM main.users WHERE login = ?", login)
@@ -95,15 +88,89 @@ func GetUserProfile(login string, wg *sync.WaitGroup, c chan Re) {
 	}
 
 	c <- re
+	close(c)
 }
 
-func GetPassHash(login string, wg *sync.WaitGroup, c chan Re) {
+func GetUserById(id uint, wg *sync.WaitGroup, c chan Re) {
 	defer wg.Done()
 
-	err = main.Get(&re.User, "SELECT passHash FROM main.users WHERE name = ?", login)
+	err = main.Get(&re.User, "SELECT name, avatar FROM main.users WHERE id = ?", id)
 	if re.Check(err, c) {
 		return
 	}
 
 	c <- re
+	close(c)
+}
+
+func GetUserPassHash(login string, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	err = main.Get(&re.User, "SELECT passHash FROM main.users WHERE login = ?", login)
+	if re.Check(err, c) {
+		return
+	}
+
+	c <- re
+	close(c)
+}
+
+func GetData(id uint, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	//err = main.Get(&re.User, "SELECT pic FROM main.data WHERE userId = ?", id)
+	//if re.Check(err, c) {
+	//	return
+	//}
+
+	c <- re
+	close(c)
+}
+
+func AddPic(id uint, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	//err = main.Get(&re.User, "SELECT pic FROM main.data WHERE userId = ?", id)
+	//if re.Check(err, c) {
+	//	return
+	//}
+
+	c <- re
+	close(c)
+}
+
+func CreateUser(id uint, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	//err = main.Get(&re.User, "SELECT pic FROM main.data WHERE userId = ?", id)
+	//if re.Check(err, c) {
+	//	return
+	//}
+
+	c <- re
+	close(c)
+}
+
+func UpdateUser(id uint, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	//err = main.Get(&re.User, "SELECT pic FROM main.data WHERE userId = ?", id)
+	//if re.Check(err, c) {
+	//	return
+	//}
+
+	c <- re
+	close(c)
+}
+
+func DeleteUser(id uint, wg *sync.WaitGroup, c chan Re) {
+	defer wg.Done()
+
+	//err = main.Get(&re.User, "SELECT pic FROM main.data WHERE userId = ?", id)
+	//if re.Check(err, c) {
+	//	return
+	//}
+
+	c <- re
+	close(c)
 }

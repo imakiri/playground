@@ -42,23 +42,9 @@ func (checkImp) Salt(err error) {
 	fmt.Print("App/Salt passed\n")
 }
 
-func (checkImp) HashQ(err error) {
-	if err != nil {
-		log.Fatalf("DB/Hash query load error/%s\n", err)
-	}
-	fmt.Print("DB/Hash query loaded\n")
-}
-
 func (checkImp) Hash(err error) {
 	if err != nil {
 		log.Fatalf("App/Hash error/%s\n", err)
 	}
 	fmt.Print("App/Hash passed\n")
-}
-
-func (checkImp) ProfileQ(err error) {
-	if err != nil {
-		log.Fatalf("DB/Profile query load error/%s\n", err)
-	}
-	fmt.Print("DB/Profile query loaded\n")
 }

@@ -25,7 +25,7 @@ func main() {
 //	app.Hash("неверныйпароль", &wg, c)
 //
 //	wg.Add(1)
-//	db.GetPassHash("imakiri", &wg, c)
+//	db.GetUserPassHash("imakiri", &wg, c)
 //
 //	re1 = <- c
 //	re2 = <- c
