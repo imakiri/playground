@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 type r0 struct{}
@@ -21,7 +22,7 @@ func (r0) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = t.ExecuteTemplate(w, "index", nil)
 
-	fmt.Printf("Web/Root passed to %s\n", r.RemoteAddr)
+	fmt.Printf("%v Web/Root passed to %s\n", time.Now(), r.RemoteAddr)
 }
 
 var Root r0
