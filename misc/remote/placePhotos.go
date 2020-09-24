@@ -3,6 +3,7 @@ package remote
 import (
 	"fmt"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/misc"
 	"sync"
 )
 
@@ -13,7 +14,7 @@ type placePhotos0 bool
 func (placePhotos0) Cast(group *sync.WaitGroup, c chan core.ThingImp) {
 	defer group.Done()
 
-	resp, err := Client.Get("http://google.com")
+	resp, err := misc.Client.Get("http://google.com")
 	if err != nil {
 		fmt.Println(err)
 		return

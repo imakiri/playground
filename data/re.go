@@ -1,4 +1,4 @@
-package db
+package data
 
 func (re *Re) Error() string {
 	return re.Err.Error()

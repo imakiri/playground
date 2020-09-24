@@ -3,7 +3,8 @@ package api
 import (
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/api/endpoints"
-	"github.com/imakiri/playground/app/remote"
+	"github.com/imakiri/playground/misc"
+	"github.com/imakiri/playground/misc/remote"
 	"net/http"
 )
 
@@ -33,11 +34,11 @@ var Action = RootRoute{
 			Handler: func(w http.ResponseWriter, r *http.Request) {
 				switch mux.Vars(r)["entity"] {
 				case "user":
-					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []misc.Caster{remote.PlacePhotos}, w, r)
 				case "location":
-					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []misc.Caster{remote.PlacePhotos}, w, r)
 				case "visit":
-					Resolve(endpoints.Location, []remote.Caster{remote.PlacePhotos}, w, r)
+					Resolve(endpoints.Location, []misc.Caster{remote.PlacePhotos}, w, r)
 				}
 			},
 		},

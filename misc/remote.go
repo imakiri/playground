@@ -1,4 +1,4 @@
-package remote
+package misc
 
 import (
 	"github.com/imakiri/playground/core"

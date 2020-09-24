@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/playground/api/endpoints"
-	"github.com/imakiri/playground/app/remote"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/misc"
 	"net/http"
 	"sync"
 )
 
-func Resolve(resolver endpoints.Resolver, casters []remote.Caster, w http.ResponseWriter, r *http.Request) {
+func Resolve(resolver endpoints.Resolver, casters []misc.Caster, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/json; charset=UTF-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,access-control-allow-origin, access-control-allow-headers")
