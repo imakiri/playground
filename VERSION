@@ -1,0 +1,8 @@
+VERSION 1.0
+PROJECT playground
+SCHEMA main: /!C(?<commitNum>\d+)(?:\.(?<subCommitNum>\d+))?(?<noteList>[\s\S]+?)(?=\s!|$)/g, noteList: /--([\s\S]+?)(?=\s--|$)/g
+DATA
+
+!C21
+    --Добавил историю версий\коммитов
+
