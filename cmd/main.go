@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/imakiri/playground/misc"
 	"github.com/imakiri/playground/server"
 	"net/http"
 )
@@ -16,4 +17,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if p, ok := w.(http.Pusher); ok {
 		_ = p.Push("style.css", nil)
 	}
+
+}
+
+type G interface {
+	Lik() *int
+	Lpe() *string
+}
+
+func test() {
+	var g = misc.Gyto{}
+	*G.Lik(&g) = 67
+
 }

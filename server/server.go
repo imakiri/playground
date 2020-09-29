@@ -24,7 +24,7 @@ func Run() {
 
 	_ = web.Run(r)
 	s.Handler = r
-	log.Fatal(s.ListenAndServeTLS("C:/Certbot/live/imakiri.ddns.net/cert.pem", "C:/Certbot/live/imakiri.ddns.net/privkey.pem"))
+	log.Fatal(s.ListenAndServeTLS("cert.pem", "privkey.pem"))
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {
