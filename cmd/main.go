@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/imakiri/playground/misc"
 	"github.com/imakiri/playground/server"
 	"net/http"
@@ -11,6 +12,7 @@ func main() {
 	//for i := 4; i > 0; i-- {
 	//	app.RunTest1()
 	//}
+	//test()
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -20,13 +22,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type G interface {
-	Lik() *int
-	Lpe() *string
-}
-
 func test() {
-	var g = misc.Gyto{}
-	*G.Lik(&g) = 67
+	ch := make(chan string)
+	in := "ONJDFSGNJEGJNEGRF"
+
+	go func() {
+		ch <- misc.Uuy(in)
+	}()
+
+	re := <-ch
+	fmt.Print(re)
 
 }

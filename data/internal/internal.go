@@ -5,17 +5,13 @@ import (
 	"io/ioutil"
 )
 
-type consecutive struct{}
-type concurrent struct{}
-type erroneous struct{}
+type r struct{}
 
 var f []byte
 var main *sqlx.DB
 var Salt string
 
-var Consecutive consecutive
-var Concurrent concurrent
-var Erroneous erroneous
+var Release r
 
 func Init() (err error) {
 	f, err = ioutil.ReadFile("data/dsn")
@@ -39,5 +35,6 @@ func Init() (err error) {
 	}
 
 	Salt = string(f)
+	f = nil
 	return
 }
