@@ -2,9 +2,7 @@ package server
 
 import (
 	"github.com/gorilla/mux"
-	_ "github.com/imakiri/playground/api"
 	"github.com/imakiri/playground/web"
-	_ "github.com/imakiri/playground/web"
 	"log"
 	"net/http"
 )

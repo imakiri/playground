@@ -8,17 +8,21 @@ import (
 	"log"
 )
 
+type Re struct {
+}
+
 const hashCost = 10
 
 var salt string
 var reData schema.Re
 
-func init() {
+func Init() (err error) {
 	if err := data.Init(); err != nil {
 		log.Fatal(err.Error())
 	}
 
 	salt = data.GetSalt()
+	return
 }
 
 func RunTest1() {

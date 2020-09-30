@@ -2,6 +2,7 @@ html, body {
     margin: 0;
     background-color: #d9d9d9;
     height: 100%;
+    font-family: "Open Sans", serif;
 }
 
 h1 {
@@ -16,7 +17,6 @@ h1 {
 p {
     vertical-align: bottom;
     text-align: center;
-    font-family: "Open Sans", serif;
     color: #d9d9d9;
     margin: 5px;
 }
