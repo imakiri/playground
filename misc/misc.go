@@ -1,6 +1,8 @@
 package misc
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/imakiri/playground/app"
 	"github.com/imakiri/playground/data"
@@ -28,6 +30,8 @@ func Uuy(in string) (out string) {
 	out = strings.ToLower(in)
 	return
 }
+
+type IncorrectArgumentError inside.IncorrectArgumentErrorInt
 
 func testGo() {
 	in := "ONJDFSGNJEGJNEGRF"
@@ -63,9 +67,9 @@ func Test1() {
 }
 
 func Test2() {
-	switch data.Init().(type) {
+	switch err := data.Init().(type) {
 	case data.InitError:
-
+		log.Fatal(err.Error())
 	}
 
 	i := data.Internal()
@@ -77,10 +81,32 @@ func Test2() {
 	case inside.IncorrectArgumentError:
 		fmt.Print("Incorrect argument")
 	case error:
-		fmt.Printf("Error: %s", err.Error())
+
+		fmt.Printf("Error: %v", errors.Is(err, sql.ErrNoRows))
 	default:
 
 	}
 
 	fmt.Printf("%s\n", u.Name)
+}
+
+func Test3() {
+	switch err := data.Init().(type) {
+	case data.InitError:
+		log.Fatal(err.Error())
+	}
+
+	i := data.Internal()
+	var u = &schema.User{Login: "imari", Name: "klff", Avatar: []byte("erhg"), PassHash: []byte("efge")}
+
+	switch err := i.CreateUser(u).(type) {
+	case inside.NotFoundError:
+		fmt.Print("Not found")
+	case inside.IncorrectArgumentError:
+		fmt.Print("Incorrect argument")
+	case error:
+		fmt.Printf("Error: %v", err.Error())
+	default:
+
+	}
 }

@@ -7,5 +7,5 @@ import (
 func main() {
 	//server.Run()
 	//misc.Test()
-	misc.Test2()
+	misc.Test3()
 }

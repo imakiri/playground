@@ -34,3 +34,6 @@ DATA
 !C25.3
     --Переименование файлов
     #data/inside/inside.go #data/outside/outside.go
+!C25.4
+    --Тестирование обработки ошибок с помощью type switches
+    #misc.Test3

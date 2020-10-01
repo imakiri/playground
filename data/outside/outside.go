@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-type r struct{}
+type R struct{}
 
 var f []byte
 var client *http.Client
 var key string
 
-var Release r
+var Release R
 
 func Init() (err error) {
 	client = &http.Client{Timeout: 5 * time.Second}

@@ -6,8 +6,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var External = outside.Release
-
 func Init() (err error) {
 	err = inside.Init()
 	if err != nil {
@@ -27,7 +25,9 @@ func GetSalt() string {
 }
 
 func Internal() *inside.R {
-	return &inside.Release
+	return &inside.R{}
 }
 
-func RunTest() {}
+func External() *outside.R {
+	return &outside.R{}
+}

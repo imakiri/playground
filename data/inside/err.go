@@ -1,65 +1,94 @@
 package inside
 
 import (
+	"github.com/go-sql-driver/mysql"
 	"github.com/imakiri/playground/data/schema"
 )
 
 type checkerImp struct{}
 
-func (checkerImp) createUser(u *schema.User) error {
-	c := u.Name == "" || u.Login == "" || u.Avatar == nil || u.PassHash == nil
-	if c {
-		return IncorrectArgumentError{}
+func (checkerImp) createUser(u *schema.User, f userFunc) error {
+	if u.Name == "" || u.Login == "" || u.Avatar == nil || u.PassHash == nil {
+		return IncorrectArgumentError{"Invalid/null argument"}
 	}
-	return nil
+
+	if err := f(u); err != nil {
+		me, ok := err.(*mysql.MySQLError)
+		if ok {
+			switch me.Number {
+			case 1062:
+				return IncorrectArgumentError{"User already exist"}
+			default:
+				return InternalServiceError{err.Error()}
+			}
+		} else {
+			return InternalServiceError{err.Error()}
+		}
+	} else {
+		return nil
+	}
 }
 
-func (checkerImp) user(u *schema.User, fId userFunc, fLogin userFunc) error {
-	var c bool
-
-	c = u.Login != "" && u.Id != 0
-	if c {
-		return IncorrectArgumentError{}
+func (checkerImp) getUser(u *schema.User, fId userFunc, fLogin userFunc) error {
+	if u.Login != "" && u.Id != 0 {
+		return IncorrectArgumentError{"Couldn't accept both login and id as a parameter"}
 	}
 
-	c = u.Login == "" && u.Id == 0
-	if c {
-		return IncorrectArgumentError{}
+	if u.Login == "" && u.Id == 0 {
+		return IncorrectArgumentError{"Invalid/null argument"}
 	}
 
 	if u.Id != 0 {
-		err := fId(u)
-		if err != nil && err.Error() == "sql: no rows in result set" {
-			return NotFoundError{}
+		if err := fId(u); err != nil {
+			switch e := err.Error(); e {
+			case "sql: no rows in result set":
+				return NotFoundError{e}
+			default:
+				return InternalServiceError{e}
+			}
+		} else {
+			return nil
 		}
-
-		return err
 	}
 
 	if u.Login != "" {
-		err := fLogin(u)
-		if err != nil && err.Error() == "sql: no rows in result set" {
-			return NotFoundError{}
+		if err := fLogin(u); err != nil {
+			switch e := err.Error(); e {
+			case "sql: no rows in result set":
+				return NotFoundError{e}
+			default:
+				return InternalServiceError{e}
+			}
+		} else {
+			return nil
 		}
-
-		return err
 	}
 
-	return NotFoundError{}
+	return InternalServiceError{}
+}
+
+type IncorrectArgumentErrorInt error
+
+type InternalServiceError struct {
+	err string
+}
+
+func (e InternalServiceError) Error() string {
+	return e.err
 }
 
 type IncorrectArgumentError struct {
 	err string
 }
 
-func (IncorrectArgumentError) Error() string {
-	return ""
+func (e IncorrectArgumentError) Error() string {
+	return e.err
 }
 
 type NotFoundError struct {
 	err string
 }
 
-func (NotFoundError) Error() string {
-	return ""
+func (e NotFoundError) Error() string {
+	return e.err
 }
