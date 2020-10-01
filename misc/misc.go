@@ -71,17 +71,16 @@ func Test2() {
 	i := data.Internal()
 	var u = &schema.User{Login: "imari"}
 
-	switch i.GetUser(u).(type) {
+	switch err := i.GetUser(u).(type) {
 	case inside.NotFoundError:
 		fmt.Print("Not found")
 	case inside.IncorrectArgumentError:
 		fmt.Print("Incorrect argument")
+	case error:
+		fmt.Printf("Error: %s", err.Error())
 	default:
 
 	}
 
-	if err := i.GetUser(u); err != nil {
-		fmt.Printf("%s\n", err.Error())
-	}
 	fmt.Printf("%s\n", u.Name)
 }

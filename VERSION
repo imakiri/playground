@@ -24,3 +24,6 @@ DATA
 !C25.1
     --Минорные исправления\багфиксы
     #data/inside/checkerImp.createUser #app.IsAuthorized
+!C25.2
+    --Минорные исправления\багфиксы
+    #misc.Test2
