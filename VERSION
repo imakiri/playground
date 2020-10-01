@@ -36,4 +36,7 @@ DATA
     #data/inside/inside.go #data/outside/outside.go
 !C25.4
     --Тестирование обработки ошибок с помощью type switches
-    #misc.Test3
+    #misc.Test3 #data/inside.InternalServiceError
+!C25.5
+    --Реструктуризация кода
+    #data/inside/check.go #data/inside/err.go

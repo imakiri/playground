@@ -31,8 +31,6 @@ func Uuy(in string) (out string) {
 	return
 }
 
-type IncorrectArgumentError inside.IncorrectArgumentErrorInt
-
 func testGo() {
 	in := "ONJDFSGNJEGJNEGRF"
 
