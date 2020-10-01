@@ -1,4 +1,4 @@
-package external
+package outside
 
 import (
 	"io/ioutil"

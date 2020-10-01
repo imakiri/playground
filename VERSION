@@ -17,3 +17,9 @@ DATA
     --Реструктурирование\чистка кода
 !C24.1
     --Минорные исправления\багфиксы
+!C25
+    --Переименование data/internal, data/external в data/inside, data/outside
+    --Первичная имплементация обработчика ошибок в модуле data/inside
+    #checker #checkerImp #IncorrectArgumentError #NotFoundError
+    --Тестирование обработки ошибок с помощью type switches
+    #misc.Test2

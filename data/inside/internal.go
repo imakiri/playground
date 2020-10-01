@@ -1,17 +1,17 @@
-package internal
+package inside
 
 import (
 	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 )
 
-type r struct{}
+type R struct{}
 
 var f []byte
 var main *sqlx.DB
 var Salt string
 
-var Release r
+var Release R
 
 func Init() (err error) {
 	f, err = ioutil.ReadFile("data/dsn")

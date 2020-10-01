@@ -1,30 +1,33 @@
 package data
 
 import (
-	"github.com/imakiri/playground/data/external"
-	"github.com/imakiri/playground/data/internal"
+	"github.com/imakiri/playground/data/inside"
+	"github.com/imakiri/playground/data/outside"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-var Internal = internal.Release
-var External = external.Release
+var External = outside.Release
 
 func Init() (err error) {
-	err = internal.Init()
+	err = inside.Init()
 	if err != nil {
-		return
+		return &InitError{"Internal", err.Error()}
 	}
 
-	err = external.Init()
+	err = outside.Init()
 	if err != nil {
-		return
+		return &InitError{"External", err.Error()}
 	}
 
 	return
 }
 
 func GetSalt() string {
-	return internal.Salt
+	return inside.Salt
+}
+
+func Internal() *inside.R {
+	return &inside.Release
 }
 
 func RunTest() {}

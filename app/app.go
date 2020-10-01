@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/imakiri/playground/data"
 	"github.com/imakiri/playground/data/schema"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
@@ -31,18 +30,21 @@ func RunTest1() {
 }
 
 func IsAuthorized(login string, pass string) (bool, error) {
-	defer func() {
-		reData = schema.Re{}
-	}()
-
-	reData = data.Internal.GetUserPassHash(login)
-	if reData.Err != nil {
-		return false, reData.Err
-	}
-
-	if bcrypt.CompareHashAndPassword(reData.PassHash, []byte(pass)) == nil {
-		return true, nil
-	} else {
-		return false, nil
-	}
+	//defer func() {
+	//	reData = schema.Re{}
+	//}()
+	//
+	//var u &schema.User{Login: login}
+	//
+	//reData = data.Internal().GetUserPassHash(u)
+	//if reData.Err != nil {
+	//	return false, reData.Err
+	//}
+	//
+	//if bcrypt.CompareHashAndPassword(reData.PassHash, []byte(pass)) == nil {
+	//	return true, nil
+	//} else {
+	//	return false, nil
+	//}
+	return false, nil
 }

@@ -1,23 +1,11 @@
 package main
 
 import (
-	"github.com/imakiri/playground/app"
-	"github.com/imakiri/playground/server"
-	"log"
+	"github.com/imakiri/playground/misc"
 )
 
 func main() {
-	server.Run()
-	//test()
-}
-
-func test() {
-	err := app.Init()
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	for i := 4; i > 0; i-- {
-		app.RunTest1()
-	}
+	//server.Run()
+	//misc.Test()
+	misc.Test2()
 }
