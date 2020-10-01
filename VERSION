@@ -23,3 +23,6 @@ DATA
     #checker #checkerImp #IncorrectArgumentError #NotFoundError
     --Тестирование обработки ошибок с помощью type switches
     #misc.Test2
+!C25.1
+    --Минорные исправления\багфиксы
+    #data/inside/checkerImp.createUser #app.IsAuthorized

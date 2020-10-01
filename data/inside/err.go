@@ -7,7 +7,7 @@ import (
 type checkerImp struct{}
 
 func (checkerImp) createUser(u *schema.User) error {
-	c := &u.Name == nil || &u.Login == nil || &u.Avatar == nil || &u.PassHash == nil
+	c := u.Name == "" || u.Login == "" || u.Avatar == nil || u.PassHash == nil
 	if c {
 		return IncorrectArgumentError{}
 	}
@@ -39,7 +39,7 @@ func (checkerImp) user(u *schema.User, fId userFunc, fLogin userFunc) error {
 	if u.Login != "" {
 		err := fLogin(u)
 		if err != nil && err.Error() == "sql: no rows in result set" {
-			return NotFoundError{err: "ergr"}
+			return NotFoundError{}
 		}
 
 		return err
