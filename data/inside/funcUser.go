@@ -4,11 +4,13 @@ import (
 	"github.com/imakiri/playground/data/schema"
 )
 
-var c checkerImp
+var c userCheckerImp
 
-type checker interface {
+type userChecker interface {
+	userLI(u *schema.User, fId userFunc, fLogin userFunc) error
+	userL(u *schema.User, fLogin userFunc) error
 	createUser(u *schema.User, f userFunc) error
-	getUser(u *schema.User, fId userFunc, fLogin userFunc) error
+	updateUser(u *schema.User, fName userFunc, fAvatar userFunc, fLogin userFunc) error
 }
 
 type userFunc func(u *schema.User) (err error)
@@ -24,21 +26,16 @@ func (R) GetUser(u *schema.User) (err error) {
 		return
 	}
 
-	return checker.getUser(c, u, fId, fLogin)
+	return userChecker.userLI(c, u, fId, fLogin)
 }
 
 func (R) GetUserPassHash(u *schema.User) (err error) {
-	fId := func(u *schema.User) (err error) {
-		err = main.Get(u, "SELECT passHash FROM main.users WHERE id = ?", u.Id)
-		return
-	}
-
-	fLogin := func(u *schema.User) (err error) {
+	f := func(u *schema.User) (err error) {
 		err = main.Get(u, "SELECT passHash FROM main.users WHERE login = ?", u.Login)
 		return
 	}
 
-	return checker.getUser(c, u, fId, fLogin)
+	return userChecker.userL(c, u, f)
 }
 
 func (R) CreateUser(u *schema.User) (err error) {
@@ -48,7 +45,7 @@ func (R) CreateUser(u *schema.User) (err error) {
 		return
 	}
 
-	return checker.createUser(c, u, f)
+	return userChecker.createUser(c, u, f)
 }
 
 func (R) DeleteUser(u *schema.User) (err error) {
@@ -62,11 +59,22 @@ func (R) DeleteUser(u *schema.User) (err error) {
 		return
 	}
 
-	return checker.getUser(c, u, fId, fLogin)
+	return userChecker.userLI(c, u, fId, fLogin)
 }
 
-func (R) UpdateUserAvatar(u *schema.User) (err error) {
-	_, err = main.Exec("UPDATE main.users SET avatar = ? WHERE login = ?", u.Avatar, u.Login)
+func (R) UpdateUser(u *schema.User) (err error) {
+	//fName := func(u *schema.User, fName userFunc, fAvatar userFunc, fLogin userFunc) (err error) {
+	//	_, err = main.Exec("UPDATE main.users SET name = ? WHERE login = ?", u.Name, u.Login)
+	//	return
+	//}
+	//
+	//fAvatar := func() {
+	//	_, err = main.Exec("UPDATE main.users SET avatar = ? WHERE login = ?", u.Avatar, u.Login)
+	//	return
+	//}
+	//
+	//
+
 	return
 }
 

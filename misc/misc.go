@@ -1,15 +1,16 @@
 package misc
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"github.com/imakiri/playground/app"
 	"github.com/imakiri/playground/data"
 	"github.com/imakiri/playground/data/inside"
 	"github.com/imakiri/playground/data/schema"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"reflect"
 	"strings"
 )
 
@@ -71,7 +72,7 @@ func Test2() {
 	}
 
 	i := data.Internal()
-	var u = &schema.User{Login: "imari"}
+	var u = &schema.User{Login: "imri"}
 
 	switch err := i.GetUser(u).(type) {
 	case inside.NotFoundError:
@@ -79,8 +80,7 @@ func Test2() {
 	case inside.IncorrectArgumentError:
 		fmt.Print("Incorrect argument")
 	case error:
-
-		fmt.Printf("Error: %v", errors.Is(err, sql.ErrNoRows))
+		fmt.Printf("Error: %v", reflect.TypeOf(err))
 	default:
 
 	}
@@ -107,4 +107,56 @@ func Test3() {
 	default:
 
 	}
+}
+
+func Test4() {
+	_, err := ioutil.ReadFile("data/dsn")
+
+	switch err.(type) {
+	case *os.PathError:
+		fmt.Print("false")
+	default:
+		fmt.Print("default")
+	}
+}
+
+func Test5() {
+	e := func() (err error) {
+		return nil
+	}
+
+	switch e().(type) {
+	case NotFound:
+		print("ffh\n")
+	default:
+		print("hjk\n")
+	}
+}
+
+func Test6() {
+
+}
+
+var Er = E{
+	NotFound:        NotFound{},
+	ServiceInternal: ServiceInternal{},
+}
+
+type E struct {
+	NotFound        NotFound
+	ServiceInternal ServiceInternal
+}
+
+type NotFound struct {
+}
+
+func (NotFound) Error() string {
+	return ""
+}
+
+type ServiceInternal struct {
+}
+
+func (ServiceInternal) Error() string {
+	return ""
 }

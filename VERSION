@@ -40,3 +40,10 @@ DATA
 !C25.5
     --Реструктуризация кода
     #data/inside/check.go #data/inside/err.go
+!C25.6
+    --Рефакторинг кода data/inside
+    #errData.go #errUser.go #funcData.go #funcUser.go
+    --Переход на switch-case в функциях проверки checker
+    #data/inside/errUser.go
+    --Добавлена новая ошибка в data/inside
+    #UserAlreadyExistError
