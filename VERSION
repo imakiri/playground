@@ -21,7 +21,7 @@ DATA
 
 !C25
     --Переименование data/internal, data/external в data/inside, data/outside
-    --Первичная имплементация обработчика ошибок в модуле data/inside
+    --data/inside: Первичная имплементация обработчика ошибок
     #checker #checkerImp #IncorrectArgumentError #NotFoundError
     --Тестирование обработки ошибок с помощью type switches
     #misc.Test2
@@ -32,21 +32,19 @@ DATA
     --Минорные исправления\багфиксы
     #misc.Test2
 !C25.3
-    --Переименование файлов
-    #data/inside/inside.go #data/outside/outside.go
+    --data/inside: Переименование файлов
+    #inside.go #outside.go
 !C25.4
     --Тестирование обработки ошибок с помощью type switches
     #misc.Test3 #data/inside.InternalServiceError
 !C25.5
-    --Реструктуризация кода
-    #data/inside/check.go #data/inside/err.go
+    --data/inside: Реструктуризация кода
+    #check.go #err.go
 !C25.6
-    --Рефакторинг кода data/inside
+    --data/inside: Рефакторинг кода
     #errData.go #errUser.go #funcData.go #funcUser.go
-    --Переход на switch-case в функциях проверки checker
-    #data/inside/errUser.go
-    --Добавлена новая ошибка в data/inside
-    #UserAlreadyExistError
+    --data/inside: Переход на switch-case в функциях проверки checker #errUser.go
+    --data/inside: Добавлена новая ошибка #UserAlreadyExistError
 !C25.7
     --Обновлено README.md
 !C26
