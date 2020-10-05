@@ -47,3 +47,5 @@ DATA
     #data/inside/errUser.go
     --Добавлена новая ошибка в data/inside
     #UserAlreadyExistError
+!C25.7
+    --Обновлено README.md
