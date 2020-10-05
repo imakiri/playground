@@ -47,6 +47,8 @@ DATA
     #data/inside/errUser.go
     --Добавлена новая ошибка в data/inside
     #UserAlreadyExistError
+!C25.7
+    --Обновлено README.md
 !C26
     --data/inside: Перекат на goqu
     --data/inside: Обновлен код ошибок #inside.go
