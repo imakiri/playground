@@ -1,84 +1,86 @@
 package inside
 
 import (
+	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 	"github.com/imakiri/playground/data/schema"
 )
 
-var c userCheckerImp
-
-type userChecker interface {
-	userLI(u *schema.User, fId userFunc, fLogin userFunc) error
-	userL(u *schema.User, fLogin userFunc) error
-	createUser(u *schema.User, f userFunc) error
-	updateUser(u *schema.User, fName userFunc, fAvatar userFunc, fLogin userFunc) error
+type Exec interface {
+	ExecuteSQL() error
 }
 
-type userFunc func(u *schema.User) (err error)
-
-func (R) GetUser(u *schema.User) (err error) {
-	fId := func(u *schema.User) (err error) {
-		err = main.Get(u, "SELECT name, avatar FROM main.users WHERE id = ?", u.Id)
-		return
-	}
-
-	fLogin := func(u *schema.User) (err error) {
-		err = main.Get(u, "SELECT name, avatar FROM main.users WHERE login = ?", u.Login)
-		return
-	}
-
-	return userChecker.userLI(c, u, fId, fLogin)
+type Base struct {
+	Data *schema.User
 }
 
-func (R) GetUserPassHash(u *schema.User) (err error) {
-	f := func(u *schema.User) (err error) {
-		err = main.Get(u, "SELECT passHash FROM main.users WHERE login = ?", u.Login)
-		return
+type GetUserV1 Base
+
+func (d GetUserV1) ExecuteSQL() (err error) {
+	q := goquDB.Select("name", "avatar").From(goqu.S("main").Table("users"))
+
+	switch err := build("loginAndId", q, d.Data).(type) {
+	case error:
+		return err
 	}
 
-	return userChecker.userL(c, u, f)
-}
-
-func (R) CreateUser(u *schema.User) (err error) {
-	f := func(u *schema.User) (err error) {
-		_, err = main.Exec("INSERT INTO main.users (login, name, avatar, passHash) VALUES (?, ?, ?, ?)",
-			u.Login, u.Name, u.Avatar, u.PassHash)
-		return
+	b, e := q.ScanStruct(d.Data)
+	if !b {
+		return NotFoundError{}
 	}
 
-	return userChecker.createUser(c, u, f)
+	return check(e)
 }
 
-func (R) DeleteUser(u *schema.User) (err error) {
-	fId := func(u *schema.User) (err error) {
-		_, err = main.Exec("DELETE FROM main.users WHERE id = ?", u.Id)
-		return
+type GetUserPassHashV1 Base
+
+func (d GetUserPassHashV1) ExecuteSQL() (err error) {
+	q := goquDB.Select("passHash").From(goqu.S("main").Table("users"))
+
+	switch err := build("login", q, d.Data).(type) {
+	case error:
+		return err
 	}
 
-	fLogin := func(u *schema.User) (err error) {
-		_, err = main.Exec("DELETE FROM main.users WHERE login = ?", u.Login)
-		return
+	b, e := q.ScanStruct(d.Data)
+	if !b {
+		return NotFoundError{}
 	}
 
-	return userChecker.userLI(c, u, fId, fLogin)
+	return check(e)
 }
 
-func (R) UpdateUser(u *schema.User) (err error) {
-	//fName := func(u *schema.User, fName userFunc, fAvatar userFunc, fLogin userFunc) (err error) {
-	//	_, err = main.Exec("UPDATE main.users SET name = ? WHERE login = ?", u.Name, u.Login)
-	//	return
-	//}
-	//
-	//fAvatar := func() {
-	//	_, err = main.Exec("UPDATE main.users SET avatar = ? WHERE login = ?", u.Avatar, u.Login)
-	//	return
-	//}
-	//
-	//
+type CreateUserV1 Base
 
-	return
+func (d CreateUserV1) ExecuteSQL() (err error) {
+	q := goquDB.Insert("users").Rows(d.Data)
+
+	switch err := build("loginAndPassHash", q, d.Data).(type) {
+	case error:
+		return err
+	}
+
+	_, err = q.Executor().Exec()
+	return check(err)
 }
 
-func (R) UpdateUserName(u *schema.User) (err error) {
-	_, err = main.Exec("UPDATE main.users SET name = ? WHERE login = ?", u.Name, u.Login)
-	return
+type DeleteUserV1 Base
+
+func (d DeleteUserV1) ExecuteSQL() (err error) {
+	q := goquDB.Delete("users")
+
+	switch err := build("loginAndId", q, d.Data).(type) {
+	case error:
+		return err
+	}
+
+	re, e := q.Executor().Exec()
+	if e != nil {
+		return InternalServiceError{BaseError(e.Error())}
+	}
+
+	if te, _ := re.RowsAffected(); te == 0 {
+		return NoUserToDelete{}
+	}
+	return check(e)
 }

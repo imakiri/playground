@@ -1,8 +1,8 @@
 package main
 
-import "github.com/imakiri/playground/server"
+import "github.com/imakiri/playground/misc"
 
 func main() {
-	//misc.Test2()
-	server.Run()
+	misc.Test7()
+	//server.Run()
 }

@@ -3,13 +3,10 @@ package misc
 import (
 	"fmt"
 	"github.com/imakiri/playground/app"
-	"github.com/imakiri/playground/data"
 	"github.com/imakiri/playground/data/inside"
 	"github.com/imakiri/playground/data/schema"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"reflect"
 	"strings"
 )
@@ -65,98 +62,24 @@ func Test1() {
 	}
 }
 
-func Test2() {
-	switch err := data.Init().(type) {
-	case data.InitError:
-		log.Fatal(err.Error())
-	}
-
-	i := data.Internal()
-	var u = &schema.User{Login: "imri"}
-
-	switch err := i.GetUser(u).(type) {
-	case inside.NotFoundError:
-		fmt.Print("Not found")
-	case inside.IncorrectArgumentError:
-		fmt.Print("Incorrect argument")
-	case error:
-		fmt.Printf("Error: %v", reflect.TypeOf(err))
-	default:
-
-	}
-
-	fmt.Printf("%s\n", u.Name)
-}
-
-func Test3() {
-	switch err := data.Init().(type) {
-	case data.InitError:
-		log.Fatal(err.Error())
-	}
-
-	i := data.Internal()
-	var u = &schema.User{Login: "imari", Name: "klff", Avatar: []byte("erhg"), PassHash: []byte("efge")}
-
-	switch err := i.CreateUser(u).(type) {
-	case inside.NotFoundError:
-		fmt.Print("Not found")
-	case inside.IncorrectArgumentError:
-		fmt.Print("Incorrect argument")
-	case error:
-		fmt.Printf("Error: %v", err.Error())
-	default:
-
-	}
-}
-
-func Test4() {
-	_, err := ioutil.ReadFile("data/dsn")
-
-	switch err.(type) {
-	case *os.PathError:
-		fmt.Print("false")
-	default:
-		fmt.Print("default")
-	}
-}
-
-func Test5() {
-	e := func() (err error) {
-		return nil
-	}
-
-	switch e().(type) {
-	case NotFound:
-		print("ffh\n")
-	default:
-		print("hjk\n")
-	}
-}
-
 func Test6() {
+	var c = inside.GetUserV1{Data: &schema.User{Login: "imari"}}
 
+	if err := inside.Exec(c).ExecuteSQL(); err != nil {
+		//fmt.Print(err.Error())
+		fmt.Print(reflect.TypeOf(err))
+	} else {
+		fmt.Print(c.Data.Name)
+	}
 }
 
-var Er = E{
-	NotFound:        NotFound{},
-	ServiceInternal: ServiceInternal{},
-}
+func Test7() {
+	var c = inside.DeleteUserV1{Data: &schema.User{Login: "imri"}}
 
-type E struct {
-	NotFound        NotFound
-	ServiceInternal ServiceInternal
-}
-
-type NotFound struct {
-}
-
-func (NotFound) Error() string {
-	return ""
-}
-
-type ServiceInternal struct {
-}
-
-func (ServiceInternal) Error() string {
-	return ""
+	if err := inside.Exec(c).ExecuteSQL(); err != nil {
+		//fmt.Print(err.Error())
+		fmt.Print(reflect.TypeOf(err))
+	} else {
+		fmt.Print(c.Data)
+	}
 }

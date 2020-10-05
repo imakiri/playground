@@ -7,10 +7,10 @@ import (
 )
 
 func Init() (err error) {
-	err = inside.Init()
-	if err != nil {
-		return &InitError{"Internal", err.Error()}
-	}
+	//err = inside.Init()
+	//if err != nil {
+	//	return &InitError{"Internal", err.Error()}
+	//}
 
 	err = outside.Init()
 	if err != nil {

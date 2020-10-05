@@ -4,11 +4,11 @@ SCHEMA main: /!C(?<commitNum>\d+)(?:\.(?<subCommitNum>\d+))?(?<noteList>[\s\S]+?
 DATA
 
 !C21
-    --Добавил историю версий\коммитов
+    --Добавлена историю версий\коммитов
 
 !C22
-    --Удалил WaitGroup за ненадобностью
-    --Реструктурировал код в data
+    --Удалена WaitGroup за ненадобностью
+    --Реструктурирован код в data
     --Код data/internal модуля написан на ~33%
 
 !C23
@@ -47,3 +47,13 @@ DATA
     #data/inside/errUser.go
     --Добавлена новая ошибка в data/inside
     #UserAlreadyExistError
+!C26
+    --data/inside: Перекат на goqu
+    --data/inside: Обновлен код ошибок #inside.go
+    --data/inside: Добавлена новая ошибка #NoUserToDelete
+    --data/inside: Переписана функция #build
+    --data/inside: Добавлен интерфейс #Exec
+    --data/inside: Переписаны SQL функции под новый интерфейс
+    #GetUserV1 #GetUserPassHashV1 #CreateUserV1 #DeleteUserV1
+
+

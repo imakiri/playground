@@ -18,8 +18,7 @@ type Data struct {
 	UserId uint      `db:"userId"`
 }
 
-type Re struct {
+type Main struct {
 	User
 	Data
-	Err error
 }

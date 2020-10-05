@@ -1,6 +1,7 @@
 package inside
 
 import (
+	"github.com/doug-martin/goqu/v9"
 	"github.com/go-sql-driver/mysql"
 	"github.com/imakiri/playground/data/schema"
 )
@@ -11,9 +12,9 @@ func check(err error) error {
 		e := err.(*mysql.MySQLError)
 		switch e.Number {
 		case 1062:
-			return UserAlreadyExistError{e.Error()}
+			return UserAlreadyExistError{BaseError(e.Error())}
 		default:
-			return InternalServiceError{e.Error()}
+			return InternalServiceError{BaseError(e.Error())}
 		}
 	case error:
 		break
@@ -21,59 +22,77 @@ func check(err error) error {
 		return err
 	}
 
-	switch e := err.Error(); e {
+	switch st := err.Error(); st {
 	case "sql: no rows in result set":
-		return NotFoundError{e}
+		return NotFoundError{BaseError(st)}
 	default:
-		return InternalServiceError{e}
+		return InternalServiceError{BaseError(st)}
 	}
 }
 
-type userCheckerImp struct{}
-
-func (userCheckerImp) createUser(u *schema.User, f userFunc) error {
-	if u.Name == "" || u.Login == "" || u.Avatar == nil || u.PassHash == nil {
-		return IncorrectArgumentError{"Invalid/null argument"}
-	}
-	return check(f(u))
-}
-
-func (userCheckerImp) userLI(u *schema.User, fId userFunc, fLogin userFunc) (err error) {
-	switch {
-	case u.Login != "" && u.Id != 0:
-		return IncorrectArgumentError{"Couldn't accept both login and id as a parameter"}
-	case u.Login == "" && u.Id == 0:
-		return IncorrectArgumentError{"Invalid/null argument"}
-	case u.Id != 0:
-		err = fId(u)
-	case u.Login != "":
-		err = fLogin(u)
-	}
-
-	return check(err)
-}
-
-func (userCheckerImp) userL(u *schema.User, f userFunc) (err error) {
-	if u.Login == "" {
-		return IncorrectArgumentError{"Invalid/null argument"}
-	}
-	return check(f(u))
-}
-
-func (userCheckerImp) updateUser(u *schema.User, fName userFunc, fAvatar userFunc, fLogin userFunc) (err error) {
-	switch {
-	case u.Login != "" && u.Id != 0:
-		return IncorrectArgumentError{"Couldn't accept both login and id as a parameter"}
-	case u.Login == "" && u.Id == 0:
-		return IncorrectArgumentError{"Invalid/null argument"}
-	case u.Name != "" && fName != nil:
-
-	}
-
-	if u.Name != "" && fName != nil {
-		if err := fName; err != nil {
-
+func build(c string, sun interface{}, m interface{}) (err error) {
+	switch d := (m).(type) {
+	case *schema.User:
+		switch c {
+		case "loginAndId":
+			switch {
+			case d.Id != 0 && d.Login != "":
+				return IncorrectArgumentError{"build: uncertain argument"}
+			case d.Id == 0 && d.Login == "":
+				return IncorrectArgumentError{"build: null argument"}
+			case d.Id != 0:
+				switch s := sun.(type) {
+				case *goqu.SelectDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					return nil
+				case *goqu.DeleteDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					return nil
+				default:
+					return InternalServiceError{"build: invalid sun"}
+				}
+			case d.Login != "":
+				switch s := sun.(type) {
+				case *goqu.SelectDataset:
+					*s = *s.Where(goqu.C("login").Eq(d.Login))
+					return nil
+				case *goqu.DeleteDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					return nil
+				default:
+					return InternalServiceError{"build: invalid sun"}
+				}
+			default:
+				return InternalServiceError{"build: nil argument pointer"}
+			}
+		case "login":
+			switch {
+			case d.Login == "":
+				return IncorrectArgumentError{"build: null argument"}
+			case d.Login != "":
+				switch s := sun.(type) {
+				case *goqu.SelectDataset:
+					*s = *s.Where(goqu.C("login").Eq(d.Login))
+					return nil
+				default:
+					return InternalServiceError{"build: invalid sun"}
+				}
+			default:
+				return InternalServiceError{"build: nil argument pointer"}
+			}
+		case "loginAndPassHash":
+			switch {
+			case d.Login == "" && d.PassHash == nil:
+				return IncorrectArgumentError{"build: null argument"}
+			case d.Login != "" && d.PassHash != nil:
+				return nil
+			default:
+				return InternalServiceError{"build: nil argument pointer"}
+			}
+		default:
+			return InternalServiceError{"build: invalid build type"}
 		}
+	default:
+		return InternalServiceError{"build: invalid data type"}
 	}
-	return
 }

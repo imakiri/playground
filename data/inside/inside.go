@@ -1,72 +1,67 @@
 package inside
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
+	"github.com/doug-martin/goqu/v9"
+	_ "github.com/go-sql-driver/mysql"
 	"io/ioutil"
 )
 
 type R struct{}
 
-var f []byte
-var main *sqlx.DB
+var goquDB *goqu.Database
+var main *sql.DB
 var Salt string
 
 var Release R
 
-func Init() (err error) {
-	f, err = ioutil.ReadFile("data/dsn")
+func init() {
+	f, err := ioutil.ReadFile("data/dsn")
 	if err != nil {
-		return
+		panic(err)
 	}
 
-	main, err = sqlx.Open("mysql", string(f))
+	main, err = sql.Open("mysql", string(f))
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	err = main.Ping()
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	f, err = ioutil.ReadFile("data/salt")
 	if err != nil {
-		return
+		panic(err)
 	}
 
 	Salt = string(f)
-	f = nil
-	return
+	goquDB = goqu.Dialect("mysql").DB(main)
+}
+
+type BaseError string
+
+func (b BaseError) Error() string {
+	return string(b)
 }
 
 type InternalServiceError struct {
-	err string
-}
-
-func (e InternalServiceError) Error() string {
-	return e.err
+	BaseError
 }
 
 type IncorrectArgumentError struct {
-	err string
-}
-
-func (e IncorrectArgumentError) Error() string {
-	return e.err
+	BaseError
 }
 
 type NotFoundError struct {
-	err string
-}
-
-func (e NotFoundError) Error() string {
-	return e.err
+	BaseError
 }
 
 type UserAlreadyExistError struct {
-	err string
+	BaseError
 }
 
-func (e UserAlreadyExistError) Error() string {
-	return e.err
+type NoUserToDelete struct {
+	BaseError
 }
