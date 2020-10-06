@@ -4,12 +4,14 @@ import (
 	"database/sql"
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 )
 
 type R struct{}
 
 var goquDB *goqu.Database
+var sqlxDB *sqlx.DB
 var main *sql.DB
 var Salt string
 
@@ -22,6 +24,11 @@ func init() {
 	}
 
 	main, err = sql.Open("mysql", string(f))
+	if err != nil {
+		panic(err)
+	}
+
+	sqlxDB, err = sqlx.Open("mysql", string(f))
 	if err != nil {
 		panic(err)
 	}

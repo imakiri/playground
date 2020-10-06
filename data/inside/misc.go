@@ -57,7 +57,7 @@ func build(c string, sun interface{}, m interface{}) (err error) {
 					*s = *s.Where(goqu.C("login").Eq(d.Login))
 					return nil
 				case *goqu.DeleteDataset:
-					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					*s = *s.Where(goqu.C("id").Eq(d.Login))
 					return nil
 				default:
 					return InternalServiceError{"build: invalid sun"}
@@ -86,6 +86,37 @@ func build(c string, sun interface{}, m interface{}) (err error) {
 				return IncorrectArgumentError{"build: null argument"}
 			case d.Login != "" && d.PassHash != nil:
 				return nil
+			default:
+				return InternalServiceError{"build: nil argument pointer"}
+			}
+		case "update":
+			switch {
+			case d.Id != 0 && d.Login != "":
+				return IncorrectArgumentError{"build: uncertain argument"}
+			case d.Id == 0 && d.Login == "":
+				return IncorrectArgumentError{"build: null argument"}
+			case d.Id != 0:
+				switch s := sun.(type) {
+				case *goqu.SelectDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					return nil
+				case *goqu.DeleteDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Id))
+					return nil
+				default:
+					return InternalServiceError{"build: invalid sun"}
+				}
+			case d.Login != "":
+				switch s := sun.(type) {
+				case *goqu.SelectDataset:
+					*s = *s.Where(goqu.C("login").Eq(d.Login))
+					return nil
+				case *goqu.DeleteDataset:
+					*s = *s.Where(goqu.C("id").Eq(d.Login))
+					return nil
+				default:
+					return InternalServiceError{"build: invalid sun"}
+				}
 			default:
 				return InternalServiceError{"build: nil argument pointer"}
 			}

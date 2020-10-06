@@ -83,3 +83,14 @@ func Test7() {
 		fmt.Print(c.Data)
 	}
 }
+
+func Test8() {
+	var c = inside.GetUserV2{Data: &schema.User{Login: "imakiri", Id: 7}}
+
+	if err := inside.Exec(c).ExecuteSQL(); err != nil {
+		fmt.Print(err.Error() + "\n")
+		fmt.Print(reflect.TypeOf(err))
+	} else {
+		fmt.Print(c.Data)
+	}
+}

@@ -19,9 +19,9 @@ type GetUserV1 BaseUser
 func (d GetUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Select("name", "avatar").From(goqu.S("main").Table("users"))
 
-	switch err := build("loginAndId", q, d.Data).(type) {
+	switch e := build("loginAndId", q, d.Data).(type) {
 	case error:
-		return err
+		return e
 	}
 
 	b, e := q.ScanStruct(d.Data)
@@ -37,9 +37,9 @@ type GetUserPassHashV1 BaseUser
 func (d GetUserPassHashV1) ExecuteSQL() (err error) {
 	q := goquDB.Select("passHash").From(goqu.S("main").Table("users"))
 
-	switch err := build("login", q, d.Data).(type) {
+	switch e := build("login", q, d.Data).(type) {
 	case error:
-		return err
+		return e
 	}
 
 	b, e := q.ScanStruct(d.Data)
@@ -55,9 +55,9 @@ type CreateUserV1 BaseUser
 func (d CreateUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Insert("users").Rows(d.Data)
 
-	switch err := build("loginAndPassHash", q, d.Data).(type) {
+	switch e := build("loginAndPassHash", q, d.Data).(type) {
 	case error:
-		return err
+		return e
 	}
 
 	_, err = q.Executor().Exec()
@@ -69,9 +69,9 @@ type DeleteUserV1 BaseUser
 func (d DeleteUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Delete("users")
 
-	switch err := build("loginAndId", q, d.Data).(type) {
+	switch e := build("loginAndId", q, d.Data).(type) {
 	case error:
-		return err
+		return e
 	}
 
 	re, e := q.Executor().Exec()
@@ -83,4 +83,32 @@ func (d DeleteUserV1) ExecuteSQL() (err error) {
 		return NoUserToDelete{}
 	}
 	return check(e)
+}
+
+//type UpdateUserV1 BaseUser
+////
+////func (d UpdateUserV1) ExecuteSQL() (err error) {
+////	q := goquDB.Update("users")
+////
+////	switch e := build("update", q, d.Data).(type) {
+////	case error:
+////		return e
+////	}
+////	////////////////////////////////////////////
+////	return nil
+////}
+
+type GetUserV2 BaseUser
+
+func (d GetUserV2) ExecuteSQL() (err error) {
+	t := new([]schema.User)
+	err = sqlxDB.Select(t, "SELECT name FROM main.users WHERE login = ? OR  id = ?", d.Data.Login, d.Data.Id)
+
+	switch {
+	case len(*t) > 1:
+		return IncorrectArgumentError{}
+	default:
+		*d.Data = (*t)[0]
+		return check(err)
+	}
 }
