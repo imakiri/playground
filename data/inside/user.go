@@ -10,11 +10,11 @@ type Exec interface {
 	ExecuteSQL() error
 }
 
-type Base struct {
+type BaseUser struct {
 	Data *schema.User
 }
 
-type GetUserV1 Base
+type GetUserV1 BaseUser
 
 func (d GetUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Select("name", "avatar").From(goqu.S("main").Table("users"))
@@ -32,7 +32,7 @@ func (d GetUserV1) ExecuteSQL() (err error) {
 	return check(e)
 }
 
-type GetUserPassHashV1 Base
+type GetUserPassHashV1 BaseUser
 
 func (d GetUserPassHashV1) ExecuteSQL() (err error) {
 	q := goquDB.Select("passHash").From(goqu.S("main").Table("users"))
@@ -50,7 +50,7 @@ func (d GetUserPassHashV1) ExecuteSQL() (err error) {
 	return check(e)
 }
 
-type CreateUserV1 Base
+type CreateUserV1 BaseUser
 
 func (d CreateUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Insert("users").Rows(d.Data)
@@ -64,7 +64,7 @@ func (d CreateUserV1) ExecuteSQL() (err error) {
 	return check(err)
 }
 
-type DeleteUserV1 Base
+type DeleteUserV1 BaseUser
 
 func (d DeleteUserV1) ExecuteSQL() (err error) {
 	q := goquDB.Delete("users")

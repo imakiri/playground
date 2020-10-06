@@ -4,12 +4,12 @@ SCHEMA main: /!C(?<commitNum>\d+)(?:\.(?<subCommitNum>\d+))?(?<noteList>[\s\S]+?
 DATA
 
 !C21
-    --Добавлена историю версий\коммитов
+    --Добавлена история версий\коммитов
 
 !C22
     --Удалена WaitGroup за ненадобностью
-    --Реструктурирован код в data
-    --Код data/internal модуля написан на ~33%
+    --data: Реструктурирован код
+    --data/internal: Код модуля написан на ~33%
 
 !C23
     --Адаптирование под запуск на виртуальном сервере Ubuntu
@@ -20,33 +20,33 @@ DATA
     --Минорные исправления\багфиксы
 
 !C25
-    --Переименование data/internal, data/external в data/inside, data/outside
+    --Переименование папок в связи с особеннсотями golang
+    #data/internal -> #data/inside, #data/external -> #data/outside
     --data/inside: Первичная имплементация обработчика ошибок
-    #checker #checkerImp #IncorrectArgumentError #NotFoundError
-    --Тестирование обработки ошибок с помощью type switches
-    #misc.Test2
+    #checker, #checkerImp, #IncorrectArgumentError, #NotFoundError
+    --Тестирование обработки ошибок с помощью type switches #misc.Test2
 !C25.1
     --Минорные исправления\багфиксы
-    #data/inside/checkerImp.createUser #app.IsAuthorized
+    #data/inside/checkerImp.createUser, #app.IsAuthorized
 !C25.2
-    --Минорные исправления\багфиксы
-    #misc.Test2
+    --Минорные исправления\багфиксы #misc.Test2
 !C25.3
     --data/inside: Переименование файлов
-    #inside.go #outside.go
+    #inside.go, #outside.go
 !C25.4
     --Тестирование обработки ошибок с помощью type switches
-    #misc.Test3 #data/inside.InternalServiceError
+    #misc.Test3, #data/inside.InternalServiceError
 !C25.5
     --data/inside: Реструктуризация кода
-    #check.go #err.go
+    #check.go, #err.go
 !C25.6
     --data/inside: Рефакторинг кода
-    #errData.go #errUser.go #funcData.go #funcUser.go
+    #errData.go, #errUser.go, #funcData.go, #funcUser.go
     --data/inside: Переход на switch-case в функциях проверки checker #errUser.go
     --data/inside: Добавлена новая ошибка #UserAlreadyExistError
 !C25.7
     --Обновлено README.md
+
 !C26
     --data/inside: Перекат на goqu
     --data/inside: Обновлен код ошибок #inside.go
@@ -54,6 +54,10 @@ DATA
     --data/inside: Переписана функция #build
     --data/inside: Добавлен интерфейс #Exec
     --data/inside: Переписаны SQL функции под новый интерфейс
-    #GetUserV1 #GetUserPassHashV1 #CreateUserV1 #DeleteUserV1
+    #GetUserV1, #GetUserPassHashV1, #CreateUserV1, #DeleteUserV1
+!C26.1
+    --data/schema: Обновлена схема базы данных #schema.sql
+    --data/inside: Переименование файлов и типов
+    #errUser.go -> #misc.go, и др.
 
 
