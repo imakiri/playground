@@ -3,53 +3,38 @@ package app
 import (
 	"fmt"
 	"github.com/imakiri/playground/data"
+	"golang.org/x/crypto/bcrypt"
 	_ "golang.org/x/crypto/bcrypt"
-	"log"
 )
-
-type Re struct {
-}
 
 const hashCost = 10
 
-var salt string
+func RunTest1() {
+	err := IsAuthorized("imakiri", "imakiri")
+	fmt.Printf("Main: %v\n", err)
+}
 
-//var reData schema.Main
-
-func Init() (err error) {
-	if err := data.Init(); err != nil {
-		log.Fatal(err.Error())
+func IsAuthorized(login string, pass string) (err error) {
+	c := data.Internal_Main_Method_GetUserPassHash_1{
+		Internal_Main: data.Connection_Internal_Main,
+		Request: struct {
+			data.Internal_Main_User_Login
+		}{},
+		Response: struct {
+			data.Internal_Main_User_PassHash
+		}{},
 	}
 
-	salt = data.GetSalt()
-	return
-}
+	c.Request.Login = login
 
-func RunTest1() {
-	re, err := IsAuthorized("imakiri", "imakiri")
-	fmt.Printf("Main: %v, %v\n", re, err)
-}
+	switch e := c.ExecuteSQL().(type) {
+	case error:
+		return e
+	}
 
-func IsAuthorized(login string, pass string) (bool, error) {
-	//defer func() {
-	//	reData = schema.Main{}
-	//}()
-	//
-	//reData.User.Login = login
-	//
-	//switch err := data.Internal().GetUserPassHash(&reData.User).(type) {
-	//default:
-	//	reData.Err = err
-	//}
-	//
-	//if reData.Err != nil {
-	//	return false, reData.Err
-	//}
-	//
-	//if bcrypt.CompareHashAndPassword(reData.PassHash, []byte(pass)) == nil {
-	//	return true, nil
-	//} else {
-	//	return false, nil
-	//}
-	return false, nil
+	if bcrypt.CompareHashAndPassword(c.Response.PassHash, []byte(pass)) == nil {
+		return nil
+	} else {
+		return ERROR_NotAuthorized{}
+	}
 }

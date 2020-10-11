@@ -1,15 +1,9 @@
 package app
 
-import (
-	"fmt"
-	"log"
-)
+type ERROR string
 
-type checkImp struct{}
-
-func (checkImp) Salt(err error) {
-	if err != nil {
-		log.Fatalf("App/Salt error/%s\n", err)
-	}
-	fmt.Print("App/Salt passed\n")
+func (b ERROR) Error() string {
+	return string(b)
 }
+
+type ERROR_NotAuthorized struct{ ERROR }
