@@ -1,114 +1,95 @@
 package inside
 
 import (
-	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
-	"github.com/imakiri/playground/data/schema"
 )
 
-type Exec interface {
-	ExecuteSQL() error
+// MAIN Data Entities
+type MAIN_GetUser_1 struct {
+	MAIN
+	EXEC
+	Request struct {
+		MAIN_User_Id
+		MAIN_User_Login
+	}
+	Response []struct {
+		MAIN_User_Avatar
+		MAIN_User_Name
+	}
+}
+type MAIN_GetUserPassHash_1 struct {
+	MAIN
+	EXEC
+	Request struct {
+		MAIN_User_Login
+	}
+	Response struct {
+		MAIN_User_PassHash
+	}
+}
+type MAIN_CreateUser_1 struct {
+	MAIN
+	EXEC
+	Request struct {
+		MAIN_User_Login
+		MAIN_User_Avatar
+		MAIN_User_Name
+		MAIN_User_PassHash
+	}
+}
+type MAIN_DeleteUser_1 struct {
+	MAIN
+	EXEC
+	Request struct {
+		MAIN_User_Id
+		MAIN_User_Login
+	}
 }
 
-type BaseUser struct {
-	Data *schema.User
-}
+// MAIN Data ExecuteSQL Methods
+func (b *MAIN_DeleteUser_1) ExecuteSQL() (err error) {
+	const query = "DELETE FROM main.users WHERE id = ? OR login = ?"
 
-type GetUserV1 BaseUser
+	_, err = b.db.Exec(query, b.Request.Id, b.Request.Login)
 
-func (d GetUserV1) ExecuteSQL() (err error) {
-	q := goquDB.Select("name", "avatar").From(goqu.S("main").Table("users"))
-
-	switch e := build("loginAndId", q, d.Data).(type) {
-	case error:
-		return e
-	}
-
-	b, e := q.ScanStruct(d.Data)
-	if !b {
-		return NotFoundError{}
-	}
-
-	return check(e)
-}
-
-type GetUserPassHashV1 BaseUser
-
-func (d GetUserPassHashV1) ExecuteSQL() (err error) {
-	q := goquDB.Select("passHash").From(goqu.S("main").Table("users"))
-
-	switch e := build("login", q, d.Data).(type) {
-	case error:
-		return e
-	}
-
-	b, e := q.ScanStruct(d.Data)
-	if !b {
-		return NotFoundError{}
-	}
-
-	return check(e)
-}
-
-type CreateUserV1 BaseUser
-
-func (d CreateUserV1) ExecuteSQL() (err error) {
-	q := goquDB.Insert("users").Rows(d.Data)
-
-	switch e := build("loginAndPassHash", q, d.Data).(type) {
-	case error:
-		return e
-	}
-
-	_, err = q.Executor().Exec()
 	return check(err)
 }
+func (b *MAIN_GetUser_1) ExecuteSQL() (err error) {
+	const query = "SELECT name, avatar FROM main.users WHERE login = ? OR  id = ?"
 
-type DeleteUserV1 BaseUser
-
-func (d DeleteUserV1) ExecuteSQL() (err error) {
-	q := goquDB.Delete("users")
-
-	switch e := build("loginAndId", q, d.Data).(type) {
-	case error:
-		return e
-	}
-
-	re, e := q.Executor().Exec()
-	if e != nil {
-		return InternalServiceError{BaseError(e.Error())}
-	}
-
-	if te, _ := re.RowsAffected(); te == 0 {
-		return NoUserToDelete{}
-	}
-	return check(e)
-}
-
-//type UpdateUserV1 BaseUser
-////
-////func (d UpdateUserV1) ExecuteSQL() (err error) {
-////	q := goquDB.Update("users")
-////
-////	switch e := build("update", q, d.Data).(type) {
-////	case error:
-////		return e
-////	}
-////	////////////////////////////////////////////
-////	return nil
-////}
-
-type GetUserV2 BaseUser
-
-func (d GetUserV2) ExecuteSQL() (err error) {
-	t := new([]schema.User)
-	err = sqlxDB.Select(t, "SELECT name FROM main.users WHERE login = ? OR  id = ?", d.Data.Login, d.Data.Id)
-
-	switch {
-	case len(*t) > 1:
-		return IncorrectArgumentError{}
-	default:
-		*d.Data = (*t)[0]
+	err = b.db.Select(&b.Response, query, b.Request.Login, b.Request.Id)
+	if err != nil {
 		return check(err)
 	}
+
+	if len(b.Response) == 0 {
+		return ERROR_NotFound{}
+	}
+
+	if len(b.Response) > 1 {
+		return ERROR_IncorrectArgument{}
+	}
+
+	return
+}
+func (b *MAIN_GetUserPassHash_1) ExecuteSQL() (err error) {
+	const query = "SELECT passHash FROM main.users WHERE login = ?"
+
+	err = b.db.Select(&b.Response, query, b.Request.Login)
+	if err != nil {
+		return check(err)
+	}
+
+	if b.Response.PassHash == nil {
+		return ERROR_NotFound{}
+	}
+
+	return
+}
+func (b *MAIN_CreateUser_1) ExecuteSQL() (err error) {
+	const query = "INSERT INTO main.users (login, name, avatar, passHash) VALUES (?, ?, ?, ?)"
+
+	_, err = b.db.Exec(query, b.Request.Login, b.Request.Name, b.Request.Avatar, b.Request.PassHash)
+
+	return check(err)
 }

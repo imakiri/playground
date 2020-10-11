@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS `main`.`users`
 (
     `id`       INT UNSIGNED NOT NULL,
     `login`    VARCHAR(45)  NOT NULL,
-    `name`     VARCHAR(45),
-    `avatar`   BLOB,
+    `name`     VARCHAR(45)  NOT NULL,
+    `avatar`   BLOB         NOT NULL,
     `passHash` BLOB         NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,

@@ -8,14 +8,11 @@ import (
 	"io/ioutil"
 )
 
-type R struct{}
-
 var goquDB *goqu.Database
 var sqlxDB *sqlx.DB
 var main *sql.DB
 var Salt string
-
-var Release R
+var Main MAIN
 
 func init() {
 	f, err := ioutil.ReadFile("data/dsn")
@@ -45,30 +42,6 @@ func init() {
 
 	Salt = string(f)
 	goquDB = goqu.Dialect("mysql").DB(main)
-}
 
-type BaseError string
-
-func (b BaseError) Error() string {
-	return string(b)
-}
-
-type InternalServiceError struct {
-	BaseError
-}
-
-type IncorrectArgumentError struct {
-	BaseError
-}
-
-type NotFoundError struct {
-	BaseError
-}
-
-type UserAlreadyExistError struct {
-	BaseError
-}
-
-type NoUserToDelete struct {
-	BaseError
+	Main.db = sqlxDB
 }

@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"github.com/imakiri/playground/data"
-	"github.com/imakiri/playground/data/schema"
 	_ "golang.org/x/crypto/bcrypt"
 	"log"
 )
@@ -14,7 +13,8 @@ type Re struct {
 const hashCost = 10
 
 var salt string
-var reData schema.Main
+
+//var reData schema.Main
 
 func Init() (err error) {
 	if err := data.Init(); err != nil {
