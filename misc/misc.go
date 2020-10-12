@@ -15,7 +15,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Test8() {
-	var c = data.Internal_Main_Method_GetUser_1{
+	var e = data.Internal_Main_Method_GetUser_1{
 		Internal_Main: data.Connection_Internal_Main,
 		Request: struct {
 			data.Internal_Main_User_Id
@@ -24,12 +24,12 @@ func Test8() {
 		Response: nil,
 	}
 
-	c.Request.Login = "imakiri"
+	e.Request.Login = "imakiri"
 
-	if err := c.ExecuteSQL(); err != nil {
+	if err := e.ExecuteSQL(); err != nil {
 		fmt.Print(err.Error() + "\n")
 		fmt.Print(reflect.TypeOf(err))
 	} else {
-		fmt.Print(c.Response)
+		fmt.Print(e.Response)
 	}
 }

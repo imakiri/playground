@@ -1,21 +1,20 @@
 package web
 
-import (
-	"fmt"
-	"log"
-)
+type ERROR string
 
-type checkImp struct{}
-
-func (checkImp) CSS(err error) {
-	if err != nil {
-		log.Fatalf("Web/CSS error/%s\n", err)
-	}
+func (e ERROR) Error() string {
+	return string(e)
 }
 
-func (checkImp) ICO(err error) {
-	if err != nil {
-		log.Fatalf("Web/Init/ICO error/%s\n", err)
-	}
-	fmt.Print("Web/Init/ICO passed\n")
+type ERROR_InitIco struct {
+	ERROR
+}
+type ERROR_ReadCss struct {
+	ERROR
+}
+type ERROR_ParseTemplate struct {
+	ERROR
+}
+type ERROR_ExecuteTemplate struct {
+	ERROR
 }

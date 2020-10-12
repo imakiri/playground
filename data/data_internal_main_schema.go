@@ -12,10 +12,10 @@ type Exec interface {
 
 // Internal_Main Data Entity
 type Internal_Main struct {
-	Db *sqlx.DB
+	SQLX_DB *sqlx.DB
 }
 
-// MAIN_User Fields
+// Internal_Main_User Fields
 type Internal_Main_User_Id struct {
 	Id uint `db:"id"`
 }
@@ -32,7 +32,7 @@ type Internal_Main_User_PassHash struct {
 	PassHash []byte `db:"passHash"`
 }
 
-// MAIN_Data Fields
+// Internal_Main_Data Fields
 type Internal_Main_Data_Id struct {
 	Id uint `db:"id"`
 }

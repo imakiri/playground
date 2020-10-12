@@ -20,7 +20,7 @@ func Run() {
 		_ = sr.ListenAndServe()
 	}()
 
-	_ = web.Run(r)
+	web.RegisterHandlers(r)
 	s.Handler = r
 	log.Fatal(s.ListenAndServeTLS("cert.pem", "privkey.pem"))
 }

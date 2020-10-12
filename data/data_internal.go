@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 )
 
-var Salt string
 var Connection_Internal_Main Internal_Main
 
 func init() {
@@ -14,20 +13,14 @@ func init() {
 		panic(err)
 	}
 
-	Connection_Internal_Main.Db, err = sqlx.Open("mysql", string(f))
+	Connection_Internal_Main.SQLX_DB, err = sqlx.Open("mysql", string(f))
 	if err != nil {
 		panic(err)
 	}
 
-	err = Connection_Internal_Main.Db.Ping()
+	err = Connection_Internal_Main.SQLX_DB.Ping()
 	if err != nil {
 		panic(err)
 	}
 
-	f, err = ioutil.ReadFile("data/salt")
-	if err != nil {
-		panic(err)
-	}
-
-	Salt = string(f)
 }

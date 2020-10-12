@@ -4,6 +4,13 @@ import (
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 )
 
+// scope (
+//     Internal.Main.Method = methods
+// ) {
+// type methods.GetUser.v1 struct {...}
+// func (b *methods.GetUser.V1) Execute.SQL() (err error) {...}
+//
+
 // Internal_Main Data Entities
 type Internal_Main_Method_GetUser_1 struct {
 	Internal_Main
@@ -43,49 +50,52 @@ type Internal_Main_Method_DeleteUser_1 struct {
 }
 
 // Internal_Main Data ExecuteSQL Methods
-func (b *Internal_Main_Method_DeleteUser_1) ExecuteSQL() (err error) {
+func (e *Internal_Main_Method_DeleteUser_1) ExecuteSQL() (err error) {
 	const query = "DELETE FROM main.users WHERE id = ? OR login = ?"
 
-	_, err = b.Db.Exec(query, b.Request.Id, b.Request.Login)
+	_, err = e.SQLX_DB.Exec(query, e.Request.Id, e.Request.Login)
 
 	return check(err)
 }
-func (b *Internal_Main_Method_GetUser_1) ExecuteSQL() (err error) {
+func (e *Internal_Main_Method_GetUser_1) ExecuteSQL() (err error) {
 	const query = "SELECT name, avatar FROM main.users WHERE login = ? OR  id = ?"
 
-	err = b.Db.Select(&b.Response, query, b.Request.Login, b.Request.Id)
+	err = e.SQLX_DB.Select(&e.Response, query, e.Request.Login, e.Request.Id)
 	if err != nil {
 		return check(err)
 	}
 
-	if len(b.Response) == 0 {
+	if len(e.Response) == 0 {
 		return Internal_ERROR_NotFound{}
 	}
 
-	if len(b.Response) > 1 {
+	if len(e.Response) > 1 {
 		return Internal_ERROR_IncorrectArgument{}
 	}
 
 	return
 }
-func (b *Internal_Main_Method_GetUserPassHash_1) ExecuteSQL() (err error) {
+func (e *Internal_Main_Method_GetUserPassHash_1) ExecuteSQL() (err error) {
 	const query = "SELECT passHash FROM main.users WHERE login = ?"
 
-	err = b.Db.Select(&b.Response, query, b.Request.Login)
+	err = e.SQLX_DB.Select(&e.Response, query, e.Request.Login)
 	if err != nil {
 		return check(err)
 	}
 
-	if b.Response.PassHash == nil {
+	if e.Response.PassHash == nil {
 		return Internal_ERROR_NotFound{}
 	}
 
 	return
 }
-func (b *Internal_Main_Method_CreateUser_1) ExecuteSQL() (err error) {
+func (e *Internal_Main_Method_CreateUser_1) ExecuteSQL() (err error) {
 	const query = "INSERT INTO main.users (login, name, avatar, passHash) VALUES (?, ?, ?, ?)"
 
-	_, err = b.Db.Exec(query, b.Request.Login, b.Request.Name, b.Request.Avatar, b.Request.PassHash)
+	_, err = e.SQLX_DB.Exec(query, e.Request.Login, e.Request.Name, e.Request.Avatar, e.Request.PassHash)
 
 	return check(err)
 }
+
+//
+//}
