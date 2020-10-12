@@ -39,7 +39,7 @@ func (e GET_Root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (e GET_Root_Assets_CSS_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/css")
 
-	f, err = ioutil.ReadFile("web/templates/assets/css/style.css")
+	f, err := ioutil.ReadFile("web/templates/assets/css/style.css")
 	if err != nil {
 		e := ERROR_ReadCss{ERROR(err.Error())}
 		fmt.Printf("Error ocured: %s, %s\n", reflect.TypeOf(e), e.Error())

@@ -40,3 +40,14 @@ func check(err error) error {
 		return Internal_ERROR_InternalServiceError{ERROR(st)}
 	}
 }
+
+func checkRequest(id uint, login string) (err error) {
+	switch {
+	case id == 0 && login == "":
+		return Internal_ERROR_IncorrectArgument{ERROR("null id and login")}
+	case id != 0 && login != "":
+		return Internal_ERROR_IncorrectArgument{ERROR("can accept only id or login, not both")}
+	default:
+		return nil
+	}
+}

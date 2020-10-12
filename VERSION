@@ -62,6 +62,7 @@ DATA
 !C26.2
     --data/inside: Исправлен баг #misc.go:60
     --data/inside: Добавлена SQL функция #GetUserV2 использующая sqlx
+
 !C27
     --data: schema перемещена в inside
     --data/inside: Новая реализация методов данных, структур данных #MAIN
@@ -71,3 +72,7 @@ DATA
 !C27.2
     --Чистка и рефакторинг
     #api #app #data #web
+!C27.3
+    --data.Internal.Main: Обновлен код ExecuteSQL методов
+    --data.Internal.Main: Добавленны сущности и их ExecuteSQL методы
+    #UpdateUser_1, #UpdateUserPassHash_1

@@ -6,12 +6,10 @@ import (
 	"log"
 )
 
-var f []byte
-var err error
 var icoF []byte
 
 func init() {
-	f, err = ioutil.ReadFile("web/templates/favicon.ico")
+	f, err := ioutil.ReadFile("web/templates/favicon.ico")
 	if err != nil {
 		log.Fatal(ERROR_InitIco{ERROR(err.Error())})
 	}
