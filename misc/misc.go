@@ -21,12 +21,15 @@ func Test8() {
 			data.Internal_Main_User_Id
 			data.Internal_Main_User_Login
 		}{},
-		Response: nil,
+		Response: struct {
+			data.Internal_Main_User_Avatar
+			data.Internal_Main_User_Name
+		}{},
 	}
 
 	e.Request.Login = "imakiri"
 
-	if err := e.ExecuteSQL(); err != nil {
+	if err := e.SQL(); err != nil {
 		fmt.Print(err.Error() + "\n")
 		fmt.Print(reflect.TypeOf(err))
 	} else {

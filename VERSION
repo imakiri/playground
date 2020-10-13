@@ -76,3 +76,6 @@ DATA
     --data.Internal.Main: Обновлен код ExecuteSQL методов
     --data.Internal.Main: Добавленны сущности и их ExecuteSQL методы
     #UpdateUser_1, #UpdateUserPassHash_1
+!C27.4
+    --data.Internal.Main: Минорные исправления
+    --web: Добавлена тестовая версия #GET_Root_User_Login_1

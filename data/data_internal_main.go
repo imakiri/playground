@@ -6,8 +6,8 @@ import (
 )
 
 // General SQL execute method
-type Exec interface {
-	ExecuteSQL() error
+type Execute interface {
+	SQL() error
 }
 
 // Internal_Main Data Entity

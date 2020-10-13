@@ -22,7 +22,7 @@ func CheckAuthorization(login string, pass string) (err error) {
 
 	e.Request.Login = login
 
-	switch e := e.ExecuteSQL().(type) {
+	switch e := e.SQL().(type) {
 	case error:
 		return e
 	}
@@ -32,4 +32,8 @@ func CheckAuthorization(login string, pass string) (err error) {
 	} else {
 		return ERROR_NotAuthorized{}
 	}
+}
+
+func Img() {
+
 }

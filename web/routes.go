@@ -2,6 +2,8 @@ package web
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/data"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -13,6 +15,7 @@ import (
 type GET_Root struct{}
 type GET_Root_Assets_CSS_1 struct{}
 type GET_Root_Ico_1 struct{}
+type GET_Root_User_Login_1 struct{}
 
 // Web ServeHTTP Methods
 func (e GET_Root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -51,4 +54,29 @@ func (e GET_Root_Ico_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/x-icon")
 
 	_, _ = w.Write(icoF)
+}
+func (e GET_Root_User_Login_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var c = data.Internal_Main_Method_GetUser_1{
+		Internal_Main: data.Connection_Internal_Main,
+		Request: struct {
+			data.Internal_Main_User_Id
+			data.Internal_Main_User_Login
+		}{},
+		Response: struct {
+			data.Internal_Main_User_Avatar
+			data.Internal_Main_User_Name
+		}{},
+	}
+
+	c.Request.Login = vars["user"]
+
+	switch err := data.Execute.SQL(&c).(type) {
+	case error:
+		_, _ = fmt.Fprint(w, err.Error()+"\n")
+	default:
+		_, _ = fmt.Print(c.Response.Name + "\n")
+		_, _ = fmt.Fprint(w, c.Response.Name+"\n")
+	}
 }
