@@ -79,3 +79,5 @@ DATA
 !C27.4
     --data.Internal.Main: Минорные исправления
     --web: Добавлена тестовая версия #GET_Root_User_Login_1
+!C27.5
+    --Возвращение к CamelCase

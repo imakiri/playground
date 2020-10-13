@@ -12,13 +12,13 @@ import (
 )
 
 // Web Handlers
-type GET_Root struct{}
-type GET_Root_Assets_CSS_1 struct{}
-type GET_Root_Ico_1 struct{}
-type GET_Root_User_Login_1 struct{}
+type GetRoot_1 struct{}
+type GetRootAssetsCss_1 struct{}
+type GetRootIco_1 struct{}
+type GetRootUserLogin_1 struct{}
 
 // Web ServeHTTP Methods
-func (e GET_Root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e GetRoot_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if p, ok := w.(http.Pusher); ok {
 		_ = p.Push("assets/css/style.css", nil)
 	}
@@ -39,7 +39,7 @@ func (e GET_Root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%v Web/Root passed to %s\n", time.Now(), r.RemoteAddr)
 }
-func (e GET_Root_Assets_CSS_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e GetRootAssetsCss_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/css")
 
 	f, err := ioutil.ReadFile("web/templates/assets/css/style.css")
@@ -50,23 +50,23 @@ func (e GET_Root_Assets_CSS_1) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	_, _ = w.Write(f)
 }
-func (e GET_Root_Ico_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e GetRootIco_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "image/x-icon")
 
 	_, _ = w.Write(icoF)
 }
-func (e GET_Root_User_Login_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e GetRootUserLogin_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	var c = data.Internal_Main_Method_GetUser_1{
-		Internal_Main: data.Connection_Internal_Main,
+	var c = data.InternalMainGetUser_1{
+		InternalMain: data.ConnectionInternalMain,
 		Request: struct {
-			data.Internal_Main_User_Id
-			data.Internal_Main_User_Login
+			data.InternalMainUserId
+			data.InternalMainUserLogin
 		}{},
 		Response: struct {
-			data.Internal_Main_User_Avatar
-			data.Internal_Main_User_Name
+			data.InternalMainUserAvatar
+			data.InternalMainUserName
 		}{},
 	}
 

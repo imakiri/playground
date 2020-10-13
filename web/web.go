@@ -18,8 +18,8 @@ func init() {
 }
 
 func RegisterHandlers(rr *mux.Router) {
-	rr.Handle("/", GET_Root{})
-	rr.Handle("/assets/css/style.css", GET_Root_Assets_CSS_1{})
-	rr.Handle("/favicon.ico", GET_Root_Ico_1{})
-	rr.Handle("/user/{user}", GET_Root_User_Login_1{})
+	rr.Handle("/", GetRoot_1{})
+	rr.Handle("/assets/css/style.css", GetRootAssetsCss_1{})
+	rr.Handle("/favicon.ico", GetRootIco_1{})
+	rr.Handle("/user/{user}", GetRootUserLogin_1{})
 }

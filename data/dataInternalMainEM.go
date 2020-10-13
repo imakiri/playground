@@ -5,62 +5,62 @@ import (
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
 )
 
-// Internal_Main Data Entities
-type Internal_Main_Method_GetUser_1 struct {
-	Internal_Main
+// InternalMain Data Entities
+type InternalMainGetUser_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Id
-		Internal_Main_User_Login
+		InternalMainUserId
+		InternalMainUserLogin
 	}
 	Response struct {
-		Internal_Main_User_Avatar
-		Internal_Main_User_Name
+		InternalMainUserAvatar
+		InternalMainUserName
 	}
 }
-type Internal_Main_Method_GetUserPassHash_1 struct {
-	Internal_Main
+type InternalMainGetUserPassHash_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Login
+		InternalMainUserLogin
 	}
 	Response struct {
-		Internal_Main_User_PassHash
+		InternalMainUserPassHash
 	}
 }
-type Internal_Main_Method_CreateUser_1 struct {
-	Internal_Main
+type InternalMainCreateUser_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Login
-		Internal_Main_User_Avatar
-		Internal_Main_User_Name
-		Internal_Main_User_PassHash
+		InternalMainUserLogin
+		InternalMainUserAvatar
+		InternalMainUserName
+		InternalMainUserPassHash
 	}
 }
-type Internal_Main_Method_DeleteUser_1 struct {
-	Internal_Main
+type InternalMainDeleteUser_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Id
-		Internal_Main_User_Login
+		InternalMainUserId
+		InternalMainUserLogin
 	}
 }
-type Internal_Main_Method_UpdateUser_1 struct {
-	Internal_Main
+type InternalMainUpdateUser_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Id
-		Internal_Main_User_Login
-		Internal_Main_User_Name
-		Internal_Main_User_Avatar
+		InternalMainUserId
+		InternalMainUserLogin
+		InternalMainUserName
+		InternalMainUserAvatar
 	}
 }
-type Internal_Main_Method_UpdateUserPassHash_1 struct {
-	Internal_Main
+type InternalMainUpdateUserPassHash_1 struct {
+	InternalMain
 	Request struct {
-		Internal_Main_User_Login
-		Internal_Main_User_PassHash
+		InternalMainUserLogin
+		InternalMainUserPassHash
 	}
 }
 
-// Internal_Main Data SQL Methods
-func (e *Internal_Main_Method_DeleteUser_1) SQL() (err error) {
+// InternalMain Data SQL Methods
+func (e *InternalMainDeleteUser_1) SQL() (err error) {
 	const query_id = "DELETE FROM main.users WHERE id = ?"
 	const query_login = "DELETE FROM main.users WHERE login = ?"
 	var query string
@@ -82,7 +82,7 @@ func (e *Internal_Main_Method_DeleteUser_1) SQL() (err error) {
 	_, err = e.SQLX_DB.Exec(query, arg)
 	return check(err)
 }
-func (e *Internal_Main_Method_GetUser_1) SQL() (err error) {
+func (e *InternalMainGetUser_1) SQL() (err error) {
 	const query_id = "SELECT name, avatar FROM main.users WHERE id = ?"
 	const query_login = "SELECT name, avatar FROM main.users WHERE login = ?"
 	var query string
@@ -109,7 +109,7 @@ func (e *Internal_Main_Method_GetUser_1) SQL() (err error) {
 		return
 	}
 }
-func (e *Internal_Main_Method_GetUserPassHash_1) SQL() (err error) {
+func (e *InternalMainGetUserPassHash_1) SQL() (err error) {
 	const query = "SELECT passHash FROM main.users WHERE login = ?"
 
 	err = e.SQLX_DB.Get(&e.Response, query, e.Request.Login)
@@ -118,18 +118,18 @@ func (e *Internal_Main_Method_GetUserPassHash_1) SQL() (err error) {
 	}
 
 	if e.Response.PassHash == nil {
-		return Internal_ERROR_NotFound{}
+		return NotFoundError{}
 	}
 
 	return
 }
-func (e *Internal_Main_Method_CreateUser_1) SQL() (err error) {
+func (e *InternalMainCreateUser_1) SQL() (err error) {
 	const query = "INSERT INTO main.users (login, name, avatar, passHash) VALUES (?, ?, ?, ?)"
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.Login, e.Request.Name, e.Request.Avatar, e.Request.PassHash)
 	return check(err)
 }
-func (e *Internal_Main_Method_UpdateUser_1) SQL() (err error) {
+func (e *InternalMainUpdateUser_1) SQL() (err error) {
 	const query_update = "UPDATE main.users"
 	const query_set_avatar = "SET avatar = ?"
 	const query_set_name = "SET name = ?"
@@ -168,7 +168,7 @@ func (e *Internal_Main_Method_UpdateUser_1) SQL() (err error) {
 	_, err = e.SQLX_DB.Exec(query, args)
 	return check(err)
 }
-func (e *Internal_Main_Method_UpdateUserPassHash_1) SQL() (err error) {
+func (e *InternalMainUpdateUserPassHash_1) SQL() (err error) {
 	const query = "UPDATE main.users SET passHash = ? WHERE login = ?"
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.PassHash, e.Request.Login)

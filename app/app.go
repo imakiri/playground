@@ -10,13 +10,13 @@ const hashCost = 10
 
 // Returns error if it is not authorized
 func CheckAuthorization(login string, pass string) (err error) {
-	e := data.Internal_Main_Method_GetUserPassHash_1{
-		Internal_Main: data.Connection_Internal_Main,
+	e := data.InternalMainGetUserPassHash_1{
+		InternalMain: data.ConnectionInternalMain,
 		Request: struct {
-			data.Internal_Main_User_Login
+			data.InternalMainUserLogin
 		}{},
 		Response: struct {
-			data.Internal_Main_User_PassHash
+			data.InternalMainUserPassHash
 		}{},
 	}
 

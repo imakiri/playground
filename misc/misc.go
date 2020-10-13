@@ -15,15 +15,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Test8() {
-	var e = data.Internal_Main_Method_GetUser_1{
-		Internal_Main: data.Connection_Internal_Main,
+	var e = data.InternalMainGetUser_1{
+		InternalMain: data.ConnectionInternalMain,
 		Request: struct {
-			data.Internal_Main_User_Id
-			data.Internal_Main_User_Login
+			data.InternalMainUserId
+			data.InternalMainUserLogin
 		}{},
 		Response: struct {
-			data.Internal_Main_User_Avatar
-			data.Internal_Main_User_Name
+			data.InternalMainUserAvatar
+			data.InternalMainUserName
 		}{},
 	}
 

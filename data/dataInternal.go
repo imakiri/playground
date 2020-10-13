@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 )
 
-var Connection_Internal_Main Internal_Main
+var ConnectionInternalMain InternalMain
 
 func init() {
 	f, err := ioutil.ReadFile("data/dsn")
@@ -13,12 +13,12 @@ func init() {
 		panic(err)
 	}
 
-	Connection_Internal_Main.SQLX_DB, err = sqlx.Open("mysql", string(f))
+	ConnectionInternalMain.SQLX_DB, err = sqlx.Open("mysql", string(f))
 	if err != nil {
 		panic(err)
 	}
 
-	err = Connection_Internal_Main.SQLX_DB.Ping()
+	err = ConnectionInternalMain.SQLX_DB.Ping()
 	if err != nil {
 		panic(err)
 	}
