@@ -2,9 +2,9 @@ package misc
 
 import (
 	"fmt"
+	"github.com/imakiri/playground/core"
 	data "github.com/imakiri/playground/data"
 	"net/http"
-	"reflect"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -15,24 +15,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Test8() {
-	var e = data.InternalMainGetUser_1{
-		InternalMain: data.ConnectionInternalMain,
-		Request: struct {
-			data.InternalMainUserId
-			data.InternalMainUserLogin
-		}{},
-		Response: struct {
-			data.InternalMainUserAvatar
-			data.InternalMainUserName
-		}{},
-	}
+	c := data.NewRequest(data.RequestInternalMainGetUser_1{}).(*core.DataInternalMainGetUser_1)
 
-	e.Request.Login = "imakiri"
+	c.Request.Login = "imakiri"
+	c.SQL()
 
-	if err := e.SQL(); err != nil {
+	if err := c.Package.Error; err != nil {
 		fmt.Print(err.Error() + "\n")
-		fmt.Print(reflect.TypeOf(err))
 	} else {
-		fmt.Print(e.Response)
+		fmt.Print(c.Response)
 	}
 }

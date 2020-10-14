@@ -6,4 +6,5 @@ func (b ERROR) Error() string {
 	return string(b)
 }
 
-type ERROR_NotAuthorized struct{ ERROR }
+type NotAuthorizedError struct{ ERROR }
+type InternalServiceError struct{ ERROR }

@@ -1,39 +1,75 @@
 package app
 
 import (
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/data"
 	"golang.org/x/crypto/bcrypt"
 	_ "golang.org/x/crypto/bcrypt"
+	"image"
+	"time"
 )
 
 const hashCost = 10
+const testKey = "testKey"
 
-// Returns error if it is not authorized
-func CheckAuthorization(login string, pass string) (err error) {
-	e := data.InternalMainGetUserPassHash_1{
-		InternalMain: data.ConnectionInternalMain,
-		Request: struct {
-			data.InternalMainUserLogin
-		}{},
-		Response: struct {
-			data.InternalMainUserPassHash
-		}{},
+//
+type CheckAuthorization struct {
+	Request struct {
+		login string
+		pass  string
 	}
-
-	e.Request.Login = login
-
-	switch e := e.SQL().(type) {
-	case error:
-		return e
-	}
-
-	if bcrypt.CompareHashAndPassword(e.Response.PassHash, []byte(pass)) == nil {
-		return nil
-	} else {
-		return ERROR_NotAuthorized{}
+	Response struct {
+		re bool
 	}
 }
+type GenerateJWT struct {
+	Request struct {
+		login string
+	}
+	Response struct {
+		tokenString string
+	}
+}
+type ImageConverter struct {
+	picB []byte
+	pic  image.Image
+}
 
-func Img() {
+//
+func (e *ImageConverter) Compute() (err error) {
+	return nil
+}
+func (e *CheckAuthorization) Compute() (err error) {
+	c := data.NewRequest(data.RequestInternalMainGetUserPassHash_1{}).(*core.DataInternalMainGetUserPassHash_1)
 
+	c.Request.Login = e.Request.login
+	c.SQL()
+
+	if c.Package.Error != nil {
+		return c.Package.Error
+	}
+
+	if bcrypt.CompareHashAndPassword(c.Response.PassHash, []byte(e.Request.pass)) == nil {
+		return nil
+	} else {
+		return NotAuthorizedError{}
+	}
+} // Returns error if it is not authorized
+func (e *GenerateJWT) Compute() (err error) {
+	var token *jwt.Token
+	var claims jwt.MapClaims
+
+	token = jwt.New(jwt.SigningMethodHS256)
+	claims = token.Claims.(jwt.MapClaims)
+	claims["authorized"] = true
+	claims["user"] = e.Request.login
+	claims["exp"] = time.Now().Add(30 * time.Minute).Unix()
+
+	e.Response.tokenString, err = token.SignedString([]byte(testKey))
+	if err != nil {
+		return InternalServiceError{ERROR(err.Error())}
+	}
+
+	return
 }

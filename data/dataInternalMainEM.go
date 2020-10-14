@@ -3,71 +3,21 @@ package data
 import (
 	"fmt"
 	_ "github.com/doug-martin/goqu/v9/dialect/mysql"
+	"github.com/imakiri/playground/core"
 )
 
-// InternalMain Data Entities
-type InternalMainGetUser_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserId
-		InternalMainUserLogin
-	}
-	Response struct {
-		InternalMainUserAvatar
-		InternalMainUserName
-	}
-}
-type InternalMainGetUserPassHash_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserLogin
-	}
-	Response struct {
-		InternalMainUserPassHash
-	}
-}
-type InternalMainCreateUser_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserLogin
-		InternalMainUserAvatar
-		InternalMainUserName
-		InternalMainUserPassHash
-	}
-}
-type InternalMainDeleteUser_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserId
-		InternalMainUserLogin
-	}
-}
-type InternalMainUpdateUser_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserId
-		InternalMainUserLogin
-		InternalMainUserName
-		InternalMainUserAvatar
-	}
-}
-type InternalMainUpdateUserPassHash_1 struct {
-	InternalMain
-	Request struct {
-		InternalMainUserLogin
-		InternalMainUserPassHash
-	}
-}
-
-// InternalMain Data SQL Methods
-func (e *InternalMainDeleteUser_1) SQL() (err error) {
+// DataInternalMain Data SQL Methods Impl
+func requestInternalMainDeleteUser_1(e *core.DataInternalMainDeleteUser_1) {
 	const query_id = "DELETE FROM main.users WHERE id = ?"
 	const query_login = "DELETE FROM main.users WHERE login = ?"
 	var query string
 	var arg interface{}
+	var err error
+	var er core.Err
 
-	if err = checkRequest(e.Request.Id, e.Request.Login); err != nil {
-		return err
+	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
+		e.Package.Error = er
+		return
 	}
 
 	switch {
@@ -80,16 +30,20 @@ func (e *InternalMainDeleteUser_1) SQL() (err error) {
 	}
 
 	_, err = e.SQLX_DB.Exec(query, arg)
-	return check(err)
+	e.Package.Error = check(err)
+	return
 }
-func (e *InternalMainGetUser_1) SQL() (err error) {
+func requestInternalMainGetUser_1(e *core.DataInternalMainGetUser_1) {
 	const query_id = "SELECT name, avatar FROM main.users WHERE id = ?"
 	const query_login = "SELECT name, avatar FROM main.users WHERE login = ?"
 	var query string
 	var arg interface{}
+	var err error
+	var er core.Err
 
-	if err = checkRequest(e.Request.Id, e.Request.Login); err != nil {
-		return err
+	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
+		e.Package.Error = er
+		return
 	}
 
 	switch {
@@ -102,34 +56,40 @@ func (e *InternalMainGetUser_1) SQL() (err error) {
 	}
 
 	err = e.SQLX_DB.Get(&e.Response, query, arg)
-	switch e := err.(type) {
+	switch err := err.(type) {
 	case error:
-		return check(e)
+		e.Package.Error = check(err)
+		return
 	default:
 		return
 	}
 }
-func (e *InternalMainGetUserPassHash_1) SQL() (err error) {
+func requestInternalMainGetUserPassHash_1(e *core.DataInternalMainGetUserPassHash_1) {
 	const query = "SELECT passHash FROM main.users WHERE login = ?"
+	var err error
 
 	err = e.SQLX_DB.Get(&e.Response, query, e.Request.Login)
 	if err != nil {
-		return check(err)
+		e.Package.Error = check(err)
+		return
 	}
 
 	if e.Response.PassHash == nil {
-		return NotFoundError{}
+		e.Package.Error = core.NewError(core.DataNotFoundError{}, "")
+		return
 	}
 
 	return
 }
-func (e *InternalMainCreateUser_1) SQL() (err error) {
+func requestInternalMainCreateUser_1(e *core.DataInternalMainCreateUser_1) {
 	const query = "INSERT INTO main.users (login, name, avatar, passHash) VALUES (?, ?, ?, ?)"
+	var err error
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.Login, e.Request.Name, e.Request.Avatar, e.Request.PassHash)
-	return check(err)
+	e.Package.Error = check(err)
+	return
 }
-func (e *InternalMainUpdateUser_1) SQL() (err error) {
+func requestInternalMainUpdateUser_1(e *core.DataInternalMainUpdateUser_1) {
 	const query_update = "UPDATE main.users"
 	const query_set_avatar = "SET avatar = ?"
 	const query_set_name = "SET name = ?"
@@ -138,9 +98,12 @@ func (e *InternalMainUpdateUser_1) SQL() (err error) {
 	const query_where_login = "WHERE login = ?"
 	var query string
 	var args []interface{}
+	var err error
+	var er core.Err
 
-	if err = checkRequest(e.Request.Id, e.Request.Login); err != nil {
-		return err
+	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
+		e.Package.Error = er
+		return
 	}
 
 	// Order of args appending is important and depends on query template
@@ -166,11 +129,14 @@ func (e *InternalMainUpdateUser_1) SQL() (err error) {
 	}
 
 	_, err = e.SQLX_DB.Exec(query, args)
-	return check(err)
+	e.Package.Error = check(err)
+	return
 }
-func (e *InternalMainUpdateUserPassHash_1) SQL() (err error) {
+func requestInternalMainUpdateUserPassHash_1(e *core.DataInternalMainUpdateUserPassHash_1) {
 	const query = "UPDATE main.users SET passHash = ? WHERE login = ?"
+	var err error
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.PassHash, e.Request.Login)
-	return check(err)
+	e.Package.Error = check(err)
+	return
 }

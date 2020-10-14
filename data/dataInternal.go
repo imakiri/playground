@@ -1,11 +1,12 @@
 package data
 
 import (
+	"github.com/imakiri/playground/core"
 	"github.com/jmoiron/sqlx"
 	"io/ioutil"
 )
 
-var ConnectionInternalMain InternalMain
+var ConnectionInternalMain core.DataInternalMain
 
 func init() {
 	f, err := ioutil.ReadFile("data/dsn")
