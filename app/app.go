@@ -47,7 +47,7 @@ func (e *CheckAuthorization) Compute() (err error) {
 	c.SQL()
 
 	if c.Package.Error != nil {
-		return c.Package.Error
+		return c.Package.Err
 	}
 
 	if bcrypt.CompareHashAndPassword(c.Response.PassHash, []byte(e.Request.pass)) == nil {

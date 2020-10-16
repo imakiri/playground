@@ -16,7 +16,7 @@ func requestInternalMainDeleteUser_1(e *core.DataInternalMainDeleteUser_1) {
 	var er core.Err
 
 	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
-		e.Package.Error = er
+		e.Package.Err = er
 		return
 	}
 
@@ -30,7 +30,7 @@ func requestInternalMainDeleteUser_1(e *core.DataInternalMainDeleteUser_1) {
 	}
 
 	_, err = e.SQLX_DB.Exec(query, arg)
-	e.Package.Error = check(err)
+	e.Package.Err = check(err)
 	return
 }
 func requestInternalMainGetUser_1(e *core.DataInternalMainGetUser_1) {
@@ -42,7 +42,7 @@ func requestInternalMainGetUser_1(e *core.DataInternalMainGetUser_1) {
 	var er core.Err
 
 	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
-		e.Package.Error = er
+		e.Package.Err = er
 		return
 	}
 
@@ -58,7 +58,7 @@ func requestInternalMainGetUser_1(e *core.DataInternalMainGetUser_1) {
 	err = e.SQLX_DB.Get(&e.Response, query, arg)
 	switch err := err.(type) {
 	case error:
-		e.Package.Error = check(err)
+		e.Package.Err = check(err)
 		return
 	default:
 		return
@@ -70,12 +70,12 @@ func requestInternalMainGetUserPassHash_1(e *core.DataInternalMainGetUserPassHas
 
 	err = e.SQLX_DB.Get(&e.Response, query, e.Request.Login)
 	if err != nil {
-		e.Package.Error = check(err)
+		e.Package.Err = check(err)
 		return
 	}
 
 	if e.Response.PassHash == nil {
-		e.Package.Error = core.NewError(core.DataNotFoundError{}, "")
+		e.Package.Err = core.NewError(core.DataNotFoundError{}, "")
 		return
 	}
 
@@ -86,7 +86,7 @@ func requestInternalMainCreateUser_1(e *core.DataInternalMainCreateUser_1) {
 	var err error
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.Login, e.Request.Name, e.Request.Avatar, e.Request.PassHash)
-	e.Package.Error = check(err)
+	e.Package.Err = check(err)
 	return
 }
 func requestInternalMainUpdateUser_1(e *core.DataInternalMainUpdateUser_1) {
@@ -102,7 +102,7 @@ func requestInternalMainUpdateUser_1(e *core.DataInternalMainUpdateUser_1) {
 	var er core.Err
 
 	if er = checkRequest(e.Request.Id, e.Request.Login); er != nil {
-		e.Package.Error = er
+		e.Package.Err = er
 		return
 	}
 
@@ -129,7 +129,7 @@ func requestInternalMainUpdateUser_1(e *core.DataInternalMainUpdateUser_1) {
 	}
 
 	_, err = e.SQLX_DB.Exec(query, args)
-	e.Package.Error = check(err)
+	e.Package.Err = check(err)
 	return
 }
 func requestInternalMainUpdateUserPassHash_1(e *core.DataInternalMainUpdateUserPassHash_1) {
@@ -137,6 +137,6 @@ func requestInternalMainUpdateUserPassHash_1(e *core.DataInternalMainUpdateUserP
 	var err error
 
 	_, err = e.SQLX_DB.Exec(query, e.Request.PassHash, e.Request.Login)
-	e.Package.Error = check(err)
+	e.Package.Err = check(err)
 	return
 }

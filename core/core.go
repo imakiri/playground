@@ -1,10 +1,20 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
+
+type Header struct {
+	From string               `json:"from"`
+	To   string               `json:"to"`
+	Path map[string]time.Time `json:"path"`
+}
 
 type Package struct {
-	Header string `json:"header"`
-	Error  Err    `json:"error"`
+	Permissions `json:"permissions"`
+	Header      `json:"header"`
+	Err         `json:"error"`
 }
 
 type ERROR struct {
