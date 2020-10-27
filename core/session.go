@@ -4,6 +4,11 @@ type UserPassRaw struct {
 	PassRaw string `json:"passRaw"`
 }
 
+type Session struct {
+	id string
+	Permissions
+}
+
 type Permissions struct {
 }
 
@@ -13,6 +18,6 @@ type Authorization struct {
 		UserPassRaw
 	}
 	Response struct {
-		Permissions
+		Session
 	}
 }

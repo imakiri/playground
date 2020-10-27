@@ -2,90 +2,174 @@ package core
 
 import (
 	"fmt"
-	"time"
+	"github.com/spf13/viper"
 )
 
+var Conf Config
+
+func init() {
+	var err error
+	viper.SetConfigType("yml")
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+
+	err = viper.ReadInConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	err = viper.Unmarshal(&Conf)
+	if err != nil {
+		panic(err)
+	}
+}
+
+type Config struct {
+	Database struct {
+		User     string
+		Password string
+		Address  string
+		Port     string
+	}
+	DSN    string
+	ApiKey string
+	Salt   string
+}
+
 type Header struct {
-	From string               `json:"from"`
-	To   string               `json:"to"`
-	Path map[string]time.Time `json:"path"`
+	ActionID uint `json:"action_id"`
 }
 
 type Package struct {
-	Permissions `json:"permissions"`
-	Header      `json:"header"`
-	Err         `json:"error"`
+	Session `json:"session"`
+	Header  `json:"header"`
+	Status  `json:"status"`
 }
 
-type ERROR struct {
+type Status struct {
 	Type_ string `json:"type"`
 	Value string `json:"value"`
 }
 
-func (e ERROR) Error() string {
+func (e Status) Error() string {
 	return fmt.Sprintf("%s: [%s]", e.Type_, e.Value)
 }
-func (e ERROR) Type() string {
+func (e Status) Type() string {
 	return e.Type_
 }
+func (e Status) IsOK() bool {
+	if e.Type_ == CStatusOK {
+		return true
+	} else {
+		return false
+	}
+}
 
-type Err interface {
+type StatusPointer interface {
+	StatusPtr() *Status
+}
+
+type StatusInt interface {
 	error
 	Type() string
 }
 
-func NewError(e Err, value string) (err Err) {
-	switch e.(type) {
+func StatusType2StrCaster(s StatusInt) string {
+	switch s.(type) {
+	case StatusOk:
+		return CStatusOK
+	case SerializationError:
+		return CSerializationError
 	case DataAlreadyExistError:
-		return DataAlreadyExistError{ERROR{
-			Type_: CDataAlreadyExistError,
-			Value: value,
-		}}
+		return CDataAlreadyExistError
 	case DataIncorrectArgumentError:
-		return DataIncorrectArgumentError{ERROR{
-			Type_: CDataIncorrectArgumentError,
-			Value: value,
-		}}
+		return CDataIncorrectArgumentError
 	case DataInternalServiceError:
-		return DataInternalServiceError{ERROR{
-			Type_: CDataInternalServiceError,
-			Value: value,
-		}}
+		return CDataInternalServiceError
 	case DataNotFoundError:
-		return DataNotFoundError{ERROR{
-			Type_: CDataNotFoundError,
-			Value: value,
-		}}
+		return CDataNotFoundError
 	case WebIcoInitError:
-		return WebIcoInitError{ERROR{
-			Type_: CWebIcoInitError,
-			Value: value,
-		}}
+		return CWebIcoInitError
 	case WebCssReadError:
-		return WebCssReadError{ERROR{
-			Type_: CWebCssReadError,
-			Value: value,
-		}}
+		return CWebCssReadError
 	case WebTemplateParseError:
-		return WebTemplateParseError{ERROR{
-			Type_: CWebTemplateParseError,
-			Value: value,
-		}}
+		return CWebTemplateParseError
 	case WebTemplateExecuteError:
-		return WebTemplateExecuteError{ERROR{
-			Type_: CWebTemplateExecuteError,
-			Value: value,
-		}}
+		return CWebTemplateExecuteError
 	default:
-		return UnknownError{ERROR{
-			Type_: CUnknownError,
-			Value: value,
-		}}
+		return CUnknownError
 	}
 }
 
-type UnknownError struct{ ERROR }
+func NewStatus(e StatusInt, err error) StatusInt {
+	if err == nil {
+		return StatusOk{
+			Status{
+				Type_: CStatusOK,
+				Value: "",
+			},
+		}
+	} else {
+		switch e.(type) {
+		case DataAlreadyExistError:
+			return DataAlreadyExistError{Status{
+				Type_: CDataAlreadyExistError,
+				Value: err.Error(),
+			}}
+		case DataIncorrectArgumentError:
+			return DataIncorrectArgumentError{Status{
+				Type_: CDataIncorrectArgumentError,
+				Value: err.Error(),
+			}}
+		case DataInternalServiceError:
+			return DataInternalServiceError{Status{
+				Type_: CDataInternalServiceError,
+				Value: err.Error(),
+			}}
+		case DataNotFoundError:
+			return DataNotFoundError{Status{
+				Type_: CDataNotFoundError,
+				Value: err.Error(),
+			}}
+		case WebIcoInitError:
+			return WebIcoInitError{Status{
+				Type_: CWebIcoInitError,
+				Value: err.Error(),
+			}}
+		case WebCssReadError:
+			return WebCssReadError{Status{
+				Type_: CWebCssReadError,
+				Value: err.Error(),
+			}}
+		case WebTemplateParseError:
+			return WebTemplateParseError{Status{
+				Type_: CWebTemplateParseError,
+				Value: err.Error(),
+			}}
+		case WebTemplateExecuteError:
+			return WebTemplateExecuteError{Status{
+				Type_: CWebTemplateExecuteError,
+				Value: err.Error(),
+			}}
+		default:
+			return UnknownError{Status{
+				Type_: CUnknownError,
+				Value: err.Error(),
+			}}
+		}
+	}
+}
 
+type StatusOk struct{ Status }
+type SerializationError struct{ Status }
+type UnknownError struct{ Status }
+
+func (e StatusOk) Type() string {
+	return CStatusOK
+}
+func (e SerializationError) Type() string {
+	return CSerializationError
+}
 func (e UnknownError) Type() string {
 	return CUnknownError
 }
@@ -100,4 +184,6 @@ const CWebCssReadError = "WebCssReadError"
 const CWebTemplateParseError = "WebTemplateParseError"
 const CWebTemplateExecuteError = "WebTemplateExecuteError"
 
+const CStatusOK = "StatusOK"
+const CSerializationError = "SerializationError"
 const CUnknownError = "UnknownError"

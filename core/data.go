@@ -32,7 +32,7 @@ type DataInternalMainUserName struct {
 	Name string `db:"name" json:"dataInternalMainUserName"`
 }
 type DataInternalMainUserPassHash struct {
-	PassHash []byte `db:"passHash" json:"dataInternalMainUserPassHash"`
+	PassHash []byte `db:"pass_hash" json:"dataInternalMainUserPassHash"`
 }
 
 // DataInternalMainData Fields
@@ -49,11 +49,22 @@ type DataInternalMainDataPic struct {
 	Pic []byte `db:"pic" json:"dataInternalMainDataPic"`
 }
 type DataInternalMainDataUserId struct {
-	UserId uint `db:"userId" json:"dataInternalMainDataUserId"`
+	UserId uint `db:"user_id" json:"dataInternalMainDataUserId"`
 }
 
 // DataInternalMain Data Entities
-type DataInternalMainGetUser_1 struct {
+type DataInternalMainCreateUser struct {
+	Package
+	DataInternalMain
+	Request struct {
+		DataInternalMainUserLogin
+		DataInternalMainUserAvatar
+		DataInternalMainUserName
+		DataInternalMainUserPassHash
+	} `json:"request"`
+	SQLfunc func(e *DataInternalMainCreateUser)
+}
+type DataInternalMainGetUser struct {
 	Package
 	DataInternalMain
 	Request struct {
@@ -64,9 +75,9 @@ type DataInternalMainGetUser_1 struct {
 		DataInternalMainUserAvatar
 		DataInternalMainUserName
 	} `json:"response"`
-	SQLfunc func(e *DataInternalMainGetUser_1)
+	SQLfunc func(e *DataInternalMainGetUser)
 }
-type DataInternalMainGetUserPassHash_1 struct {
+type DataInternalMainGetUserPassHash struct {
 	Package
 	DataInternalMain
 	Request struct {
@@ -75,29 +86,9 @@ type DataInternalMainGetUserPassHash_1 struct {
 	Response struct {
 		DataInternalMainUserPassHash
 	} `json:"response"`
-	SQLfunc func(e *DataInternalMainGetUserPassHash_1)
+	SQLfunc func(e *DataInternalMainGetUserPassHash)
 }
-type DataInternalMainCreateUser_1 struct {
-	Package
-	DataInternalMain
-	Request struct {
-		DataInternalMainUserLogin
-		DataInternalMainUserAvatar
-		DataInternalMainUserName
-		DataInternalMainUserPassHash
-	} `json:"request"`
-	SQLfunc func(e *DataInternalMainCreateUser_1)
-}
-type DataInternalMainDeleteUser_1 struct {
-	Package
-	DataInternalMain
-	Request struct {
-		DataInternalMainUserId
-		DataInternalMainUserLogin
-	} `json:"request"`
-	SQLfunc func(e *DataInternalMainDeleteUser_1)
-}
-type DataInternalMainUpdateUser_1 struct {
+type DataInternalMainUpdateUser struct {
 	Package
 	DataInternalMain
 	Request struct {
@@ -106,34 +97,69 @@ type DataInternalMainUpdateUser_1 struct {
 		DataInternalMainUserName
 		DataInternalMainUserAvatar
 	} `json:"request"`
-	SQLfunc func(e *DataInternalMainUpdateUser_1)
+	SQLfunc func(e *DataInternalMainUpdateUser)
 }
-type DataInternalMainUpdateUserPassHash_1 struct {
+type DataInternalMainDeleteUser struct {
+	Package
+	DataInternalMain
+	Request struct {
+		DataInternalMainUserId
+		DataInternalMainUserLogin
+	} `json:"request"`
+	SQLfunc func(e *DataInternalMainDeleteUser)
+}
+type DataInternalMainUpdateUserPassHash struct {
 	Package
 	DataInternalMain
 	Request struct {
 		DataInternalMainUserLogin
 		DataInternalMainUserPassHash
 	} `json:"request"`
-	SQLfunc func(e *DataInternalMainUpdateUserPassHash_1)
+	SQLfunc func(e *DataInternalMainUpdateUserPassHash)
 }
 
-// DataInternalMain General SQL Method Impl
-func (e *DataInternalMainGetUser_1) SQL() {
+func (e *DataInternalMainCreateUser) SQL() {
 	e.SQLfunc(e)
 }
-func (e *DataInternalMainGetUserPassHash_1) SQL() {
+func (e *DataInternalMainGetUser) SQL() {
 	e.SQLfunc(e)
 }
-func (e *DataInternalMainCreateUser_1) SQL() {
+func (e *DataInternalMainGetUserPassHash) SQL() {
 	e.SQLfunc(e)
 }
-func (e *DataInternalMainDeleteUser_1) SQL() {
+func (e *DataInternalMainUpdateUser) SQL() {
 	e.SQLfunc(e)
 }
-func (e *DataInternalMainUpdateUser_1) SQL() {
+func (e *DataInternalMainDeleteUser) SQL() {
 	e.SQLfunc(e)
 }
-func (e *DataInternalMainUpdateUserPassHash_1) SQL() {
+func (e *DataInternalMainUpdateUserPassHash) SQL() {
 	e.SQLfunc(e)
 }
+
+func (e *DataInternalMainCreateUser) StatusPtr() *Status {
+	return &e.Status
+}
+func (e *DataInternalMainGetUser) StatusPtr() *Status {
+	return &e.Status
+}
+func (e *DataInternalMainGetUserPassHash) StatusPtr() *Status {
+	return &e.Status
+}
+func (e *DataInternalMainUpdateUser) StatusPtr() *Status {
+	return &e.Status
+}
+func (e *DataInternalMainDeleteUser) StatusPtr() *Status {
+	return &e.Status
+}
+func (e *DataInternalMainUpdateUserPassHash) StatusPtr() *Status {
+	return &e.Status
+}
+
+// Data Errors
+type DataInternalServiceError struct{ Status }
+type DataExternalServiceError struct{ Status }
+type DataIncorrectArgumentError struct{ Status }
+type DataNotFoundError struct{ Status }
+type DataAlreadyExistError struct{ Status }
+type DataAccessDenied struct{ Status }

@@ -25,14 +25,14 @@ func (e GetRoot_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("web/templates/index.html")
 	if err != nil {
-		e := core.NewError(core.WebTemplateParseError{}, err.Error())
+		e := core.NewStatus(core.WebTemplateParseError{}, err)
 		fmt.Print(e.Error())
 		return
 	}
 
 	err = t.ExecuteTemplate(w, "index", nil)
 	if err != nil {
-		e := core.NewError(core.WebTemplateExecuteError{}, err.Error())
+		e := core.NewStatus(core.WebTemplateExecuteError{}, err)
 		fmt.Print(e.Error())
 	}
 
@@ -43,13 +43,13 @@ func (e GetRoot_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (e GetRootUserLogin_1) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	var c = data.NewRequest(data.RequestInternalMainGetUser_1{}).(*core.DataInternalMainGetUser_1)
+	var c = data.NewRequest(data.RequestInternalMainGetUser{}).(*core.DataInternalMainGetUser)
 
 	c.Request.Login = vars["login"]
 	Execute.SQL(c)
 
 	if err := c.Package.Error; err != nil {
-		_, _ = fmt.Fprintf(w, "%s [%s]", c.Package.Err, c.Request.Login)
+		_, _ = fmt.Fprintf(w, "%s [%s]", c.Package.Error(), c.Request.Login)
 	} else {
 		_, _ = fmt.Fprintf(w, "%s", c.Response.Name)
 	}

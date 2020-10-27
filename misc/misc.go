@@ -3,7 +3,7 @@ package misc
 import (
 	"fmt"
 	"github.com/imakiri/playground/core"
-	data "github.com/imakiri/playground/data"
+	"github.com/imakiri/playground/data"
 	"net/http"
 )
 
@@ -15,14 +15,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Test8() {
-	c := data.NewRequest(data.RequestInternalMainGetUser_1{}).(*core.DataInternalMainGetUser_1)
+	c := data.NewRequest(data.RequestInternalMainGetUser{}).(*core.DataInternalMainGetUser)
 
 	c.Request.Login = "imakiri"
 	c.SQL()
 
-	if err := c.Package.Error; err != nil {
-		fmt.Print(err.Error() + "\n")
-	} else {
+	if c.Package.Status.IsOK() {
 		fmt.Print(c.Response)
+		fmt.Print("\nOK")
+	} else {
+		fmt.Print(c.Package.Status.Error())
 	}
 }
