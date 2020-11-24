@@ -8,3 +8,4 @@ func (b ERROR) Error() string {
 
 type NotAuthorizedError struct{ ERROR }
 type InternalServiceError struct{ ERROR }
+type IncorrectImageError struct{ ERROR }

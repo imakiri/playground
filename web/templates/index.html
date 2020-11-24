@@ -10,6 +10,15 @@
     </head>
     <body>
     <h1>Go</h1>
+    <form action="/detect" enctype="multipart/form-data" method="post">
+        <p class="detect">
+            Please specify a file, or a set of files:
+            <input type="file" name="file">
+        </p>
+        <div class="detect">
+            <input type="submit" value="Detect">
+        </div>
+    </form>
     <div class="footer">
         <p>Веб-сервер, который скоро будет кое что делать</p>
         <p>А пока немножко музыки</p>

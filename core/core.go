@@ -88,6 +88,8 @@ func StatusType2StrCaster(s StatusInt) string {
 		return CDataInternalServiceError
 	case DataNotFoundError:
 		return CDataNotFoundError
+	case AppDetecterIncorrectImageError:
+		return CAppDetecterIncorrectImageError
 	case WebIcoInitError:
 		return CWebIcoInitError
 	case WebCssReadError:
@@ -129,6 +131,11 @@ func NewStatus(e StatusInt, err error) StatusInt {
 		case DataNotFoundError:
 			return DataNotFoundError{Status{
 				Type_: CDataNotFoundError,
+				Value: err.Error(),
+			}}
+		case AppDetecterIncorrectImageError:
+			return AppDetecterIncorrectImageError{Status{
+				Type_: CAppDetecterIncorrectImageError,
 				Value: err.Error(),
 			}}
 		case WebIcoInitError:
@@ -178,6 +185,8 @@ const CDataInternalServiceError = "DataInternalServiceError"
 const CDataIncorrectArgumentError = "DataIncorrectArgumentError"
 const CDataNotFoundError = "DataNotFoundError"
 const CDataAlreadyExistError = "DataAlreadyExistError"
+
+const CAppDetecterIncorrectImageError = "AppDetecterIncorrectImageError"
 
 const CWebIcoInitError = "WebIcoInitError"
 const CWebCssReadError = "WebCssReadError"

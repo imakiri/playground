@@ -41,13 +41,13 @@ func (e *ImageConverter) Compute() (err error) {
 	return nil
 }
 func (e *CheckAuthorization) Compute() (err error) {
-	c := data.NewRequest(data.RequestInternalMainGetUserPassHash_1{}).(*core.DataInternalMainGetUserPassHash_1)
+	c := data.NewRequest(data.RequestInternalMainGetUserPassHash{}).(*core.DataInternalMainGetUserPassHash)
 
 	c.Request.Login = e.Request.login
 	c.SQL()
 
-	if c.Package.Error != nil {
-		return c.Package.Err
+	if !c.Package.Status.IsOK() {
+		return c.Package.Status
 	}
 
 	if bcrypt.CompareHashAndPassword(c.Response.PassHash, []byte(e.Request.pass)) == nil {

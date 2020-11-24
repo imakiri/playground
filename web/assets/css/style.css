@@ -14,6 +14,12 @@ h1 {
     box-shadow: 0 4px;
 }
 
+.detect {
+    color: #141515;
+    margin: 0;
+    padding: 0;
+}
+
 p {
     vertical-align: bottom;
     text-align: center;

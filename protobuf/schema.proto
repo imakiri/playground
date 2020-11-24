@@ -1,0 +1,14 @@
+syntax = "proto3";
+package protobuf;
+
+service FaceDetecter {
+  rpc Detect (DetectionRequest) returns (DetectionResponse) {}
+}
+
+message DetectionRequest {
+  bytes img = 1;
+}
+
+message DetectionResponse {
+  bytes processedImg = 1;
+}
