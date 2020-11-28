@@ -95,3 +95,8 @@ DATA
     --app.ip: Функция Detect.
     --web: GetRootDetect
     --Реализация простой функции детектирования лица на основе OpenCV
+!С31
+    --protos: Учебная реализация gRPC - сервис FaceDetector
+    --ips: Добавлена имплиментация protos.FaceDetector
+    --cmd: Приложения public.HTTPServer и private.ImageProcessingServer
+    --app, data, core, misc - legacy, не используется

@@ -3,6 +3,8 @@ html, body {
     background-color: #d9d9d9;
     height: 100%;
     font-family: "Open Sans", serif;
+    display: flex;
+    flex-flow: column;
 }
 
 h1 {
@@ -18,6 +20,17 @@ h1 {
     color: #141515;
     margin: 0;
     padding: 0;
+    position: absolute;
+    top: 30%;
+    align-self: center;
+}
+
+.detect-button {
+    align-self: center;
+}
+
+.detect-title {
+    color: #141515;
 }
 
 p {

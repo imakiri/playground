@@ -10,17 +10,17 @@
     </head>
     <body>
     <h1>Go</h1>
-    <form action="/detect" enctype="multipart/form-data" method="post">
-        <p class="detect">
-            Please specify a file, or a set of files:
+    <form action="/detect" class="detect" enctype="multipart/form-data" method="post">
+        <p class="detect-title">
+            Внутреннее сетевое соединение не защищено. Выберите файл
             <input type="file" name="file">
         </p>
-        <div class="detect">
-            <input type="submit" value="Detect">
+        <div class="detect-button">
+            <input type="submit" value="Detect Faces">
         </div>
     </form>
     <div class="footer">
-        <p>Веб-сервер, который скоро будет кое что делать</p>
+        <p>Веб-сервер, который скоро™ будет кое что делать</p>
         <p>А пока немножко музыки</p>
         <iframe class="player" width="560" height="315"
                 src="https://www.youtube.com/embed/videoseries?list=PLLMzStdfMNobbRaoBXoEa-_-B6Lcsi7rc&index=2"
