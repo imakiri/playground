@@ -100,3 +100,5 @@ DATA
     --ips: Добавлена имплиментация protos.FaceDetector
     --cmd: Приложения public.HTTPServer и private.ImageProcessingServer
     --app, data, core, misc - legacy, не используется
+!C31.1
+    --cmd.public.HTTPServer: Использование файла конфига для хранение имени домена ImageProcessing сервера

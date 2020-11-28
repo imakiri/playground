@@ -2,6 +2,7 @@ package ips
 
 import (
 	"context"
+	"fmt"
 	"github.com/imakiri/playground/protos"
 	"gocv.io/x/gocv"
 	"image"
@@ -18,6 +19,8 @@ func NewFaceDetector() *FaceDetecter {
 
 func (e *FaceDetecter) Detect(_ context.Context, dr *protos.DetectionRequest) (*protos.DetectionResponse, error) {
 	rImg := dr.GetImg()
+
+	fmt.Print("Detection in process")
 
 	img, err := gocv.IMDecode(rImg, gocv.IMReadColor)
 	if err != nil {
