@@ -12,7 +12,7 @@ import (
 )
 
 type GetRoot struct{}
-type GetRootDetect struct{}
+type PostRootDetect struct{}
 
 // Web ServeHTTP Methods
 
@@ -37,17 +37,17 @@ func (e GetRoot) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fmt.Print(e.Error())
 	}
 
-	fmt.Printf("%v WebGetRoot passed to %s\n", time.Now(), r.RemoteAddr)
+	fmt.Printf("%v WebGetRoot enpoint hit and pass to %s\n", time.Now(), r.RemoteAddr)
 }
 
 // POST /detect
-func (e GetRootDetect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (e PostRootDetect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	fmt.Println("File Upload Endpoint Hit")
+	fmt.Println("PostRootDetect endpoint hit")
 	_ = r.ParseMultipartForm(10 << 20)
 
 	file, handler, err := r.FormFile("file")
@@ -65,13 +65,15 @@ func (e GetRootDetect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	responce, _ := gc.Detect(context.Background(), &protos.DetectionRequest{Img: fileBytes})
-	if err := responce.GetErr(); err != nil {
+
+	response, _ := gc.Detect(context.Background(), &protos.DetectionRequest{Img: fileBytes})
+	if err := response.GetErr(); err != nil {
+		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte(err.String()))
 		return
 	}
 
 	w.Header().Set("Content-Type", "image/jpeg")
-	_, _ = w.Write(responce.GetImg().GetData())
+	_, _ = w.Write(response.GetImg().GetData())
 }

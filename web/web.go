@@ -6,35 +6,31 @@ import (
 	"net/http"
 )
 
-var r = mux.NewRouter()
-var rr = &http.ServeMux{}
-var s = &http.Server{}
-var sr = &http.Server{}
+var router = mux.NewRouter()
+var redirRouter = &http.ServeMux{}
+var server = &http.Server{}
+var redirServer = &http.Server{}
 var gc protos.FaceDetecterClient
-
-type Execute interface {
-	SQL()
-}
 
 func NewWebServer(gcNew protos.FaceDetecterClient) error {
 	gc = gcNew
 
-	rr.HandleFunc("/", redirect)
-	sr.Handler = rr
+	redirRouter.HandleFunc("/", redirect)
+	redirServer.Handler = redirRouter
 
 	go func() {
-		_ = sr.ListenAndServe()
+		_ = redirServer.ListenAndServe()
 	}()
 
-	RegisterHandlers(r)
-	s.Handler = r
-	return s.ListenAndServeTLS("cert.pem", "privkey.pem")
+	RegisterHandlers(router)
+	server.Handler = router
+	return server.ListenAndServeTLS("cert.pem", "privkey.pem")
 }
 
 func RegisterHandlers(rr *mux.Router) {
 	rr.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./web/assets/"))))
 	rr.Handle("/", GetRoot{})
-	rr.Handle("/detect", GetRootDetect{})
+	rr.Handle("/detect", PostRootDetect{})
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {

@@ -102,3 +102,5 @@ DATA
     --app, data, core, misc - legacy, не используется
 !C31.1
     --cmd.public.HTTPServer: Использование файла конфига для хранение имени домена ImageProcessing сервера
+!C31.2
+    --web: Минорные исправления
