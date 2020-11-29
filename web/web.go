@@ -17,14 +17,26 @@ func NewWebServer(gcNew protos.FaceDetecterClient) error {
 
 	redirRouter.HandleFunc("/", redirect)
 	redirServer.Handler = redirRouter
-
-	go func() {
-		_ = redirServer.ListenAndServe()
-	}()
-
 	RegisterHandlers(router)
 	server.Handler = router
-	return server.ListenAndServeTLS("cert.pem", "privkey.pem")
+
+	rsc := make(chan error)
+	sc := make(chan error)
+
+	go func(rsc chan error) {
+		rsc <- redirServer.ListenAndServe()
+	}(rsc)
+
+	go func(sc chan error) {
+		sc <- server.ListenAndServeTLS("cert.pem", "privkey.pem")
+	}(sc)
+
+	select {
+	case err := <-rsc:
+		return err
+	case err := <-sc:
+		return err
+	}
 }
 
 func RegisterHandlers(rr *mux.Router) {
