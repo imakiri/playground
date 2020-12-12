@@ -9,27 +9,28 @@ import (
 	"sync"
 )
 
-func pow(x, n uint16) (re uint64) {
-	re = 1
-	for n > 0 {
-		re = re * uint64(x)
-		n--
+// Compute n / (b ** p)
+func div(n, b, p uint16) uint16 {
+	for p > 0 {
+		n = n / b
+		p--
 	}
-	return
+	return n
 }
 
-func base(x, b, dim uint16) (re []uint64) {
-	re = make([]uint64, 0, dim)
-
-	for i := dim - 1; i < dim; i-- {
-		t := uint64(x) / pow(b, i)
-		x = x % uint16(pow(b, i))
-		re = append(re, t)
+// Compute ceil(log_b(n))
+func dim(n, b uint16) (d uint16) {
+	for {
+		m := div(n, b, d)
+		if m > 0 {
+			d++
+		} else {
+			return
+		}
 	}
-
-	return
 }
 
+// Count unique numbers in array
 func count(x []uint64) (n uint8) {
 	lookTable := make([]uint64, 0, len(x))
 
@@ -47,32 +48,106 @@ func count(x []uint64) (n uint8) {
 			lookTable = append(lookTable, value)
 		}
 	}
-
-	return uint8(len(lookTable))
+	n = uint8(len(lookTable))
+	return n
 }
 
-func dim(x, b uint16) (dim uint16) {
-	for {
-		if uint64(x)/pow(b, dim) > 0 {
-			dim++
-		} else {
-			break
-		}
-	}
+type task struct {
+	size      [2]uint16
+	base      [2]uint16
+	dimension [2]uint16
+	palette   []color.Color
+}
+
+func createTask(size, base [2]uint16, palette []color.Color) (t *task, err error) {
+	t = new(task)
+	t.size = size
+	t.base = base
+	t.palette = palette
+	t.dimension[0] = dim(t.size[0], t.base[0])
+	t.dimension[1] = dim(t.size[1], t.base[1])
 	return
 }
 
-func draw(x, y, b uint16) *image.Paletted {
+func (e task) compute() *image.Paletted {
 	rect := image.Rectangle{
 		Min: image.Point{
 			X: 0,
 			Y: 0,
 		},
 		Max: image.Point{
-			X: int(x),
-			Y: int(y),
+			X: int(e.size[0]),
+			Y: int(e.size[1]),
 		},
 	}
+	pal := color.Palette(e.palette)
+	img := image.NewPaletted(rect, pal)
+	wg := &sync.WaitGroup{}
+
+	//re := make([][][]uint64, e.size[0])
+	//for i := range re {
+	//	re[i] = make([][]uint64, e.size[1])
+	//}
+
+	for i := uint16(0); i < e.size[0]; i++ {
+		wg.Add(1)
+
+		//bX := base(i, e.base[0], e.dimension[0])
+
+		//for j := uint16(0); j < e.size[1]; j++ {
+		//	bY := base(j, e.base[1], e.dimension[1])
+		//	t := append(bX, bY...)
+		//	re[i][j] = t
+		//	img.SetColorIndex(int(i), int(j), count(t))
+		//}
+
+		go func(i uint16, wg *sync.WaitGroup) {
+			bX := base(i, e.base[0], e.dimension[0])
+
+			for j := uint16(0); j < e.size[1]; j++ {
+				bY := base(j, e.base[1], e.dimension[1])
+				t := append(bX, bY...)
+				img.SetColorIndex(int(i), int(j), count(t))
+			}
+
+			wg.Done()
+		}(i, wg)
+	}
+
+	wg.Wait()
+	return img
+}
+
+func pow(x, n uint16) (re uint64) {
+	re = 1
+	for n > 0 {
+		re = re * uint64(x)
+		n--
+	}
+	return
+}
+
+func base(n, b, dim uint16) (re []uint64) {
+	re = make([]uint64, 0, dim)
+
+	for i := dim - 1; i < dim; i-- {
+		t := uint64(div(n, b, i))
+		//t := uint16(uint64(n) / pow(b, i))
+		n = n % uint16(pow(b, i))
+		re = append(re, t)
+	}
+
+	return
+}
+
+func writeImg(x, y, b uint16) {
+	f, err := os.Create("draw.gif")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	size := [2]uint16{x, y}
+	base := [2]uint16{b, b}
 	pal := color.Palette([]color.Color{
 		color.RGBA{243, 72, 72, 0},
 		color.RGBA{242, 157, 73, 0},
@@ -85,40 +160,10 @@ func draw(x, y, b uint16) *image.Paletted {
 		color.RGBA{157, 73, 242, 0},
 		color.RGBA{242, 73, 242, 0},
 	})
-	img := image.NewPaletted(rect, pal)
-
-	dX := dim(x, b) - 1
-	dY := dim(y, b) - 1
-	wg := &sync.WaitGroup{}
-
-	for i := uint16(0); i < x; i++ {
-
-		wg.Add(1)
-		go func(i uint16, wg *sync.WaitGroup) {
-			bX := base(i, b, dX)
-
-			for j := uint16(0); j < y; j++ {
-				bY := base(j, b, dY)
-				t := append(bX, bY...)
-				img.SetColorIndex(int(i), int(j), count(t))
-			}
-			wg.Done()
-		}(i, wg)
-
-	}
-
-	wg.Wait()
-	return img
-}
-
-func writeImg(x, y, b uint16) {
-	f, err := os.Create("draw.gif")
-	if err != nil {
-		panic(err.Error())
-	}
+	t, _ := createTask(size, base, pal)
 
 	img := []*image.Paletted{
-		draw(x, y, b),
+		t.compute(),
 	}
 
 	g := &gif.GIF{
@@ -136,7 +181,7 @@ func writeImg(x, y, b uint16) {
 	}
 }
 
-func main() {
+func generateImg() {
 	var x, y, b int
 	var err error
 
@@ -173,4 +218,9 @@ func main() {
 	fmt.Printf("\nx: %d, y: %d, b: %d", x, y, b)
 	fmt.Print("\n...\n")
 	writeImg(uint16(x), uint16(y), uint16(b))
+}
+
+func main() {
+	generateImg()
+	//fmt.Println(div(2048, 8, 5))
 }

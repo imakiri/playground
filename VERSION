@@ -108,3 +108,5 @@ DATA
     --web: Минорные улучшения\исправления
 !C32
     --cmd: +private.ImageGenerator
+!C32.1
+    -cmd.private.ImageGenerator обновленна реализация
