@@ -3,28 +3,28 @@ package ips
 import (
 	"context"
 	"fmt"
-	"github.com/imakiri/playground/protos"
+	"github.com/imakiri/playground/core"
 	"gocv.io/x/gocv"
 	"image"
 	"image/color"
 )
 
 type FaceDetecter struct {
-	protos.UnimplementedFaceDetecterServer
+	core.UnimplementedFaceDetecterServer
 }
 
 func NewFaceDetector() *FaceDetecter {
 	return &FaceDetecter{}
 }
 
-func (e *FaceDetecter) Detect(_ context.Context, dr *protos.DetectionRequest) (*protos.DetectionResponse, error) {
+func (e *FaceDetecter) Detect(_ context.Context, dr *core.DetectionRequest) (*core.DetectionResponse, error) {
 	rImg := dr.GetImg()
 
 	fmt.Print("Detection in process\n")
 
 	img, err := gocv.IMDecode(rImg, gocv.IMReadColor)
 	if err != nil {
-		return &protos.DetectionResponse{Response: &protos.DetectionResponse_Err{Err: &protos.Error{Error: protos.Errors_IncorrectImage}}}, err
+		return &core.DetectionResponse{Response: &core.DetectionResponse_Err{Err: &core.Error{Error: core.Errors_IncorrectImage}}}, err
 	}
 	defer img.Close()
 
@@ -51,8 +51,8 @@ func (e *FaceDetecter) Detect(_ context.Context, dr *protos.DetectionRequest) (*
 
 	data, err := gocv.IMEncode(".jpg", img)
 	if err != nil {
-		return &protos.DetectionResponse{Response: &protos.DetectionResponse_Err{Err: &protos.Error{Error: protos.Errors_InternalServiceError}}}, err
+		return &core.DetectionResponse{Response: &core.DetectionResponse_Err{Err: &core.Error{Error: core.Errors_InternalServiceError}}}, err
 	}
 
-	return &protos.DetectionResponse{Response: &protos.DetectionResponse_Img{Img: &protos.Image{Data: data}}}, nil
+	return &core.DetectionResponse{Response: &core.DetectionResponse_Img{Img: &core.Image{Data: data}}}, nil
 }

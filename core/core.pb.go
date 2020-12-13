@@ -4,7 +4,7 @@
 // 	protoc        v3.14.0
 // source: schema.proto
 
-package protos
+package core
 
 import (
 	context "context"

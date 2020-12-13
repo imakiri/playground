@@ -109,4 +109,6 @@ DATA
 !C32
     --cmd: +private.ImageGenerator
 !C32.1
-    -cmd.private.ImageGenerator обновленна реализация
+    --cmd.private.ImageGenerator обновленна реализация
+!C33
+    --Рефакторинг и чистка core, web, cmd.public.HTTPServer

@@ -1,31 +1,44 @@
 package main
 
 import (
-	"github.com/imakiri/playground/protos"
+	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/web"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"net/http"
 )
 
-var conf Config
-var gc protos.FaceDetecterClient
+func startWeb(s core.Settings) error {
+	var server = &http.Server{}
+	var redirServer = &http.Server{}
 
-type Config struct {
-	Database struct {
-		User     string
-		Password string
-		Address  string
-		Port     string
+	router, redirRouter, _ := web.NewWebRouters(s)
+	server.Handler = router
+	redirServer.Handler = redirRouter
+
+	rsc := make(chan error)
+	sc := make(chan error)
+
+	go func(rsc chan error) {
+		rsc <- redirServer.ListenAndServe()
+	}(rsc)
+
+	go func(sc chan error) {
+		sc <- server.ListenAndServeTLS("cert.pem", "privkey.pem")
+	}(sc)
+
+	select {
+	case err := <-rsc:
+		return err
+	case err := <-sc:
+		return err
 	}
-	DSN       string
-	ApiKey    string
-	Salt      string
-	IPSDomain string
 }
 
 func main() {
+	var conf core.Config
 	var err error
 	viper.SetConfigType("yml")
 	viper.SetConfigName("config")
@@ -52,7 +65,11 @@ func main() {
 	}
 	defer gsConn.Close()
 
-	gc = protos.NewFaceDetecterClient(gsConn)
+	gc := core.NewFaceDetecterClient(gsConn)
+	s := core.Settings{
+		Config:   conf,
+		Services: core.Services{FaceDetection: gc},
+	}
 
-	log.Fatal(web.NewWebServer(gc))
+	log.Fatal(startWeb(s))
 }

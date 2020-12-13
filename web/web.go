@@ -2,50 +2,35 @@ package web
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/protos"
+	"github.com/imakiri/playground/app"
+	"github.com/imakiri/playground/core"
 	"net/http"
 )
 
-var router = mux.NewRouter()
-var redirRouter = &http.ServeMux{}
-var server = &http.Server{}
-var redirServer = &http.Server{}
-var gc protos.FaceDetecterClient
-
-func NewWebServer(gcNew protos.FaceDetecterClient) error {
-	gc = gcNew
+// Returns prepared router and redirectionRouter, or error
+func NewWebRouters(s core.Settings) (*mux.Router, *mux.Router, error) {
+	a := app.NewApp(s)
+	var router = mux.NewRouter()
+	var redirRouter = mux.NewRouter()
 
 	redirRouter.HandleFunc("/", redirect)
-	redirServer.Handler = redirRouter
-	RegisterHandlers(router)
-	server.Handler = router
 
-	rsc := make(chan error)
-	sc := make(chan error)
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./web/assets/"))))
+	router.Handle("/", root{a})
+	router.Handle("/detect", detect{a})
 
-	go func(rsc chan error) {
-		rsc <- redirServer.ListenAndServe()
-	}(rsc)
-
-	go func(sc chan error) {
-		sc <- server.ListenAndServeTLS("cert.pem", "privkey.pem")
-	}(sc)
-
-	select {
-	case err := <-rsc:
-		return err
-	case err := <-sc:
-		return err
-	}
+	return router, redirRouter, nil
 }
 
-func RegisterHandlers(rr *mux.Router) {
-	rr.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./web/assets/"))))
-	rr.Handle("/", GetRoot{})
-	rr.Handle("/detect", PostRootDetect{})
-}
-
+// Redirect from HTTP to HTTPS
 func redirect(w http.ResponseWriter, r *http.Request) {
 	newURI := "https://" + r.Host + r.URL.String()
 	http.Redirect(w, r, newURI, http.StatusFound)
+}
+
+// Internal Service Error Response
+func ise(w http.ResponseWriter, err error) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusInternalServerError)
+	_, _ = w.Write([]byte(err.Error()))
 }
