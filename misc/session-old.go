@@ -1,4 +1,4 @@
-package core
+package misc
 
 type UserPassRaw struct {
 	PassRaw string `json:"passRaw"`

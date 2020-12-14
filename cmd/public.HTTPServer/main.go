@@ -37,6 +37,10 @@ func startWeb(s core.Settings) error {
 	}
 }
 
+func startAPI(s core.Settings) error {
+	return nil
+}
+
 func main() {
 	var conf core.Config
 	var err error

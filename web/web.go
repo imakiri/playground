@@ -7,9 +7,13 @@ import (
 	"net/http"
 )
 
-// Returns prepared router and redirectionRouter, or error
+// Returns prepared router and redirectionRouter for http web server, or error
 func NewWebRouters(s core.Settings) (*mux.Router, *mux.Router, error) {
-	a := app.NewApp(s)
+	a, err := app.NewApp(s)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	var router = mux.NewRouter()
 	var redirRouter = mux.NewRouter()
 
