@@ -6,29 +6,29 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func errTypeCast(err error) (type_ string) {
+func errorWrapper(err error) error {
 	switch err.(type) {
 	case *mysql.MySQLError:
 		e := err.(*mysql.MySQLError)
 		switch e.Number {
 		case 1062:
-			return core.CDataAlreadyExistError
+			return Error(core.CDataAlreadyExistError)
 		case 1048:
-			return core.CAppDetecterIncorrectImageError
+			return Error(core.CAppDetecterIncorrectImageError)
 		default:
-			return core.CDataInternalServiceError
+			return Error(core.CDataInternalServiceError)
 		}
 	case error:
 		break
 	default:
-		return core.CUnknownError
+		return Error(core.CUnknownError)
 	}
 
 	switch st := err.Error(); st {
 	case "sql: no rows in result set":
-		return core.CDataNotFoundError
+		return Error(core.CDataNotFoundError)
 	default:
-		return core.CDataInternalServiceError
+		return Error(core.CDataInternalServiceError)
 	}
 }
 
@@ -105,12 +105,12 @@ type DBMainDeleteUser struct {
 func (e *DB) DBMainCreateUser(c *DBMainCreateUser) error {
 	q, args, err := sqlx.Named(query_dataInternalMainCreateUser, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	_, err = e.db.Exec(q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil
@@ -118,13 +118,13 @@ func (e *DB) DBMainCreateUser(c *DBMainCreateUser) error {
 func (e *DB) DBMainGetUser(c *DBMainGetUser) error {
 	q, args, err := sqlx.Named(query_dataInternalMainGetUser, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	q = e.db.Rebind(q)
 	err = e.db.Get(&c.Response, q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil
@@ -132,13 +132,13 @@ func (e *DB) DBMainGetUser(c *DBMainGetUser) error {
 func (e *DB) DBMainGetPassHash(c *DBMainGetUserPassHash) error {
 	q, args, err := sqlx.Named(query_dataInternalMainGetPassHash, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	q = e.db.Rebind(q)
 	err = e.db.Get(&c.Response, q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil
@@ -146,12 +146,12 @@ func (e *DB) DBMainGetPassHash(c *DBMainGetUserPassHash) error {
 func (e *DB) DBMainUpdateUser(c *DBMainUpdateUser) error {
 	q, args, err := sqlx.Named(query_dataInternalMainUpdateUser, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	_, err = e.db.Exec(q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil
@@ -159,12 +159,12 @@ func (e *DB) DBMainUpdateUser(c *DBMainUpdateUser) error {
 func (e *DB) DBMainUpdateUserPassHash(c *DBMainUpdateUserPassHash) error {
 	q, args, err := sqlx.Named(query_dataInternalMainUpdateUserPassHash, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	_, err = e.db.Exec(q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil
@@ -172,12 +172,12 @@ func (e *DB) DBMainUpdateUserPassHash(c *DBMainUpdateUserPassHash) error {
 func (e *DB) DBMainDeleteUser(c *DBMainDeleteUser) error {
 	q, args, err := sqlx.Named(query_dataInternalMainDeleteUser, c.Request)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	_, err = e.db.Exec(q, args...)
 	if err != nil {
-		return err
+		return errorWrapper(err)
 	}
 
 	return nil

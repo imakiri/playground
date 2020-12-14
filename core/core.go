@@ -1,16 +1,25 @@
 package core
 
-type Config struct {
-	Database struct {
-		User     string
-		Password string
-		Address  string
-		Port     string
-	}
-	DSN       string
-	ApiKey    string
-	Salt      string
+type Data struct {
+	DSN    string
+	ApiKey string
+}
+type App struct {
+	HashCost int
+	Salt     string
+}
+type API struct {
+	ToStart bool
+}
+type Web struct {
+	ToStart   bool
 	IPSDomain string
+}
+type Config struct {
+	Data
+	App
+	API
+	Web
 }
 
 type Services struct {

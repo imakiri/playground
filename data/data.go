@@ -7,8 +7,13 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type Error string
+
+func (e Error) Error() string {
+	return string(e)
+}
+
 type DB struct {
-	core.Settings
 	db *sqlx.DB
 }
 
@@ -16,8 +21,7 @@ func NewDB(s core.Settings) (*DB, error) {
 	var err error
 	var data DB
 
-	data.Settings = s
-	data.db, err = sqlx.Connect("pgx", data.Settings.Config.DSN)
+	data.db, err = sqlx.Connect("pgx", s.Config.Data.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -28,4 +32,14 @@ func NewDB(s core.Settings) (*DB, error) {
 	}
 
 	return &data, nil
+}
+
+type WebClient struct {
+	apiKey string
+}
+
+func NewWebClient(s core.Settings) (*WebClient, error) {
+	var wc WebClient
+	wc.apiKey = s.Config.Data.ApiKey
+	return &wc, nil
 }

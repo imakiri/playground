@@ -6,8 +6,11 @@ import (
 	"github.com/imakiri/playground/core"
 )
 
+var API core.API
+
 // Returns prepared router and redirectionRouter for http api server, or error
 func NewAPIRouters(s core.Settings) (*mux.Router, *mux.Router, error) {
+	API = s.API
 	_, err := app.NewApp(s)
 	if err != nil {
 		return nil, nil, err
