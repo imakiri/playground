@@ -29,7 +29,7 @@ type App struct {
 	data     *data.DB
 }
 
-func (e App) Detect(image []byte) ([]byte, error) {
+func (e *App) Detect(image []byte) ([]byte, error) {
 	response, _ := e.settings.Services.FaceDetection.Detect(context.Background(), &core.DetectionRequest{Img: image})
 	if err := response.GetErr(); err != nil {
 		return nil, errors.New(err.String())
@@ -38,7 +38,7 @@ func (e App) Detect(image []byte) ([]byte, error) {
 	return response.GetImg().GetData(), nil
 }
 
-func (e App) CreateUser(login string, password string, avatar []byte, name string) error {
+func (e *App) CreateUser(login string, password string, avatar []byte, name string) error {
 	var c data.DBMainCreateUser
 	var err error
 
