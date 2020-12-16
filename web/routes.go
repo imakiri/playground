@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/imakiri/playground/app"
 	"html/template"
 	"io/ioutil"
@@ -33,7 +34,7 @@ func (e root) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("%v WebGetRoot enpoint hit by %s\n", time.Now(), r.RemoteAddr)
+	fmt.Printf("%v WebGetRoot endpoint hit by %s\n", time.Now(), r.RemoteAddr)
 }
 
 type detect struct {
@@ -45,6 +46,19 @@ func (e detect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	var u uuid.UUID
+	c, err := r.Cookie("uuid")
+	if err != nil {
+		u = uuid.New()
+		http.SetCookie(w, &http.Cookie{Name: "uuid", Value: u.String()})
+	} else {
+		u, err = uuid.Parse(c.Value)
+		if err != nil {
+			u = uuid.New()
+			http.SetCookie(w, &http.Cookie{Name: "uuid", Value: u.String()})
+		}
 	}
 
 	_ = r.ParseMultipartForm(10 << 20)
@@ -61,11 +75,13 @@ func (e detect) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	img, err := e.app.Detect(fileBytes)
+	img, err := e.app.Detect(u, fileBytes)
 	if err != nil {
 		ise(w, err)
 		return
 	}
+
+	fmt.Printf("%v WebPostDetect endpoint hit by %s\n", time.Now(), r.RemoteAddr)
 
 	w.Header().Set("Content-Type", "image/jpeg")
 	_, _ = w.Write(img)

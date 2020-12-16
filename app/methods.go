@@ -3,12 +3,16 @@ package app
 import (
 	"context"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/data"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (e *App) Detect(image []byte) ([]byte, error) {
+func (e *App) Detect(u uuid.UUID, image []byte) ([]byte, error) {
+	if !checkPermissionForUUID(e.gate, u, core.FN_Detect) {
+		return nil, errors.New(core.CAccessDenied)
+	}
+
 	response, _ := e.services.FaceDetection.Detect(context.Background(), &core.DetectionRequest{Img: image})
 	if err := response.GetErr(); err != nil {
 		return nil, errors.New(err.String())
@@ -17,8 +21,12 @@ func (e *App) Detect(image []byte) ([]byte, error) {
 	return response.GetImg().GetData(), nil
 }
 
-func (e *App) CreateUser(login string, password string, avatar []byte, name string) error {
-	var c data.DBMainCreateUser
+func (e *App) CreateUser(u uuid.UUID, login string, password string, avatar []byte, name string) error {
+	if !checkPermissionForUUID(e.gate, u, core.FN_CreateUser) {
+		return errors.New(core.CAccessDenied)
+	}
+
+	var c core.ContainerCreateUser
 	var err error
 
 	c.Request.Login = login
@@ -29,6 +37,24 @@ func (e *App) CreateUser(login string, password string, avatar []byte, name stri
 		return err
 	}
 
-	err = e.data.DBMainCreateUser(&c)
+	err = e.data.CreateUser(&c)
 	return err
+}
+
+func (e *App) Login(login string, password string) (uuid.UUID, error) {
+	var c core.ContainerGetUserPassHash
+	var err error
+
+	c.Request.Login = login
+	err = e.data.GetPassHash(&c)
+	if err != nil {
+		return uuid.New(), errors.New(core.CAccessDenied)
+	}
+
+	err = bcrypt.CompareHashAndPassword(c.Response.PassHash, []byte(password))
+	if err != nil {
+		return uuid.New(), errors.New(core.CAccessDenied)
+	}
+
+	return uuid.New(), nil
 }

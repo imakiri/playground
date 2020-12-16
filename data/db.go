@@ -32,78 +32,15 @@ func errorWrapper(err error) error {
 	}
 }
 
-type DBMainUserId struct {
-	Id uint `db:"id" json:"dataInternalMainUserId"`
-}
-type DBMainUserLogin struct {
-	Login string `db:"login" json:"dataInternalMainUserLogin"`
-}
-type DBMainUserAvatar struct {
-	Avatar []byte `db:"avatar" json:"dataInternalMainUserAvatar"`
-}
-type DBMainUserName struct {
-	Name string `db:"name" json:"dataInternalMainUserName"`
-}
-type DBMainUserPassHash struct {
-	PassHash []byte `db:"pass_hash" json:"dataInternalMainUserPassHash"`
-}
+const query_CreateUser = "INSERT INTO main.users (login, name, avatar, pass_hash) VALUES (:login, :name, :avatar, :pass_hash)"
+const query_GetUser = "SELECT name, avatar FROM main.users WHERE login = :login"
+const query_GetPassHash = "SELECT pass_hash FROM main.users WHERE login = :login"
+const query_UpdateUser = "UPDATE main.users SET name = :name, avatar = :avatar WHERE login = :login"
+const query_UpdateUserPassHash = "UPDATE main.users SET pass_hash = :pass_hash WHERE login = :login"
+const query_DeleteUser = "DELETE FROM main.users WHERE login = :login"
 
-const query_dataInternalMainCreateUser = "INSERT INTO main.users (login, name, avatar, pass_hash) VALUES (:login, :name, :avatar, :pass_hash)"
-const query_dataInternalMainGetUser = "SELECT name, avatar FROM main.users WHERE login = :login"
-const query_dataInternalMainGetPassHash = "SELECT pass_hash FROM main.users WHERE login = :login"
-const query_dataInternalMainUpdateUser = "UPDATE main.users SET name = :name, avatar = :avatar WHERE login = :login"
-const query_dataInternalMainUpdateUserPassHash = "UPDATE main.users SET pass_hash = :pass_hash WHERE login = :login"
-const query_dataInternalMainDeleteUser = "DELETE FROM main.users WHERE login = :login"
-
-type DBMainCreateUser struct {
-	Request struct {
-		DBMainUserLogin
-		DBMainUserAvatar
-		DBMainUserName
-		DBMainUserPassHash
-	}
-}
-type DBMainGetUser struct {
-	Request struct {
-		DBMainUserId
-		DBMainUserLogin
-	}
-	Response struct {
-		DBMainUserAvatar
-		DBMainUserName
-	}
-}
-type DBMainGetUserPassHash struct {
-	Request struct {
-		DBMainUserLogin
-	}
-	Response struct {
-		DBMainUserPassHash
-	}
-}
-type DBMainUpdateUser struct {
-	Request struct {
-		DBMainUserId
-		DBMainUserLogin
-		DBMainUserAvatar
-		DBMainUserName
-	}
-}
-type DBMainUpdateUserPassHash struct {
-	Request struct {
-		DBMainUserLogin
-		DBMainUserPassHash
-	}
-}
-type DBMainDeleteUser struct {
-	Request struct {
-		DBMainUserId
-		DBMainUserLogin
-	}
-}
-
-func (e *DB) DBMainCreateUser(c *DBMainCreateUser) error {
-	q, args, err := sqlx.Named(query_dataInternalMainCreateUser, c.Request)
+func (e *DB) CreateUser(c *core.ContainerCreateUser) error {
+	q, args, err := sqlx.Named(query_CreateUser, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -115,8 +52,8 @@ func (e *DB) DBMainCreateUser(c *DBMainCreateUser) error {
 
 	return nil
 }
-func (e *DB) DBMainGetUser(c *DBMainGetUser) error {
-	q, args, err := sqlx.Named(query_dataInternalMainGetUser, c.Request)
+func (e *DB) GetUser(c *core.ContainerGetUser) error {
+	q, args, err := sqlx.Named(query_GetUser, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -129,8 +66,8 @@ func (e *DB) DBMainGetUser(c *DBMainGetUser) error {
 
 	return nil
 }
-func (e *DB) DBMainGetPassHash(c *DBMainGetUserPassHash) error {
-	q, args, err := sqlx.Named(query_dataInternalMainGetPassHash, c.Request)
+func (e *DB) GetPassHash(c *core.ContainerGetUserPassHash) error {
+	q, args, err := sqlx.Named(query_GetPassHash, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -143,8 +80,8 @@ func (e *DB) DBMainGetPassHash(c *DBMainGetUserPassHash) error {
 
 	return nil
 }
-func (e *DB) DBMainUpdateUser(c *DBMainUpdateUser) error {
-	q, args, err := sqlx.Named(query_dataInternalMainUpdateUser, c.Request)
+func (e *DB) UpdateUser(c *core.ContainerUpdateUser) error {
+	q, args, err := sqlx.Named(query_UpdateUser, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -156,8 +93,8 @@ func (e *DB) DBMainUpdateUser(c *DBMainUpdateUser) error {
 
 	return nil
 }
-func (e *DB) DBMainUpdateUserPassHash(c *DBMainUpdateUserPassHash) error {
-	q, args, err := sqlx.Named(query_dataInternalMainUpdateUserPassHash, c.Request)
+func (e *DB) UpdateUserPassHash(c *core.ContainerUpdateUserPassHash) error {
+	q, args, err := sqlx.Named(query_UpdateUserPassHash, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -169,8 +106,8 @@ func (e *DB) DBMainUpdateUserPassHash(c *DBMainUpdateUserPassHash) error {
 
 	return nil
 }
-func (e *DB) DBMainDeleteUser(c *DBMainDeleteUser) error {
-	q, args, err := sqlx.Named(query_dataInternalMainDeleteUser, c.Request)
+func (e *DB) DeleteUser(c *core.ContainerDeleteUser) error {
+	q, args, err := sqlx.Named(query_DeleteUser, c.Request)
 	if err != nil {
 		return errorWrapper(err)
 	}

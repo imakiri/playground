@@ -43,3 +43,11 @@ func NewWebClient(s core.Settings) (*WebClient, error) {
 	wc.apiKey = s.Config.Data.ApiKey
 	return &wc, nil
 }
+
+type Gate struct {
+	pt *core.PermissionsTable
+}
+
+func NewGate(s core.Settings) (*Gate, error) {
+	return &Gate{}, nil
+}
