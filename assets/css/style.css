@@ -1,0 +1,36 @@
+html, body {
+    margin: 0;
+    background-color: #d9d9d9;
+    height: 100%;
+    font-family: "Open Sans", serif;
+    display: block;
+}
+
+#logo {
+    color: #18b4b4;
+    text-align: center;
+    width: min-content;
+    margin: 0;
+    padding: 0;
+    border: #9218b4 solid 1px;
+}
+
+.tab-bar-div-hor {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    width: 100vw;
+    color: #18b4b4;
+    box-shadow: 0 -4px;
+    background-color: rgba(0, 0, 0, 0.85);
+    margin: 0;
+    padding: 0;
+}
+
+.tab-bar-div-ver {
+    display: block;
+    position: relative;
+    width: 60vmax;
+
+    border: #18b444 solid 1px;
+}

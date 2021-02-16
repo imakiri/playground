@@ -1,0 +1,27 @@
+{{ define "index"}}
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>imakiri's Search Engine</title>
+        <link href="/assets/css/style.css" rel="stylesheet">
+        <link href="/assets/favicon.ico" rel="icon">
+    </head>
+    <body>
+
+    {{template "tabBar"}}
+    </body>
+    </html>
+
+{{ end }}
+
+{{define "tabBar"}}
+
+    <div id="tab-bar" class="tab-bar-div-hor">
+        <div class="tab-bar-div-ver">
+            <h1 id="logo">Go</h1>
+        </div>
+    </div>
+
+{{end}}
