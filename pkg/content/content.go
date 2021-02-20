@@ -1,6 +1,7 @@
 package content
 
 import (
+	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/data"
 	"github.com/jackc/pgx/v4"
@@ -9,11 +10,11 @@ import (
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   core.ConfigContent
-	configDB core.ConfigDB
+	config   cfg.Content
+	configDB cfg.DB
 }
 
-func NewContentService(c core.Config) (*Service, error) {
+func NewContentService(c cfg.System) (*Service, error) {
 	var s Service
 	var err error
 

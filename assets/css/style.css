@@ -3,34 +3,53 @@ html, body {
     background-color: #d9d9d9;
     height: 100%;
     font-family: "Open Sans", serif;
-    display: block;
+    display: flex;
+    flex-flow: column;
 }
 
-#logo {
+h1 {
     color: #18b4b4;
     text-align: center;
-    width: min-content;
-    margin: 0;
-    padding: 0;
-    border: #9218b4 solid 1px;
-}
-
-.tab-bar-div-hor {
-    display: block;
-    position: fixed;
-    bottom: 0;
-    width: 100vw;
-    color: #18b4b4;
-    box-shadow: 0 -4px;
     background-color: rgba(0, 0, 0, 0.85);
     margin: 0;
     padding: 0;
+    box-shadow: 0 4px;
 }
 
-.tab-bar-div-ver {
-    display: block;
-    position: relative;
-    width: 60vmax;
+.detect {
+    color: #141515;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 30%;
+    align-self: center;
+}
 
-    border: #18b444 solid 1px;
+.detect-button {
+    align-self: center;
+}
+
+.detect-title {
+    color: #141515;
+}
+
+p {
+    vertical-align: bottom;
+    text-align: center;
+    color: #d9d9d9;
+    margin: 5px;
+}
+
+.player {
+    width: 100%;
+    vertical-align: bottom;
+}
+
+.footer {
+    background-color: rgba(0, 0, 0, 0.85);
+    width: 100%;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    position: fixed;
 }

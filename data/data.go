@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/cfg"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -68,7 +68,7 @@ type ViewPostDetails struct {
 	ViewUserPublicInfoExt
 }
 
-func Connect(c core.ConfigDB) (*pgx.Conn, error) {
+func Connect(c cfg.DB) (*pgx.Conn, error) {
 	var db *pgx.Conn
 	var err error
 

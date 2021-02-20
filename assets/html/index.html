@@ -9,19 +9,18 @@
         <link href="/assets/favicon.ico" rel="icon">
     </head>
     <body>
+    <h1>Go</h1>
 
-    {{template "tabBar"}}
+    <div class="footer">
+        <p>Веб-сервер, который скоро™ будет кое что делать</p>
+        <p>А пока немножко музыки</p>
+        <iframe class="player" width="560" height="315"
+                src="https://www.youtube.com/embed/videoseries?list=PLLMzStdfMNobbRaoBXoEa-_-B6Lcsi7rc&index=2"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+    </div>
     </body>
     </html>
 
 {{ end }}
-
-{{define "tabBar"}}
-
-    <div id="tab-bar" class="tab-bar-div-hor">
-        <div class="tab-bar-div-ver">
-            <h1 id="logo">Go</h1>
-        </div>
-    </div>
-
-{{end}}

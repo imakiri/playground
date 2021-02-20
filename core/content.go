@@ -30,10 +30,6 @@ type ContentRequestGetUserList struct {
 	Page       uint8
 	TotalPages uint8
 }
-type ContentRequestGetTrace struct {
-	AuthKey
-	ActionID
-}
 
 // }
 
@@ -74,7 +70,6 @@ type ContentService interface {
 	GetUserInfo(ctx context.Context, r *ContentRequestGetUserInfo) (ContentResponseGetUserInfo, error)
 	UpdateUserInfo(ctx context.Context, r *ContentRequestUpdateUserInfo) (ContentResponseUpdateUserInfo, error)
 	GetUserList(ctx context.Context, r *ContentRequestGetUserList) (ContentResponseGetUserList, error)
-	GetTrace(ctx context.Context, r *ContentRequestGetTrace) (ContentResponseGetTrace, error)
 }
 
 // }

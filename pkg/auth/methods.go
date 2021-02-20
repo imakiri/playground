@@ -3,16 +3,11 @@ package auth
 import (
 	"context"
 	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/misc"
 )
 
 func (e *Service) Login(ctx context.Context, r *core.AuthRequestLogin) (*core.AuthResponseLogin, error) {
 	var re core.AuthResponseLogin
 	var err error
-
-	var dataR misc.DataRequestGetUserPassHash
-
-	dataRe := e.data.GetUserPassHash(ctx, &dataR)
 
 	return &re, err
 }

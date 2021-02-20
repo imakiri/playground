@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/data"
 	"github.com/jackc/pgx/v4"
@@ -9,18 +10,18 @@ import (
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   core.ConfigAuth
-	configDB core.ConfigDB
+	config   cfg.Auth
+	configDB cfg.DB
 }
 
-func NewService(c core.Config) (*Service, error) {
+func NewService(c cfg.System) (*Service, error) {
 	var s Service
 	var err error
 
 	s.config = c.Auth
 	s.configDB = c.DB
 
-	s.db, err = data.Connect(s.configDB)
+	s.db, err = data.Connect(c.DB)
 	if err != nil {
 		return nil, err
 	}
