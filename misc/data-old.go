@@ -44,7 +44,7 @@ type SQLContainer interface {
 	DB() *sqlx.DB
 }
 
-// DataInternalMain Data Entities
+// DataInternalMain DB Entities
 type DataInternalMainCreateUser struct {
 	db      *sqlx.DB
 	Request struct {

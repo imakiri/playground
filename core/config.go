@@ -1,11 +1,17 @@
 package core
 
-type ConfigData struct {
+type ConfigDB struct {
 	DSN string
 }
 type ConfigApp struct {
 	HashCost int
 	Salt     string
+}
+type ConfigAuth struct {
+}
+type ConfigContent struct {
+}
+type ConfigGate struct {
 }
 type ConfigAPI struct {
 	ToStart bool
@@ -15,12 +21,15 @@ type ConfigUI struct {
 	IPSDomain string
 }
 type Config struct {
-	Data ConfigData
-	App  ConfigApp
-	API  ConfigAPI
-	UI   ConfigUI
+	DB      ConfigDB
+	App     ConfigApp
+	Auth    ConfigAuth
+	Content ConfigContent
+	Gate    ConfigGate
+	API     ConfigAPI
+	UI      ConfigUI
 }
 
 type Settings struct {
-	Config
+	Config Config
 }

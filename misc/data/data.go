@@ -7,21 +7,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type Error string
-
-func (e Error) Error() string {
-	return string(e)
+type Data struct {
+	db     *sqlx.DB
+	log    core.LogService
+	config core.ConfigDB
 }
 
-type DB struct {
-	db *sqlx.DB
-}
-
-func NewDB(s core.Settings) (*DB, error) {
+func NewDataService(s core.Settings) (*Data, error) {
+	var data Data
 	var err error
-	var data DB
 
-	data.db, err = sqlx.Connect("pgx", s.Config.Data.DSN)
+	data.config = s.Config.DB
+
+	data.db, err = sqlx.Connect("pgx", data.config.DSN)
 	if err != nil {
 		return nil, err
 	}
@@ -31,5 +29,5 @@ func NewDB(s core.Settings) (*DB, error) {
 		return nil, err
 	}
 
-	return &data, nil
+	return &data, err
 }

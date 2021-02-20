@@ -34,27 +34,7 @@ const FID_AuthLogout FunctionID = 1
 
 //
 
-// Logger
-
 type ActionID uint64
-type Log struct {
-	FuncID FunctionID
+type Meta struct {
 	Status Status
-	Start  int64
-	End    int64
 }
-type Trace struct {
-	ActionID
-	Logs []Log
-}
-
-func (e *Trace) AddLog(fid FunctionID, s Status, start int64, end int64) {
-	e.Logs = append(e.Logs, Log{fid, s, start, end})
-}
-
-type Resume struct {
-	ActionID
-	Status
-}
-
-//

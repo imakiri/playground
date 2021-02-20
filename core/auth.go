@@ -1,22 +1,25 @@
 package core
 
+import (
+	"context"
+	"github.com/imakiri/playground/data"
+)
+
 // Auth
 
-type AuthAccessKey struct {
-	IsWorth bool
-	Key     []byte
-}
+type AuthKey []byte
 
 // Request
 
 type AuthRequestLogin struct {
-	Trace
-	Login    DataModelCredentialsLogin
+	Login    data.ModelCredentialsLogin
 	Password string
 }
+type AuthRequestCheckAccess struct {
+	Key AuthKey
+}
 type AuthRequestLogout struct {
-	Trace
-	AuthAccessKey
+	Key AuthKey
 }
 
 //
@@ -24,18 +27,19 @@ type AuthRequestLogout struct {
 // Response
 
 type AuthResponseLogin struct {
-	Trace
-	AuthAccessKey
+	Meta
+	Key AuthKey
 }
 type AuthResponseLogout struct {
-	Trace
+	Meta
 }
 
 //
 
 type AuthService interface {
-	Login(AuthRequestLogin) AuthResponseLogin
-	Logout(AuthRequestLogout) AuthResponseLogout
+	Login(ctx context.Context, r *AuthRequestLogin) (*AuthResponseLogin, error)
+	CheckAccess(ctx context.Context, r *AuthRequestCheckAccess) error
+	Logout(ctx context.Context, r *AuthRequestLogout) (*AuthResponseLogout, error)
 }
 
 //

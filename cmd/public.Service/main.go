@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/pkg/ui"
+	"github.com/imakiri/playground/ei/ui"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"

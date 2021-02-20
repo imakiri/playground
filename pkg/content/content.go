@@ -1,4 +1,4 @@
-package app
+package content
 
 import (
 	"github.com/imakiri/playground/core"
@@ -9,18 +9,18 @@ import (
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   core.ConfigApp
+	config   core.ConfigContent
 	configDB core.ConfigDB
 }
 
-func NewService(c core.Config) (*Service, error) {
+func NewContentService(c core.Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.config = c.App
+	s.config = c.Content
 	s.configDB = c.DB
 
-	s.db, err = data.Connect(s.configDB)
+	s.db, err = data.Connect(c.DB)
 	if err != nil {
 		return nil, err
 	}

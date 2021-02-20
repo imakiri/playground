@@ -1,20 +1,28 @@
 package auth
 
-//func (e *Auth) Login(req core.AuthRequestLogin) core.AuthResponseLogin {
-//	var ts = time.Now().UnixNano()
-//	var te int64
-//	var s core.Status
-//	var n core.DataRequestGetUserPassHash
-//	var res core.AuthResponseLogin
-//	n.Trace = req.Trace
-//	defer n.AddLog(core.FID_AuthLogin, s, ts, te)
-//
-//
-//	e.dataService.GetUserPassHash(req)
-//
-//	panic("implement me")
-//}
-//
-//func (e *Auth) Logout(req core.AuthRequestLogout) core.AuthResponseLogout {
-//	panic("implement me")
-//}
+import (
+	"context"
+	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/misc"
+)
+
+func (e *Service) Login(ctx context.Context, r *core.AuthRequestLogin) (*core.AuthResponseLogin, error) {
+	var re core.AuthResponseLogin
+	var err error
+
+	var dataR misc.DataRequestGetUserPassHash
+
+	dataRe := e.data.GetUserPassHash(ctx, &dataR)
+
+	return &re, err
+}
+
+func (e *Service) CheckAccess(ctx context.Context, r *core.AuthRequestCheckAccess) error {
+	var err error
+
+	return err
+}
+
+func (e *Service) Logout(ctx context.Context, r *core.AuthRequestLogout) (*core.AuthResponseLogout, error) {
+	panic("implement me")
+}

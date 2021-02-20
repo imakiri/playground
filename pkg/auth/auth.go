@@ -1,14 +1,29 @@
 package auth
 
-import "github.com/imakiri/playground/core"
+import (
+	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/data"
+	"github.com/jackc/pgx/v4"
+)
 
-type Auth struct {
-	dataService core.DataService
-	salt        []byte
+type Service struct {
+	db       *pgx.Conn
+	log      core.LogService
+	config   core.ConfigAuth
+	configDB core.ConfigDB
 }
 
-func NewAuthService(s core.Settings) (*Auth, error) {
-	var auth *Auth
+func NewService(c core.Config) (*Service, error) {
+	var s Service
+	var err error
 
-	return auth, nil
+	s.config = c.Auth
+	s.configDB = c.DB
+
+	s.db, err = data.Connect(s.configDB)
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, err
 }

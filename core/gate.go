@@ -1,32 +1,37 @@
 package core
 
+import (
+	"context"
+	"github.com/imakiri/playground/data"
+)
+
 // Gate
 
 // Request
 
 type GateRequestGetThreadContent struct {
-	AuthAccessKey
-	AppRequestGetThreadContent
+	Key AuthKey
+	ContentRequestGetThreadContent
 }
 type GateRequestPostToThread struct {
-	AuthAccessKey
-	AppRequestPostToThread
+	Key AuthKey
+	ContentRequestPostToThread
 }
 type GateRequestCreateUser struct {
-	AuthAccessKey
-	AppRequestCreateUser
+	Key AuthKey
+	ContentRequestCreateUser
 }
 type GateRequestGetUserInfo struct {
-	AuthAccessKey
-	AppRequestGetUserInfo
+	Key AuthKey
+	ContentRequestGetUserInfo
 }
 type GateRequestUpdateUserInfo struct {
-	AuthAccessKey
-	AppRequestUpdateUserInfo
+	Key AuthKey
+	ContentRequestUpdateUserInfo
 }
 type GateRequestGetUserList struct {
-	AuthAccessKey
-	AppRequestGetUserList
+	Key AuthKey
+	ContentRequestGetUserList
 }
 type GateRequestLogin struct {
 	AuthRequestLogin
@@ -40,50 +45,43 @@ type GateRequestLogout struct {
 // Response
 
 type GateResponseGetThreadContent struct {
-	Resume
-	Posts []DataViewPostDetails
+	Meta
+	Posts []data.ViewPostDetails
 }
 type GateResponsePostToThread struct {
-	Resume
+	Meta
 }
 type GateResponseCreateUser struct {
-	Resume
+	Meta
 }
 type GateResponseGetUserInfo struct {
-	Resume
-	DataViewUserPublicInfoExt
+	Meta
+	data.ViewUserPublicInfoExt
 }
 type GateResponseUpdateUserInfo struct {
-	Resume
+	Meta
 }
 type GateResponseGetUserList struct {
-	Resume
-	Users []DataViewUserPublicInfo
+	Meta
+	Users []data.ViewUserPublicInfo
 }
 type GateResponseLogin struct {
-	Resume
-	AuthAccessKey
+	Meta
+	AuthKey
 }
 type GateResponseLogout struct {
-	Resume
+	Meta
 }
-type GateResponseGetTrace struct {
-	Resume
-	Trace
-}
-
-//
 
 type GateService interface {
-	GetThreadContent(GateRequestGetThreadContent) GateResponseGetThreadContent
-	PostToThread(GateRequestPostToThread) GateResponsePostToThread
-	CreateUser(GateRequestCreateUser) GateResponseCreateUser
-	GetUserInfo(GateRequestGetUserInfo) GateResponseGetUserInfo
-	UpdateUserInfo(GateRequestUpdateUserInfo) GateResponseUpdateUserInfo
-	GetUserList(GateRequestGetUserList) GateResponseGetUserList
-	Login(GateRequestLogin) GateResponseLogin
-	Logout(GateRequestLogout) GateResponseLogout
-	GetReflection(AppRequestGetTrace) GateResponseGetTrace
+	GetThreadContent(ctx context.Context, r *GateRequestGetThreadContent) (*GateResponseGetThreadContent, error)
+	PostToThread(ctx context.Context, r *GateRequestPostToThread) (*GateResponsePostToThread, error)
+	CreateUser(ctx context.Context, r *GateRequestCreateUser) (*GateResponseCreateUser, error)
+	GetUserInfo(ctx context.Context, r *GateRequestGetUserInfo) (*GateResponseGetUserInfo, error)
+	UpdateUserInfo(ctx context.Context, r *GateRequestUpdateUserInfo) (*GateResponseUpdateUserInfo, error)
+	GetUserList(ctx context.Context, r *GateRequestGetUserList) (*GateResponseGetUserList, error)
+	Login(ctx context.Context, r *GateRequestLogin) (*GateResponseLogin, error)
+	Logout(ctx context.Context, r *GateRequestLogout) (*GateResponseLogout, error)
 }
 
 //
