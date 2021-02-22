@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package cfg;
+
+message Request {};
+
+message Data {
+  string DSN = 1;
+}
+
+service Config {
+  rpc RequestConfig(Request) returns (Data);
+}

@@ -17,7 +17,7 @@ type Service struct {
 	configSys cfg.System
 }
 
-func NewService(c cfg.Config) (*Service, error) {
+func NewService(c *cfg.Config) (*Service, error) {
 	var s Service
 	var err error
 
