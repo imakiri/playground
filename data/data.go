@@ -1,10 +1,7 @@
 package data
 
 import (
-	"context"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/imakiri/playground/cfg"
-	"github.com/jackc/pgx/v4"
 )
 
 type ModelUserID uint64
@@ -66,21 +63,4 @@ type ViewPostDetails struct {
 	Timestamp ModelPostTimestamp
 	Content   ModelPostContent
 	ViewUserPublicInfoExt
-}
-
-func Connect(c cfg.DB) (*pgx.Conn, error) {
-	var db *pgx.Conn
-	var err error
-
-	db, err = pgx.Connect(context.Background(), c.DSN)
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Ping(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }

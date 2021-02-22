@@ -2,24 +2,24 @@ package web
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/admin/cfg"
 	"github.com/imakiri/playground/gate"
 	"net/http"
 )
 
 type Service struct {
 	gate        gate.GeneralService
-	config      cfg.Web
+	config      *cfg.Web
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(c cfg.EI, g gate.GeneralService) (*Service, error) {
+func NewService(c *cfg.EI, g gate.GeneralService) (*Service, error) {
 	var s Service
 	var err error
 
 	s.gate = g
-	s.config = c.Web
+	s.config = c.GetWeb()
 
 	router := mux.NewRouter()
 	redirRouter := mux.NewRouter()

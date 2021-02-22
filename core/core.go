@@ -1,5 +1,11 @@
 package core
 
+import (
+	"context"
+	"github.com/imakiri/playground/admin/cfg"
+	"github.com/jackc/pgx/v4"
+)
+
 // Status
 
 type Status string
@@ -9,6 +15,7 @@ func (e Status) Error() string {
 }
 
 const Status_OK Status = "OK"
+const Status_InvalidDSN Status = "InvalidDSN"
 const Status_AccessDenied Status = "AccessDenied"
 const Status_NotFound Status = "NotFound"
 const Status_InternalServiceError Status = "InternalServiceError"
@@ -37,4 +44,25 @@ const FID_AuthLogout FunctionID = 1
 type ActionID uint64
 type Meta struct {
 	Status Status
+}
+
+func Connect(c *cfg.Data) (*pgx.Conn, error) {
+	var db *pgx.Conn
+	var err error
+
+	if c.GetDSN() == "" {
+		return nil, Status_InvalidDSN
+	}
+
+	db, err = pgx.Connect(context.Background(), c.GetDSN())
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.Ping(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

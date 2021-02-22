@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/admin/cfg"
 	"github.com/imakiri/playground/ei/web"
 	"github.com/imakiri/playground/gate"
 	"google.golang.org/grpc"
@@ -12,7 +12,7 @@ import (
 )
 
 func readConfig() (*cfg.Config, error) {
-	var conf cfg.Config
+	var conf *cfg.Config
 	var err error
 
 	var ips []net.IP
@@ -21,24 +21,22 @@ func readConfig() (*cfg.Config, error) {
 		log.Fatal(err)
 	}
 
-	var client cfg.ConfigClient
-	client, err = launchConfigClient(ips[0].String()+":25565", "cfg/grpc/cert.crt")
+	var client cfg.AdminClient
+	client, err = launchConfigClient(ips[0].String()+":25565", "admin/cfg/grpc/cert.crt")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var data *cfg.Data
-	data, err = client.RequestConfig(context.Background(), &cfg.Request{})
+	conf, err = client.GetConfig(context.Background(), &cfg.Request{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	conf.System.DB.DSN = data.DSN
-	return &conf, err
+	return conf, err
 }
 
-func launchConfigClient(addr, certFile string) (cfg.ConfigClient, error) {
-	var client cfg.ConfigClient
+func launchConfigClient(addr, certFile string) (cfg.AdminClient, error) {
+	var client cfg.AdminClient
 	var err error
 
 	var creds credentials.TransportCredentials
@@ -53,7 +51,7 @@ func launchConfigClient(addr, certFile string) (cfg.ConfigClient, error) {
 		return nil, err
 	}
 
-	client = cfg.NewConfigClient(conn)
+	client = cfg.NewAdminClient(conn)
 	return client, err
 }
 
@@ -67,7 +65,7 @@ func launch(c *cfg.Config) error {
 		return err
 	}
 
-	ws, err = web.NewService(c.EI, gs)
+	ws, err = web.NewService(c.GetEI(), gs)
 	if err != nil {
 		return err
 	}
@@ -80,7 +78,7 @@ func launch(c *cfg.Config) error {
 	}(rsc)
 
 	go func(sc chan error) {
-		sc <- ws.Server.ListenAndServeTLS("cfg/http/cert.pem", "cfg/http/privkey.pem")
+		sc <- ws.Server.ListenAndServeTLS("admin/cfg/http/cert.pem", "admin/cfg/http/privkey.pem")
 	}(sc)
 
 	select {

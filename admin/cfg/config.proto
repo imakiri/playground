@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package cfg;
+
+option go_package = "github.com/imakiri/playground/admin/cfg";
+
+message Request {}
+
+message Data {
+  string DSN = 1;
+}
+message App {}
+message Auth {
+  int32 HashCost = 1;
+  string Salt = 2;
+}
+message Content {}
+message System {
+  Data Data = 1;
+  App App = 2;
+  Auth Auth = 3;
+  Content Content = 4;
+}
+message Gate {}
+message API {}
+message Web {}
+message EI {
+  API API = 1;
+  Web Web = 2;
+}
+message Config {
+  System System = 1;
+  Gate Gate = 2;
+  EI EI = 3;
+}
+
+service Admin {
+  rpc GetConfig(Request) returns (Config);
+}

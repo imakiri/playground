@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/admin/cfg"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -11,25 +11,15 @@ import (
 	"net"
 )
 
-type ConfigService struct {
-	cfg.UnimplementedConfigServer
+type AdminService struct {
+	cfg.UnimplementedAdminServer
 	config *cfg.Config
 }
 
-func (e ConfigService) RequestConfig(_ context.Context, _ *cfg.Request) (*cfg.Data, error) {
-	var re cfg.Data
-	var err error
-
-	var ips []net.IP
-	ips, err = net.LookupIP("imakiri-ips.ddns.net")
-	if err != nil {
-		return nil, err
-	}
-
-	re.DSN = "postgres://service:a5l6d99@" + ips[0].String() + ":5432/data?sslmode=disable"
-
+func (e AdminService) GetConfig(_ context.Context, _ *cfg.Request) (*cfg.Config, error) {
 	fmt.Println("Config sent")
-	return &re, err
+	fmt.Println(e.config.String())
+	return e.config, nil
 }
 
 func readConfig() (*cfg.Config, error) {
@@ -37,7 +27,7 @@ func readConfig() (*cfg.Config, error) {
 	var err error
 	viper.SetConfigType("yml")
 	viper.SetConfigName("config")
-	viper.AddConfigPath("./cfg/")
+	viper.AddConfigPath("./admin/cfg/")
 
 	err = viper.ReadInConfig()
 	if err != nil {
@@ -70,8 +60,8 @@ func launchService(c *cfg.Config, addr, certFile, keyFile string) error {
 	var server *grpc.Server
 	server = grpc.NewServer(grpc.Creds(creds))
 
-	var service = ConfigService{config: c}
-	cfg.RegisterConfigServer(server, service)
+	var service = AdminService{config: c}
+	cfg.RegisterAdminServer(server, service)
 
 	return server.Serve(lis)
 }
@@ -85,7 +75,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = launchService(conf, ":25565", "cfg/grpc/cert.crt", "cfg/grpc/key.pem")
+	err = launchService(conf, ":25565", "admin/cfg/grpc/cert.crt", "admin/cfg/grpc/key.pem")
 	if err != nil {
 		log.Fatal(err)
 	}
