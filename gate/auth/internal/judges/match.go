@@ -1,7 +1,9 @@
-package internal
+package judges
 
 import (
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/gate/auth/internal"
+	"github.com/imakiri/playground/gate/auth/internal/storage"
 	"google.golang.org/grpc/codes"
 	"math/rand"
 )
@@ -18,7 +20,7 @@ var random = func(n int) string {
 func NewCookieJudge() (*CookieJudge, error) {
 	var cj CookieJudge
 	cj.randFunc = random
-	cj.storage = new(MemStorage)
+	cj.storage = new(storage.MemStorage)
 
 	return &cj, nil
 }
@@ -30,10 +32,10 @@ type CookieJudge struct {
 
 func (cj *CookieJudge) AddAssertion(id core.Assertion, c core.Credentials) (core.Assertion, error) {
 	switch _ := id.(type) {
-	case Assertion_ID:
-		var r Assertion_Rand
+	case internal.Assertion_ID:
+		var r internal.Assertion_Rand
 		var err error
-		r = Assertion_Rand(cj.randFunc(60))
+		r = internal.Assertion_Rand(cj.randFunc(60))
 
 		err = cj.storage.Write(r)
 		if err != nil {

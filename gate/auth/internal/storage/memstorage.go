@@ -1,14 +1,15 @@
-package internal
+package storage
 
 import (
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/gate/auth/internal"
 	"sync"
 )
 
 type MemStorage struct {
-	data map[Assertion_Rand]struct {
-		ID         Assertion_ID
-		ExpireTime Assertion_ExpirationTime
+	data map[internal.Assertion_Rand]struct {
+		ID         internal.Assertion_ID
+		ExpireTime internal.Assertion_ExpirationTime
 	}
 	rwmux *sync.RWMutex
 }
