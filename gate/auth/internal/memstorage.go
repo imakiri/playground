@@ -2,41 +2,27 @@ package internal
 
 import (
 	"github.com/imakiri/playground/core"
-	"google.golang.org/grpc/codes"
-	"math/rand"
 	"sync"
 )
 
 type MemStorage struct {
-	data  map[Assertion_Rand]Assertion_ID
+	data map[Assertion_Rand]struct {
+		ID         Assertion_ID
+		ExpireTime Assertion_ExpirationTime
+	}
 	rwmux *sync.RWMutex
 }
 
-func (mem *MemStorage) AddAssertion(id core.Assertion, _ core.Assertions) (core.Assertion, error) {
-	switch id := id.(type) {
-	case Assertion_ID:
-		var r Assertion_Rand
-		r = Assertion_Rand(random(60))
+func (mem *MemStorage) Read(assertion ...core.Assertion) (core.Assertions, error) {
+	mem.rwmux.RLock()
+	defer mem.rwmux.RUnlock()
 
-		mem.rwmux.Lock()
-		defer mem.rwmux.Unlock()
-		mem.data[r] = id
-
-		return r, nil
-	default:
-		return nil, core.StatusCode(codes.InvalidArgument)
-	}
-}
-
-func (mem *MemStorage) CheckAssertion(assertion core.Assertion, assertions core.Assertions) (core.Assertion, error) {
 	panic("implement me")
 }
 
-func random(n int) string {
-	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	b := make([]byte, n)
-	for i := range b {
-		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
-	}
-	return string(b)
+func (mem *MemStorage) Write(assertion ...core.Assertion) error {
+	mem.rwmux.Lock()
+	defer mem.rwmux.Unlock()
+
+	panic("implement me")
 }

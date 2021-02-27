@@ -3,73 +3,53 @@ package internal
 import (
 	"github.com/imakiri/playground/core"
 	"google.golang.org/grpc/codes"
-	"time"
+	"math/rand"
 )
 
-func NewCookie(duration time.Duration, storage core.Judge) (*Cookie, error) {
-	var cookie = new(Cookie)
-	cookie.expirationTime = time.Now().Add(duration).UnixNano()
-	cookie.judges = []core.Judge{storage}
-	cookie.level = 1
-	return cookie, nil
-}
-
-type Cookie struct {
-	judges         []core.Judge
-	currentLevel   int8
-	level          int8
-	wasVerified    bool
-	assertions     core.Assertions
-	expirationTime int64
-}
-
-func (cookie Cookie) Judges() []core.Judge {
-	return cookie.judges
-}
-
-func (cookie Cookie) ID() string {
-	return cookie.assertions[0].Data().(string)
-}
-
-func (cookie Cookie) Level() int8 {
-	return cookie.level
-}
-
-func (cookie Cookie) IsVerified() bool {
-	return cookie.wasVerified && time.Now().UnixNano() < cookie.expirationTime
-}
-
-func (cookie Cookie) RegisterAssertion(a core.Assertion, j core.Judge) error {
-	var ass core.Assertion
-	var err error
-	if a.Type() != Type_Assertion_ID {
-		return core.StatusCode(codes.InvalidArgument)
+var random = func(n int) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
-	id, ok := a.Data().(string)
-	if !ok {
-		return core.StatusCode(codes.InvalidArgument)
-	}
-	if id == "" {
-		return core.StatusCode(codes.InvalidArgument)
-	}
-	cookie.assertions = append(cookie.assertions, a)
-
-	ass, err = cookie.judges[0].AddAssertion(a, nil)
-	if err != nil {
-		return err
-	}
-
-	cookie.assertions = append(cookie.assertions, ass)
-	cookie.wasVerified = true
-	cookie.currentLevel = 1
-
-	return err
+	return string(b)
 }
 
-func (cookie Cookie) VerifyAssertion(a core.Assertion, j core.Judge) error {
+func NewCookieJudge() (*CookieJudge, error) {
+	var cj CookieJudge
+	cj.randFunc = random
+	cj.storage = new(MemStorage)
+
+	return &cj, nil
+}
+
+type CookieJudge struct {
+	randFunc func(n int) string
+	storage  core.Storage
+}
+
+func (cj *CookieJudge) AddAssertion(id core.Assertion, c core.Credentials) (core.Assertion, error) {
+	switch _ := id.(type) {
+	case Assertion_ID:
+		var r Assertion_Rand
+		var err error
+		r = Assertion_Rand(cj.randFunc(60))
+
+		err = cj.storage.Write(r)
+		if err != nil {
+			return nil, err
+		}
+
+		return r, nil
+	default:
+		return nil, core.StatusCode(codes.InvalidArgument)
+	}
+}
+
+func (cj *CookieJudge) CheckAssertion(assertion core.Assertion, c core.Credentials) (core.Assertion, error) {
 	panic("implement me")
 }
 
-func (cookie Cookie) WithdrawAssertion() error {
+func (cj *CookieJudge) WithdrawAssertion(ass core.Assertion, c core.Credentials) error {
 	panic("implement me")
 }

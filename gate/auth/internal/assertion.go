@@ -1,25 +1,11 @@
 package internal
 
-const Type_Assertion_ID = "Type_Assertion_ID"
+import "github.com/imakiri/playground/core"
 
-type Assertion_ID string
+type Assertion_Empty core.Assertion
 
-func (Assertion_ID) Type() string {
-	return Type_Assertion_ID
-}
+type Assertion_ID core.Assertion
 
-func (e Assertion_ID) Data() interface{} {
-	return e
-}
+type Assertion_ExpirationTime core.Assertion
 
-const Type_Assertion_Rand = "Type_Assertion_Rand"
-
-type Assertion_Rand string
-
-func (Assertion_Rand) Type() string {
-	return Type_Assertion_Rand
-}
-
-func (e Assertion_Rand) Data() interface{} {
-	return e
-}
+type Assertion_Rand core.Assertion
