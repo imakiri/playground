@@ -36,10 +36,7 @@ type AuthResponseLogout struct {
 //
 
 type Judge interface {
-	// Judge register new Assertion taking into account Assertions made before and return Assertion back along with error
 	AddAssertion(Assertion, Assertions) (Assertion, error)
-
-	// Judge check Assertion taking into account Assertions made before and return Assertion back along with error
 	CheckAssertion(Assertion, Assertions) (Assertion, error)
 }
 
