@@ -4,9 +4,16 @@ import (
 	"context"
 	"github.com/imakiri/playground/admin/cfg"
 	"github.com/jackc/pgx/v4"
+	"google.golang.org/grpc/codes"
 )
 
 // Status
+
+type StatusCode codes.Code
+
+func (e StatusCode) Error() string {
+	return string(e)
+}
 
 type Status string
 
@@ -16,6 +23,7 @@ func (e Status) Error() string {
 
 const Status_OK Status = "OK"
 const Status_InvalidDSN Status = "InvalidDSN"
+const Status_InvalidArgument Status = "InvalidArgument"
 const Status_AccessDenied Status = "AccessDenied"
 const Status_NotFound Status = "NotFound"
 const Status_InternalServiceError Status = "InternalServiceError"

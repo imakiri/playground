@@ -1,11 +1,12 @@
 package gate
 
 import (
+	"errors"
 	"github.com/imakiri/playground/admin/cfg"
+	"github.com/imakiri/playground/backend/app"
+	"github.com/imakiri/playground/backend/content"
 	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/pkg/app"
-	"github.com/imakiri/playground/pkg/auth"
-	"github.com/imakiri/playground/pkg/content"
+	"github.com/imakiri/playground/gate/auth"
 )
 
 type Service struct {
@@ -40,4 +41,12 @@ func NewService(c *cfg.Config) (*Service, error) {
 	}
 
 	return &s, err
+}
+
+func (e *Service) checkWorker() error {
+	if e.app == nil {
+		return errors.New("app error")
+	}
+
+	return nil
 }

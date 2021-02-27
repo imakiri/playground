@@ -26,7 +26,7 @@ func NewService(c *cfg.EI, g gate.GeneralService) (*Service, error) {
 
 	redirRouter.HandleFunc("/", redirect)
 
-	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/frontend/assets/", http.FileServer(http.Dir("./frontend/assets/"))))
 	router.HandleFunc("/", s.Root)
 
 	s.Server = &http.Server{}

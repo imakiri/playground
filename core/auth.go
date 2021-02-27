@@ -1,7 +1,6 @@
 package core
 
 import (
-	"context"
 	"github.com/imakiri/playground/data"
 )
 
@@ -36,10 +35,29 @@ type AuthResponseLogout struct {
 
 //
 
-type AuthService interface {
-	Login(ctx context.Context, r *AuthRequestLogin) (*AuthResponseLogin, error)
-	CheckAccess(ctx context.Context, r *AuthRequestCheckAccess) error
-	Logout(ctx context.Context, r *AuthRequestLogout) (*AuthResponseLogout, error)
+type Judge interface {
+	// Judge register new Assertion taking into account Assertions made before and return Assertion back along with error
+	AddAssertion(Assertion, Assertions) (Assertion, error)
+
+	// Judge check Assertion taking into account Assertions made before and return Assertion back along with error
+	CheckAssertion(Assertion, Assertions) (Assertion, error)
 }
+
+type Credentials interface {
+	Judges() []Judge
+	ID() string
+	Level() int8
+	IsVerified() bool
+
+	RegisterAssertion(a Assertion, j Judge) error
+	VerifyAssertion(a Assertion, j Judge) error
+	WithdrawAssertion() error
+}
+
+type Assertion interface {
+	Type() string
+	Data() interface{}
+}
+type Assertions []Assertion
 
 //

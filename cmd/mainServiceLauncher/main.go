@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/imakiri/playground/admin/cfg"
-	"github.com/imakiri/playground/ei/web"
+	"github.com/imakiri/playground/frontend/web"
 	"github.com/imakiri/playground/gate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

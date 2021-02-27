@@ -1,6 +1,8 @@
 package gate
 
-import "context"
+import (
+	"context"
+)
 
 func (e *Service) Login(ctx context.Context, r *RequestLogin) (*ResponseLogin, error) {
 	panic("implement me")

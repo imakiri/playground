@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/imakiri/playground/admin/cfg"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/gate/auth/internal"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -16,6 +17,8 @@ type Service struct {
 func NewService(c *cfg.System) (*Service, error) {
 	var s Service
 	var err error
+
+	var _ internal.Cookie
 
 	s.config = c.GetAuth()
 	s.configDB = c.GetData()
