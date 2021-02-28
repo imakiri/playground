@@ -37,29 +37,60 @@ type AuthResponseLogout struct {
 
 type Action interface{}
 type Factor interface{}
-type Factors []Factor
 type ID interface{}
 
-type Resolver interface {
-	Resolve(Factors) (ID, error)
+type Inspector interface {
+	Enrol(...Factor) (bool, error)
+	Withdraw(...Factor) (bool, error)
 }
 
-type Registrar interface {
-	Enrol(Factor) (bool, error)
+type Verifier interface {
+	Verify(...Factor) (ID, error)
+}
+
+type Resolver interface {
+	Resolve(factor Factor)
+}
+
+type Worker interface {
+	GetResolvers() []Resolver
+	GetID() (ID, error)
+}
+
+type Identificator interface {
+	Worker
+	Identify(Factor) (bool, error)
+	Withdraw(Factor) (bool, error)
 }
 
 type Authenticator interface {
+	Worker
 	Check(Factor) (bool, error)
-	ID() (ID, error)
 }
 
 type Authorizer interface {
+	Worker
 	Permit(ID, Action) (bool, error)
 }
 
-type Storage interface {
-	Read(Factors) (Factors, error)
-	Write(Factors) error
+//
+
+func IsNilSafe(l ...interface{}) bool {
+	for i := 0; i < len(l); i++ {
+		if l[i] == nil {
+			return false
+		}
+	}
+	return true
 }
 
-//
+func IsNilSafeEx(l ...interface{}) (b []bool) {
+	for i := 0; i < len(l); i++ {
+		if l[i] == nil {
+			b = append(b, false)
+		} else {
+			b = append(b, true)
+		}
+	}
+	return
+}

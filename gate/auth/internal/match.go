@@ -1,4 +1,4 @@
-package resolvers
+package internal
 
 import (
 	"math/rand"
