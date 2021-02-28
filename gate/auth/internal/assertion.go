@@ -2,10 +2,10 @@ package internal
 
 import "github.com/imakiri/playground/core"
 
-type Assertion_Empty core.Assertion
+type Factor_Empty core.Factor
 
-type Assertion_ID core.Assertion
+type Factor_ID core.Factor
 
-type Assertion_ExpirationTime core.Assertion
+type Factor_ExpirationTime core.Factor
 
-type Assertion_Rand core.Assertion
+type Factor_Rand core.Factor

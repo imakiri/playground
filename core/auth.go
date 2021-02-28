@@ -35,32 +35,31 @@ type AuthResponseLogout struct {
 
 //
 
-type Judge interface {
-	AddAssertion(rawAss Assertion, c Credentials) (Assertion, error)
-	CheckAssertion(rawAss Assertion, c Credentials) (Assertion, error)
-	WithdrawAssertion(ass Assertion, c Credentials) error
-}
-type Judges []Judge
+type Action interface{}
+type Factor interface{}
+type Factors []Factor
+type ID interface{}
 
-type Credentials interface {
-	Judges() Judges
-	Assertions() Assertions
-	ID() Assertion
-	Level() int
-	IsVerified() bool
-
-	ExtendWith(c Credentials) error
-	RegisterAssertion(a Assertion) error
-	VerifyAssertion(a Assertion) error
-	WithdrawAssertion() error
+type Resolver interface {
+	Resolve(Factors) (ID, error)
 }
 
-type Assertion interface{}
-type Assertions []Assertion
+type Registrar interface {
+	Enrol(Factor) (bool, error)
+}
+
+type Authenticator interface {
+	Check(Factor) (bool, error)
+	ID() (ID, error)
+}
+
+type Authorizer interface {
+	Permit(ID, Action) (bool, error)
+}
 
 type Storage interface {
-	Read(...Assertion) (Assertions, error)
-	Write(...Assertion) error
+	Read(Factors) (Factors, error)
+	Write(Factors) error
 }
 
 //
