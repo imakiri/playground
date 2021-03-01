@@ -36,44 +36,36 @@ type AuthResponseLogout struct {
 //
 
 type Action interface{}
+type ID interface {
+	UUID() uint64
+	PemID() uint64
+}
+type Key interface{}
 type Factor interface{}
-type ID interface{}
 
-type Inspector interface {
-	Enrol(...Factor) (bool, error)
-	Withdraw(...Factor) (bool, error)
+type Encoder interface {
+	Encode(Key) (Factor, error)
 }
 
-type Verifier interface {
-	Verify(...Factor) (ID, error)
+type Decoder interface {
+	Decode(Factor) (Key, error)
 }
 
 type Resolver interface {
-	Resolve(factor Factor)
+	Resolve(Key) (ID, error)
 }
 
-type Worker interface {
-	GetResolvers() []Resolver
-	GetID() (ID, error)
+type Validator interface {
+	Validate(ID, Action) (bool, error)
 }
 
-type Identificator interface {
-	Worker
-	Identify(Factor) (bool, error)
-	Withdraw(Factor) (bool, error)
-}
+//type Authority interface {
+//	NewID() (ID, error)
+//	ResetID(ID) error
+//}
 
-type Authenticator interface {
-	Worker
-	Check(Factor) (bool, error)
+type Gate interface {
 }
-
-type Authorizer interface {
-	Worker
-	Permit(ID, Action) (bool, error)
-}
-
-//
 
 func IsNilSafe(l ...interface{}) bool {
 	for i := 0; i < len(l); i++ {

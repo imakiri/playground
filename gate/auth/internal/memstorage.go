@@ -1,15 +1,14 @@
-package resolvers
+package internal
 
 import (
 	"errors"
 	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/gate/auth/internal/types"
 	"sync"
 )
 
 type MemStorage struct {
-	data     map[types.Factor_Rand]types.ID
-	data_rev map[types.ID]types.Factor_Rand
+	data     map[Key_Random]ID
+	data_rev map[ID]Key_Random
 	rwmux    *sync.RWMutex
 }
 
@@ -17,18 +16,18 @@ func (mem *MemStorage) Enrol(factors ...core.Factor) (bool, error) {
 	var r_id = factors[len(factors)-2]
 	var r_rand = factors[len(factors)-1]
 
-	var id types.ID
-	var rand types.Factor_Rand
+	var id ID
+	var rand Key_Random
 
 	switch t := r_id.(type) {
-	case types.ID:
+	case ID:
 		id = t
 	default:
 		return false, errors.New("factor mismatch: ID")
 	}
 
 	switch t := r_rand.(type) {
-	case types.Factor_Rand:
+	case Key_Random:
 		rand = t
 	default:
 		return false, errors.New("factor mismatch: Rand")
@@ -37,42 +36,42 @@ func (mem *MemStorage) Enrol(factors ...core.Factor) (bool, error) {
 	return mem.create(&rand, &id)
 }
 
-func (mem *MemStorage) Withdraw(factors ...core.Factor) (core.ID, error) {
+func (mem *MemStorage) Withdraw(factors ...core.Factor) (bool, error) {
 	var r_id = factors[len(factors)-2]
 	var r_rand = factors[len(factors)-1]
 
-	var id *types.ID
-	var rand *types.Factor_Rand
+	var id *ID
+	var rand *Key_Random
 
 	switch t := r_id.(type) {
-	case types.ID:
+	case ID:
 		id = &t
 	}
 
 	switch t := r_rand.(type) {
-	case types.Factor_Rand:
+	case Key_Random:
 		rand = &t
 	}
 
 	return mem.delete(rand, id)
 }
 
-func (mem *MemStorage) Verify(factors ...core.Factor) (core.ID, error) {
+func (mem *MemStorage) Verify(factors ...core.Factor) (bool, error) {
 	var r_rand = factors[len(factors)-1]
-	var rand types.Factor_Rand
+	var rand Key_Random
 
 	switch t := r_rand.(type) {
-	case types.Factor_Rand:
+	case Key_Random:
 		rand = t
 	default:
 		return false, errors.New("factor mismatch: Rand")
 	}
 
-	var id types.ID
+	var id ID
 	return mem.readID(&rand, &id)
 }
 
-func (mem *MemStorage) create(rand *types.Factor_Rand, id *types.ID) (bool, error) {
+func (mem *MemStorage) create(rand *Key_Random, id *ID) (bool, error) {
 	if !core.IsNilSafe(rand, id) {
 		return false, errors.New("nil factor")
 	}
@@ -89,7 +88,7 @@ func (mem *MemStorage) create(rand *types.Factor_Rand, id *types.ID) (bool, erro
 	}
 }
 
-func (mem *MemStorage) readID(rand *types.Factor_Rand, id *types.ID) (bool, error) {
+func (mem *MemStorage) readID(rand *Key_Random, id *ID) (bool, error) {
 	if !core.IsNilSafe(rand, id) {
 		return false, errors.New("nil factor")
 	}
@@ -105,7 +104,7 @@ func (mem *MemStorage) readID(rand *types.Factor_Rand, id *types.ID) (bool, erro
 	}
 }
 
-func (mem *MemStorage) delete(rand *types.Factor_Rand, id *types.ID) (bool, error) {
+func (mem *MemStorage) delete(rand *Key_Random, id *ID) (bool, error) {
 	var path = core.IsNilSafeEx(rand, id)
 
 	if !path[0] && !path[1] {
@@ -128,7 +127,7 @@ func (mem *MemStorage) delete(rand *types.Factor_Rand, id *types.ID) (bool, erro
 	if path[1] {
 		if v, ok := mem.data_rev[*id]; ok {
 			delete(mem.data, v)
-			delete(mem.data_rev, *rand)
+			delete(mem.data_rev, *id)
 			return true, nil
 		} else {
 			return false, errors.New("nothing to delete")
