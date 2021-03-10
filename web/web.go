@@ -2,23 +2,21 @@ package web
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/admin/cfg"
-	"github.com/imakiri/playground/gate"
+	"github.com/imakiri/playground/cfg"
 	"net/http"
 )
 
 type Service struct {
-	gate        gate.GeneralService
+	//gate        gate.GeneralService
 	config      *cfg.Web
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(c *cfg.EI, g gate.GeneralService) (*Service, error) {
+func NewService(c *cfg.EI) (*Service, error) {
 	var s Service
 	var err error
 
-	s.gate = g
 	s.config = c.GetWeb()
 
 	router := mux.NewRouter()
@@ -26,7 +24,7 @@ func NewService(c *cfg.EI, g gate.GeneralService) (*Service, error) {
 
 	redirRouter.HandleFunc("/", redirect)
 
-	router.PathPrefix("/assets/").Handler(http.StripPrefix("/frontend/assets/", http.FileServer(http.Dir("./frontend/assets/"))))
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	router.HandleFunc("/", s.Root)
 
 	s.Server = &http.Server{}

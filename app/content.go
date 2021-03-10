@@ -1,7 +1,7 @@
-package auth
+package app
 
 import (
-	"github.com/imakiri/playground/admin/cfg"
+	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
 	"github.com/jackc/pgx/v4"
 )
@@ -9,17 +9,15 @@ import (
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   *cfg.Auth
+	config   *cfg.Content
 	configDB *cfg.Data
-
-	encoders core.Encoder
 }
 
-func NewService(c *cfg.System) (*Service, error) {
+func NewContentService(c *cfg.System) (*Service, error) {
 	var s Service
 	var err error
 
-	s.config = c.GetAuth()
+	s.config = c.GetContent()
 	s.configDB = c.GetData()
 
 	s.db, err = core.Connect(c.GetData())

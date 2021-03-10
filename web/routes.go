@@ -11,14 +11,14 @@ func (e *Service) Root(w http.ResponseWriter, r *http.Request) {
 	n := time.Now().Format(time.RFC822)
 	fmt.Printf("%s Root web-endpoint hit by %s\n", n, r.RemoteAddr)
 
-	//if p, ok := w.(http.Pusher); ok {
-	//	_ = p.Push("assets/css/style.css", nil)
-	//	_ = p.Push("assets/favicon.ico", nil)
+	//if pusher, ok := w.(http.Pusher); ok {
+	//	_ = pusher.Push("assets/css/style.css", nil)
+	//	_ = pusher.Push("assets/favicon.ico", nil)
 	//}
 
 	w.Header().Set("Content-Type", "text/html")
 
-	t, err := template.ParseFiles("frontend/assets/html/index.html")
+	t, err := template.ParseFiles("assets/html/index.html")
 	if err != nil {
 		ise(w, err)
 		return

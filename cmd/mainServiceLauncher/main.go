@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/imakiri/playground/admin/cfg"
-	"github.com/imakiri/playground/frontend/web"
-	"github.com/imakiri/playground/gate"
+	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -22,7 +21,7 @@ func readConfig() (*cfg.Config, error) {
 	}
 
 	var client cfg.AdminClient
-	client, err = launchConfigClient(ips[0].String()+":25565", "admin/cfg/grpc/cert.crt")
+	client, err = launchConfigClient(ips[0].String()+":25565", "cfg/grpc/cert.crt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,15 +56,9 @@ func launchConfigClient(addr, certFile string) (cfg.AdminClient, error) {
 
 func launch(c *cfg.Config) error {
 	var err error
-	var gs gate.GeneralService
 	var ws *web.Service
 
-	gs, err = gate.NewService(c)
-	if err != nil {
-		return err
-	}
-
-	ws, err = web.NewService(c.GetEI(), gs)
+	ws, err = web.NewService(c.GetEI())
 	if err != nil {
 		return err
 	}
@@ -78,7 +71,7 @@ func launch(c *cfg.Config) error {
 	}(rsc)
 
 	go func(sc chan error) {
-		sc <- ws.Server.ListenAndServeTLS("admin/cfg/http/cert.pem", "admin/cfg/http/privkey.pem")
+		sc <- ws.Server.ListenAndServeTLS("cfg/certificate.crt", "cfg/key.txt")
 	}(sc)
 
 	select {

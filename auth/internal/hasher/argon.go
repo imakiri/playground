@@ -1,7 +1,8 @@
-package internal
+package hasher
 
 import (
 	"errors"
+	"github.com/imakiri/playground/auth/internal"
 	"github.com/imakiri/playground/core"
 	"golang.org/x/crypto/argon2"
 )
@@ -32,10 +33,10 @@ type Argon2 struct {
 	memory     uint32
 }
 
-func (e Argon2) Encode(key core.Key) (core.Factor, error) {
+func (e Argon2) Send(key core.Key) (core.Factor, error) {
 	switch k := key.(type) {
-	case Key_Password:
-		var hash Factor_Hash
+	case internal.Key_Password:
+		var hash internal.Factor_Hash
 
 		switch e._type {
 		case Argon2i:

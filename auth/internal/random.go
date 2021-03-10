@@ -4,7 +4,7 @@ package internal
 //
 //}
 //
-//func (e Random) Encode(key core.Key) (core.Factor, error) {
+//func (e Random) Send(key core.Key) (core.Factor, error) {
 //	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 //	b := make([]byte, n)
 //	for i := range b {

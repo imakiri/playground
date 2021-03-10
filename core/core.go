@@ -2,12 +2,13 @@ package core
 
 import (
 	"context"
-	"github.com/imakiri/playground/admin/cfg"
+	"github.com/imakiri/playground/cfg"
+	error2 "github.com/imakiri/playground/erres"
 	"github.com/jackc/pgx/v4"
 	"google.golang.org/grpc/codes"
 )
 
-// Status
+// Error
 
 type StatusCode codes.Code
 
@@ -15,23 +16,17 @@ func (e StatusCode) Error() string {
 	return string(e)
 }
 
-type Status string
+//
 
-func (e Status) Error() string {
-	return string(e)
+type ServiceName string
+
+func (s ServiceName) String() string {
+	return string(s)
 }
 
-const Status_OK Status = "OK"
-const Status_InvalidDSN Status = "InvalidDSN"
-const Status_InvalidArgument Status = "InvalidArgument"
-const Status_AccessDenied Status = "AccessDenied"
-const Status_NotFound Status = "NotFound"
-const Status_InternalServiceError Status = "InternalServiceError"
-const Status_SerializationError Status = "SerializationError"
-const Status_UnknownError Status = "UnknownError"
-const Status_AlreadyExist Status = "AlreadyExist"
-
-//
+type Service interface {
+	Name() ServiceName
+}
 
 // FunctionID
 
@@ -51,7 +46,7 @@ const FID_AuthLogout FunctionID = 1
 
 type ActionID uint64
 type Meta struct {
-	Status Status
+	Status error2.Error
 }
 
 func Connect(c *cfg.Data) (*pgx.Conn, error) {
@@ -59,7 +54,7 @@ func Connect(c *cfg.Data) (*pgx.Conn, error) {
 	var err error
 
 	if c.GetDSN() == "" {
-		return nil, Status_InvalidDSN
+		return nil, error2.E_InvalidArgument
 	}
 
 	db, err = pgx.Connect(context.Background(), c.GetDSN())
@@ -73,4 +68,36 @@ func Connect(c *cfg.Data) (*pgx.Conn, error) {
 	}
 
 	return db, nil
+}
+
+type Container interface {
+	Type() []string
+	Data() []byte
+}
+
+func NewContainer(t []string, d []byte) (*Contain, error) {
+	var c Contain
+	var err error
+
+	c._type = t
+	c.data = d
+
+	return &c, err
+}
+
+type Contain struct {
+	_type []string
+	data  []byte
+}
+
+func (c Contain) Type() []string {
+	return c._type
+}
+
+func (c Contain) Data() []byte {
+	return c.data
+}
+
+func NewEmailContainer() {
+
 }

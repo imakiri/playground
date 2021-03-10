@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/imakiri/playground/admin/cfg"
+	"github.com/imakiri/playground/cfg"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -27,7 +27,7 @@ func readConfig() (*cfg.Config, error) {
 	var err error
 	viper.SetConfigType("yml")
 	viper.SetConfigName("config")
-	viper.AddConfigPath("./admin/cfg/")
+	viper.AddConfigPath("./cfg/")
 
 	err = viper.ReadInConfig()
 	if err != nil {
@@ -75,7 +75,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = launchService(conf, ":25565", "admin/cfg/grpc/cert.crt", "admin/cfg/grpc/key.pem")
+	err = launchService(conf, ":25565", "cfg/grpc/cert.crt", "cfg/grpc/key.pem")
 	if err != nil {
 		log.Fatal(err)
 	}

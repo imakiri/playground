@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/imakiri/playground/admin/cfg"
+	"github.com/imakiri/playground/cfg"
 )
 
 type Service struct {
