@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/transport"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -21,7 +21,7 @@ func (e ID) PemID() []uint64 {
 	return e.pemid
 }
 
-func NewService(c *cfg.System) (*Service, error) {
+func NewService(c *transport.System) (*Service, error) {
 	var s Service
 	var err error
 
@@ -39,8 +39,8 @@ func NewService(c *cfg.System) (*Service, error) {
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   *cfg.Auth
-	configDB *cfg.Data
+	config   *transport.Auth
+	configDB *transport.Data
 }
 
 func (s Service) Authenticate(credentials []Credential) (ID, error) {

@@ -1,17 +1,17 @@
 package gate
 
 import (
-	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/transport"
 )
 
 type Service struct {
 	log       core.LogService
-	config    *cfg.Gate
-	configSys *cfg.System
+	config    *transport.Gate
+	configSys *transport.System
 }
 
-func NewService(c *cfg.Config) (*Service, error) {
+func NewService(c *transport.Config) (*Service, error) {
 	var s Service
 	var err error
 

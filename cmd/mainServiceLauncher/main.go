@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/transport"
 	"github.com/imakiri/playground/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -10,23 +10,23 @@ import (
 	"net"
 )
 
-func readConfig() (*cfg.Config, error) {
-	var conf *cfg.Config
+func getConfig(from string, port string, certFile string) (*transport.Config, error) {
+	var conf *transport.Config
 	var err error
 
 	var ips []net.IP
-	ips, err = net.LookupIP("imakiri-ips.ddns.net")
+	ips, err = net.LookupIP(from)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var client cfg.AdminClient
-	client, err = launchConfigClient(ips[0].String()+":25565", "cfg/grpc/cert.crt")
+	var client transport.AdminClient
+	client, err = launchConfigClient(ips[0].String()+port, certFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	conf, err = client.GetConfig(context.Background(), &cfg.Request{})
+	conf, err = client.GetConfig(context.Background(), &transport.Request{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -34,8 +34,8 @@ func readConfig() (*cfg.Config, error) {
 	return conf, err
 }
 
-func launchConfigClient(addr, certFile string) (cfg.AdminClient, error) {
-	var client cfg.AdminClient
+func launchConfigClient(addr, certFile string) (transport.AdminClient, error) {
+	var client transport.AdminClient
 	var err error
 
 	var creds credentials.TransportCredentials
@@ -50,11 +50,11 @@ func launchConfigClient(addr, certFile string) (cfg.AdminClient, error) {
 		return nil, err
 	}
 
-	client = cfg.NewAdminClient(conn)
+	client = transport.NewAdminClient(conn)
 	return client, err
 }
 
-func launch(c *cfg.Config) error {
+func launch(c *transport.Config, certFile string, keyFile string) error {
 	var err error
 	var ws *web.Service
 
@@ -71,7 +71,7 @@ func launch(c *cfg.Config) error {
 	}(rsc)
 
 	go func(sc chan error) {
-		sc <- ws.Server.ListenAndServeTLS("cfg/certificate.crt", "cfg/key.txt")
+		sc <- ws.Server.ListenAndServeTLS(certFile, keyFile)
 	}(sc)
 
 	select {
@@ -83,13 +83,15 @@ func launch(c *cfg.Config) error {
 }
 
 func main() {
-	var conf *cfg.Config
+	var conf *transport.Config
 	var err error
 
-	conf, err = readConfig()
+	// TODO: Grab func args from command line args
+
+	conf, err = getConfig("imakiri-ips.ddns.net", ":25565", "cfg/grpc/cert.crt")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Fatal(launch(conf))
+	log.Fatal(launch(conf, "cfg/web/certificate.crt", "cfg/web/key.txt"))
 }

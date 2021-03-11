@@ -1,4 +1,4 @@
-package sender
+package message
 
 import (
 	"bytes"

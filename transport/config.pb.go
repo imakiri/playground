@@ -4,7 +4,7 @@
 // 	protoc        v3.14.0
 // source: admin/cfg/config.proto
 
-package cfg
+package transport
 
 import (
 	proto "github.com/golang/protobuf/proto"

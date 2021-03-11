@@ -1,4 +1,4 @@
-package sender
+package message
 
 import (
 	"github.com/imakiri/playground/core"
@@ -32,7 +32,7 @@ func NewService() (*service, error) {
 
 	s.email, err = newServiceEmailBasic("", "", "", "", nil)
 
-	// TODO: Sender service constructor
+	// TODO: Message service constructor
 
 	return &s, err
 }

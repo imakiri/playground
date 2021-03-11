@@ -1,3 +1,0 @@
-package hasher
-
-// TODO: Hasher

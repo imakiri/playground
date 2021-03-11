@@ -1,13 +1,13 @@
 package api
 
 import (
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/transport"
 )
 
 type Service struct {
 }
 
-func NewService(c cfg.API) (*Service, error) {
+func NewService(c transport.API) (*Service, error) {
 	var s Service
 	var err error
 

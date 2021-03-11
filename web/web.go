@@ -2,18 +2,18 @@ package web
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/cfg"
+	"github.com/imakiri/playground/transport"
 	"net/http"
 )
 
 type Service struct {
 	//gate        gate.GeneralService
-	config      *cfg.Web
+	config      *transport.Web
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(c *cfg.EI) (*Service, error) {
+func NewService(c *transport.EI) (*Service, error) {
 	var s Service
 	var err error
 

@@ -2,8 +2,8 @@ package core
 
 import (
 	"context"
-	"github.com/imakiri/playground/cfg"
 	error2 "github.com/imakiri/playground/erres"
+	"github.com/imakiri/playground/transport"
 	"github.com/jackc/pgx/v4"
 	"google.golang.org/grpc/codes"
 )
@@ -49,7 +49,7 @@ type Meta struct {
 	Status error2.Error
 }
 
-func Connect(c *cfg.Data) (*pgx.Conn, error) {
+func Connect(c *transport.Data) (*pgx.Conn, error) {
 	var db *pgx.Conn
 	var err error
 

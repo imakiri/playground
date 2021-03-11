@@ -18,7 +18,7 @@ func (e *Service) Root(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html")
 
-	t, err := template.ParseFiles("assets/html/index.html")
+	t, err := template.ParseFiles("web/templates/index.html")
 	if err != nil {
 		ise(w, err)
 		return

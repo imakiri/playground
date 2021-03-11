@@ -1,19 +1,19 @@
 package app
 
 import (
-	"github.com/imakiri/playground/cfg"
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/transport"
 	"github.com/jackc/pgx/v4"
 )
 
 type Service struct {
 	db       *pgx.Conn
 	log      core.LogService
-	config   *cfg.Content
-	configDB *cfg.Data
+	config   *transport.Content
+	configDB *transport.Data
 }
 
-func NewContentService(c *cfg.System) (*Service, error) {
+func NewContentService(c *transport.System) (*Service, error) {
 	var s Service
 	var err error
 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package cfg;
 
-option go_package = "github.com/imakiri/playground/admin/cfg";
+option go_package = "github.com/imakiri/playground/cfg";
 
 message Request {}
 
@@ -34,6 +34,6 @@ message Config {
   EI EI = 3;
 }
 
-service Admin {
+service Cfg {
   rpc GetConfig(Request) returns (Config);
 }
