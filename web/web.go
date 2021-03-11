@@ -1,23 +1,30 @@
 package web
 
 import (
+	"context"
 	"github.com/gorilla/mux"
+	"github.com/imakiri/playground/core"
 	"github.com/imakiri/playground/transport"
 	"net/http"
 )
 
 type Service struct {
 	//gate        gate.GeneralService
-	config      *transport.Web
+	cc          transport.CfgClient
+	config      *core.CfgWeb
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(c *transport.EI) (*Service, error) {
+func NewService(cc transport.CfgClient) error {
 	var s Service
 	var err error
 
-	s.config = c.GetWeb()
+	s.cc = cc
+	s.config, err = s.cc.Web(context.Background(), &core.Request{})
+	if err != nil {
+		return err
+	}
 
 	router := mux.NewRouter()
 	redirRouter := mux.NewRouter()
@@ -32,7 +39,23 @@ func NewService(c *transport.EI) (*Service, error) {
 	s.Server.Handler = router
 	s.RedirServer.Handler = redirRouter
 
-	return &s, err
+	rsc := make(chan error)
+	sc := make(chan error)
+
+	go func(rsc chan error) {
+		rsc <- s.RedirServer.ListenAndServe()
+	}(rsc)
+
+	go func(sc chan error) {
+		sc <- s.Server.ListenAndServeTLS(s.config.CertFile, s.config.KeyFile)
+	}(sc)
+
+	select {
+	case err = <-rsc:
+		return err
+	case err = <-sc:
+		return err
+	}
 }
 
 // Redirect from HTTP to HTTPS

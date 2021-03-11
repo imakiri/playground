@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/data"
 	"github.com/imakiri/playground/transport"
 	"github.com/jackc/pgx/v4"
 )
@@ -20,7 +21,7 @@ func NewContentService(c *transport.System) (*Service, error) {
 	s.config = c.GetContent()
 	s.configDB = c.GetData()
 
-	s.db, err = core.Connect(c.GetData())
+	s.db, err = data.Connect(c.GetData())
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package core;
+
+option go_package = "github.com/imakiri/playground/core";
+
+message Request {}
+
+message CfgDataApp {
+  string DSN = 1;
+}
+message CfgDataAuth {
+  string DSN = 1;
+}
+message CfgDataGate {
+  string DSN = 1;
+}
+
+message CfgApi {
+
+}
+message CfgApp {
+
+}
+message CfgAuth {
+  int32 HashCost = 1;
+  string Salt = 2;
+}
+message CfgData {
+  CfgDataApp App = 1;
+  CfgDataAuth Auth = 2;
+  CfgDataGate Gate = 3;
+}
+message CfgGate {
+
+}
+message CfgWeb {
+  string CertFile = 1;
+  string KeyFile = 2;
+}

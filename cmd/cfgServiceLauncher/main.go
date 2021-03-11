@@ -33,7 +33,7 @@ func launchService(addr, certFile, keyFile string) error {
 		return err
 	}
 
-	transport.RegisterAdminServer(server, service)
+	transport.RegisterCfgServer(server, service)
 	return server.Serve(lis)
 }
 

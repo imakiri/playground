@@ -1,4 +1,4 @@
-package data
+package internal
 
 import "github.com/imakiri/playground/core"
 

@@ -1,14 +1,27 @@
 package internal
 
-//type Random struct {
-//
-//}
-//
-//func (e Random) Send(key core.Key) (core.Factor, error) {
-//	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-//	b := make([]byte, n)
-//	for i := range b {
-//		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
-//	}
-//	return string(b)
-//}
+import (
+	"github.com/imakiri/playground/core"
+	"math/rand"
+)
+
+func NewRandom(length uint) (*random, error) {
+	var r random
+	var err error
+
+	r.length = length
+	return &r, err
+}
+
+type random struct {
+	length uint
+}
+
+func (e random) Encode(core.ID) core.Credential {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	b := make([]byte, e.length)
+	for i := range b {
+		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
+	}
+	return core.Credential(b)
+}

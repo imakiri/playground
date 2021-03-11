@@ -1,4 +1,4 @@
-package data
+package internal
 
 //type MemStorage struct {
 //	data     map[internal.Key_Random]internal.ID

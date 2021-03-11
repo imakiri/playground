@@ -2,23 +2,45 @@ package auth
 
 import (
 	"github.com/imakiri/playground/core"
+	"github.com/imakiri/playground/data"
 	"github.com/imakiri/playground/transport"
 	"github.com/jackc/pgx/v4"
+	"time"
 )
 
-type Credential []byte
-
-type ID struct {
-	uuid  uint64
-	pemid []uint64
+type Hasher interface {
+	Hash(plain core.CredentialPlain) core.CredentialObscure
+	Compare(obscure ...core.CredentialObscure) bool
 }
 
-func (e ID) UUID() uint64 {
-	return e.uuid
+type StrongAuthenticator interface {
+	Validate(plain core.CredentialPlain) (core.CredentialObscure, error)
+	Authenticate(valid core.CredentialObscure, key core.CredentialPlain) (core.ID, error)
 }
 
-func (e ID) PemID() []uint64 {
-	return e.pemid
+type WeakAuthenticator interface {
+	Authenticate(obscure core.CredentialObscure) (core.ID, error)
+}
+
+type StrongRegistrar interface {
+	Register(plain core.CredentialPlain) (core.CredentialObscure, error)
+	Activate(valid core.CredentialObscure, key core.CredentialPlain) (core.ID, error)
+	Revoke(id core.ID) error
+}
+
+type WeakRegistrar interface {
+	Register(id core.ID, expireAt time.Time) (core.CredentialObscure, error)
+	Revoke(id core.ID) error
+}
+
+type Strong interface {
+	StrongRegistrar
+	StrongAuthenticator
+}
+
+type Weak interface {
+	WeakRegistrar
+	WeakAuthenticator
 }
 
 func NewService(c *transport.System) (*Service, error) {
@@ -27,8 +49,7 @@ func NewService(c *transport.System) (*Service, error) {
 
 	s.config = c.GetAuth()
 	s.configDB = c.GetData()
-
-	s.db, err = core.Connect(c.GetData())
+	s.db, err = data.Connect(c.GetData())
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +64,8 @@ type Service struct {
 	configDB *transport.Data
 }
 
-func (s Service) Authenticate(credentials []Credential) (ID, error) {
-	var id ID
+func (s Service) Authenticate(credentials []core.Credential) (core.ID, error) {
+	var id core.ID
 	var err error
 
 	// TODO: Implement Authenticate

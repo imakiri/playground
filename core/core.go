@@ -1,22 +1,28 @@
 package core
 
 import (
-	"context"
-	error2 "github.com/imakiri/playground/erres"
-	"github.com/imakiri/playground/transport"
-	"github.com/jackc/pgx/v4"
-	"google.golang.org/grpc/codes"
+	"github.com/imakiri/playground/erres"
 )
 
-// Error
-
-type StatusCode codes.Code
-
-func (e StatusCode) Error() string {
-	return string(e)
+func IsNilSafe(l ...interface{}) bool {
+	for i := 0; i < len(l); i++ {
+		if l[i] == nil {
+			return false
+		}
+	}
+	return true
 }
 
-//
+func IsNilSafeEx(l ...interface{}) (b []bool) {
+	for i := 0; i < len(l); i++ {
+		if l[i] == nil {
+			b = append(b, false)
+		} else {
+			b = append(b, true)
+		}
+	}
+	return
+}
 
 type ServiceName string
 
@@ -46,58 +52,5 @@ const FID_AuthLogout FunctionID = 1
 
 type ActionID uint64
 type Meta struct {
-	Status error2.Error
-}
-
-func Connect(c *transport.Data) (*pgx.Conn, error) {
-	var db *pgx.Conn
-	var err error
-
-	if c.GetDSN() == "" {
-		return nil, error2.E_InvalidArgument
-	}
-
-	db, err = pgx.Connect(context.Background(), c.GetDSN())
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Ping(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
-}
-
-type Container interface {
-	Type() []string
-	Data() []byte
-}
-
-func NewContainer(t []string, d []byte) (*Contain, error) {
-	var c Contain
-	var err error
-
-	c._type = t
-	c.data = d
-
-	return &c, err
-}
-
-type Contain struct {
-	_type []string
-	data  []byte
-}
-
-func (c Contain) Type() []string {
-	return c._type
-}
-
-func (c Contain) Data() []byte {
-	return c.data
-}
-
-func NewEmailContainer() {
-
+	Error erres.Error
 }
