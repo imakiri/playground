@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/imakiri/playground/core"
+	"github.com/imakiri/gorum/core"
 )
 
 func (e *User) CreateUser(ctx context.Context, r *core.ContentRequestCreateUser) (core.ContentResponseCreateUser, error) {

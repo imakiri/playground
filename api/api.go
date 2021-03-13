@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/transport"
 )
 
 type Service struct {

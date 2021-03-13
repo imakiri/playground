@@ -1,4 +1,4 @@
-module github.com/imakiri/playground
+module github.com/imakiri/gorum
 
 go 1.15
 

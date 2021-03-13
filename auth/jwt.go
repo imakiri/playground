@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/imakiri/playground/core"
+import "github.com/imakiri/gorum/core"
 
 type JWT struct {
 	Reversible

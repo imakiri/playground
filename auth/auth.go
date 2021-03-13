@@ -1,16 +1,20 @@
 package auth
 
 import (
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/data"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/data"
+	"github.com/imakiri/gorum/transport"
 	"github.com/jackc/pgx/v4"
 	"time"
 )
 
+type Randomizer interface {
+	Random() core.CredentialObscure
+}
+
 type Hasher interface {
 	Hash(plain core.CredentialPlain) core.CredentialObscure
-	Compare(obscure ...core.CredentialObscure) bool
+	Compare(obscure0, obscure1 core.CredentialObscure) bool
 }
 
 type StrongAuthenticator interface {

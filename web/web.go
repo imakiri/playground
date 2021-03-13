@@ -3,13 +3,13 @@ package web
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/transport"
 	"net/http"
 )
 
 type Service struct {
-	//gate        gate.GeneralService
+	//gate        *gate.GeneralService
 	cc          transport.CfgClient
 	config      *core.CfgWeb
 	Server      *http.Server

@@ -2,8 +2,8 @@ package gate
 
 import (
 	"context"
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/data"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/data"
 )
 
 // Gate

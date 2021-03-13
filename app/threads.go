@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/imakiri/playground/core"
+	"github.com/imakiri/gorum/core"
 )
 
 func (e *User) GetThreadContent(ctx context.Context, r *core.ContentRequestGetThreadContent) (*core.ContentResponseGetThreadContent, error) {

@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/imakiri/playground/core"
+	"github.com/imakiri/gorum/core"
 	"math/rand"
 )
 
@@ -17,11 +17,11 @@ type random struct {
 	length uint
 }
 
-func (e random) Encode(core.ID) core.Credential {
+func (e random) Random() core.CredentialObscure {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, e.length)
 	for i := range b {
 		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
-	return core.Credential(b)
+	return b
 }

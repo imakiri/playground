@@ -1,59 +1,69 @@
 package message
 
 import (
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/erres"
-	"reflect"
+	"github.com/imakiri/gorum/erres"
 )
 
-type address interface {
-	Address() []string
+type _type string
+
+const Email _type = "email"
+
+type Messenger interface {
+	Send(msg []byte) error
 }
 
-type sender interface {
-	Send(addr address, msg []byte) error
+type messengerEmail struct {
+	service *ServiceEmail
+	addr    email
 }
 
-type constructor interface {
-	NewAddress(addr ...string) (address, error)
+func (e messengerEmail) Send(msg []byte) error {
+	return e.service.Send(e.addr, msg)
 }
 
 type Service interface {
-	core.Service
-	constructor
-	sender
+	New(p _type, addr []string) (Messenger, error)
 }
 
-const N_Sender core.ServiceName = "Service"
-
-func NewService() (*service, error) {
+func NewService(features ..._type) (*service, error) {
 	var s service
 	var err error
 
-	s.email, err = newServiceEmailBasic("", "", "", "", nil)
+	s.email, err = NewServiceEmail("", "", "", "", nil)
+	if err != nil {
+		return nil, err
+	}
 
-	// TODO: Message service constructor
+	for _, v := range features {
+		s.features[v] = true
+	}
 
 	return &s, err
 }
 
 type service struct {
-	email serviceEmail
+	features map[_type]bool
+	email    *ServiceEmail
 }
 
-func (service) Name() core.ServiceName {
-	return N_Sender
-}
+func (s service) New(p _type, addr []string) (Messenger, error) {
+	switch p {
+	case Email:
+		if _, ok := s.features[p]; !ok {
+			return nil, erres.E_NotFound.SetTime("")
+		}
 
-func (s service) Send(addr address, msg []byte) error {
-	switch a := addr.(type) {
-	case email:
-		return s.email.Send(msg, a)
+		var m messengerEmail
+		var err error
+
+		m.service = s.email
+		m.addr, err = NewEmail(addr...)
+		if err != nil {
+			return nil, err
+		} else {
+			return m, err
+		}
 	default:
-		return erres.
-			E_TypeMismatch.
-			Time("").
-			Route(s.Name().String()).
-			Description(reflect.TypeOf(a).String())
+		return nil, erres.E_TypeMismatch.SetTime("")
 	}
 }

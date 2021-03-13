@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/imakiri/playground/erres"
+	"github.com/imakiri/gorum/erres"
 )
 
 func IsNilSafe(l ...interface{}) bool {

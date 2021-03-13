@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/data"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/data"
+	"github.com/imakiri/gorum/transport"
 	"github.com/jackc/pgx/v4"
 )
 

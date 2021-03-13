@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/imakiri/playground/core"
+	"github.com/imakiri/gorum/core"
 )
 
 func NewCookie(encoder Encoder, storage Irreversible) (*Cookie, error) {

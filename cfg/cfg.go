@@ -3,8 +3,8 @@ package cfg
 import (
 	"context"
 	"fmt"
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/transport"
 	"github.com/spf13/viper"
 )
 

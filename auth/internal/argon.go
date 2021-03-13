@@ -1,18 +1,18 @@
 package internal
 
 import (
-	"errors"
-	"github.com/imakiri/playground/core"
+	"bytes"
+	"github.com/imakiri/gorum/core"
 	"golang.org/x/crypto/argon2"
 )
 
-const Argon2i = "argon2i"
-const Argon2id = "argon2id"
+const Argon2i argonType = "argon2i"
+const Argon2id argonType = "argon2id"
 
-type Argon2Type string
+type argonType string
 
-func NewArgon2(t Argon2Type, iterations uint32, threads uint8, keyLen uint32, salt []byte, memory uint32) (*Argon2, error) {
-	var arg2 Argon2
+func NewArgon(t argonType, iterations uint32, threads uint8, keyLen uint32, salt []byte, memory uint32) (*argon, error) {
+	var arg2 argon
 	arg2._type = t
 	arg2.iterations = iterations
 	arg2.threads = threads
@@ -23,8 +23,8 @@ func NewArgon2(t Argon2Type, iterations uint32, threads uint8, keyLen uint32, sa
 	return &arg2, nil
 }
 
-type Argon2 struct {
-	_type      Argon2Type
+type argon struct {
+	_type      argonType
 	iterations uint32
 	threads    uint8
 	keyLen     uint32
@@ -32,20 +32,21 @@ type Argon2 struct {
 	memory     uint32
 }
 
-func (e Argon2) Send(key core.Key) (core.Factor, error) {
-	switch k := key.(type) {
-	case Key_Password:
-		var hash Factor_Hash
+func (e argon) Hash(plain core.CredentialPlain) core.CredentialObscure {
+	var obscure core.CredentialObscure
 
-		switch e._type {
-		case Argon2i:
-			hash = argon2.Key([]byte(k), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
-		case Argon2id:
-			hash = argon2.IDKey([]byte(k), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
-		}
-
-		return hash, nil
+	switch e._type {
+	case Argon2i:
+		obscure = argon2.Key([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
+	case Argon2id:
+		obscure = argon2.IDKey([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
 	default:
-		return nil, errors.New("wrong key type")
+		return nil
 	}
+
+	return obscure
+}
+
+func (e argon) Compare(obscure0, obscure1 core.CredentialObscure) bool {
+	return bytes.Equal(obscure0, obscure1)
 }

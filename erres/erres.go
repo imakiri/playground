@@ -9,6 +9,8 @@ type Error string
 
 const (
 	E_InvalidArgument      Error = "invalid argument"
+	E_NotSupported         Error = "not supported"
+	E_ClosedChannel        Error = "closed channel"
 	E_TypeMismatch         Error = "type mismatch"
 	E_AccessDenied         Error = "access denied"
 	E_NotFound             Error = "not found"
@@ -47,7 +49,7 @@ func (e Error) Error() string {
 	return es
 }
 
-func (e Error) Time(format string) Error {
+func (e Error) SetTime(format string) Error {
 	var t string
 
 	if format == "" {
@@ -60,7 +62,7 @@ func (e Error) Time(format string) Error {
 	return Error(t + string(e))
 }
 
-func (e Error) Route(s string) Error {
+func (e Error) SetRoute(s string) Error {
 	var es = string(e)
 
 	if strings.HasSuffix(es, ".") {
@@ -70,7 +72,7 @@ func (e Error) Route(s string) Error {
 	}
 }
 
-func (e Error) Description(s string) Error {
+func (e Error) SetDescription(s string) Error {
 	var es = string(e)
 
 	es = trimTrace(es)

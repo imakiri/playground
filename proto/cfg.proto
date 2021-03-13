@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package cfg;
 
-option go_package = "github.com/imakiri/playground/transport";
+option go_package = "github.com/imakiri/gorum/transport";
 import public "core.proto";
 
 service Cfg {

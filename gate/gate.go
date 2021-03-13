@@ -1,8 +1,8 @@
 package gate
 
 import (
-	"github.com/imakiri/playground/core"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/transport"
 )
 
 type Service struct {

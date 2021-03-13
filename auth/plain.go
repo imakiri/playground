@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/imakiri/playground/core"
+import "github.com/imakiri/gorum/core"
 
 type Plain interface {
 	Create(pemid core.PEMID, credential core.Credential) (core.UUID, error)

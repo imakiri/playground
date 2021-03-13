@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/imakiri/playground/cfg"
-	"github.com/imakiri/playground/transport"
+	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"

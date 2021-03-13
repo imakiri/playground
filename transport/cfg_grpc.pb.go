@@ -4,7 +4,7 @@ package transport
 
 import (
 	context "context"
-	core "github.com/imakiri/playground/core"
+	core "github.com/imakiri/gorum/core"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

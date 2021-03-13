@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package core;
 
-option go_package = "github.com/imakiri/playground/core";
+option go_package = "github.com/imakiri/gorum/core";
 
 message Request {}
 
