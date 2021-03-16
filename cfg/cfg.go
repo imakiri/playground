@@ -47,6 +47,24 @@ func (e Service) Get4Data(_ context.Context, _ *Request) (*Data, error) {
 	return e.config.Data, nil
 }
 
+func (e Service) Get4DataApp(context.Context, *Request) (*DataApp, error) {
+	fmt.Println("Config sent")
+	fmt.Println(e.config.Data.App.String())
+	return e.config.Data.App, nil
+}
+
+func (e Service) Get4DataAuth(context.Context, *Request) (*DataAuth, error) {
+	fmt.Println("Config sent")
+	fmt.Println(e.config.Data.App.String())
+	return e.config.Data.Auth, nil
+}
+
+func (e Service) Get4DataGate(context.Context, *Request) (*DataGate, error) {
+	fmt.Println("Config sent")
+	fmt.Println(e.config.Data.App.String())
+	return e.config.Data.Gate, nil
+}
+
 func (e Service) Get4Gate(_ context.Context, _ *Request) (*Gate, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Gate.String())

@@ -1,8 +1,6 @@
-package internal
+package auth
 
 import (
-	"bytes"
-	"github.com/imakiri/gorum/utils"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -32,21 +30,21 @@ type argon struct {
 	memory     uint32
 }
 
-func (e argon) Hash(plain utils.CredentialPlain) utils.CredentialObscure {
-	var obscure utils.CredentialObscure
+func (e argon) Hash(plain string) []byte {
+	var b []byte
 
 	switch e._type {
 	case Argon2i:
-		obscure = argon2.Key([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
+		b = argon2.Key([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
 	case Argon2id:
-		obscure = argon2.IDKey([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
+		b = argon2.IDKey([]byte(plain), e.salt, e.iterations, e.memory, e.threads, e.keyLen)
 	default:
 		return nil
 	}
 
-	return obscure
+	return b
 }
 
-func (e argon) Compare(obscure0, obscure1 utils.CredentialObscure) bool {
-	return bytes.Equal(obscure0, obscure1)
-}
+//func (e argon) Compare(obscure0, obscure1 service.CredentialObscure) bool {
+//	return bytes.Equal(obscure0, obscure1)
+//}

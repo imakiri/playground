@@ -1,17 +1,25 @@
 package api
 
 import (
+	"context"
 	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/service"
 )
 
 type Service struct {
-	cfg    cfg.ServiceClient
-	config cfg.Config
+	service.Service
+	config *cfg.Api
 }
 
-func NewService(cfgc cfg.ServiceClient) (*Service, error) {
+func New(bs service.Service) (*Service, error) {
 	var s Service
 	var err error
+
+	s.Service = bs
+	s.config, err = s.Cfg().Get4Api(context.Background(), &cfg.Request{})
+	if err != nil {
+		return nil, err
+	}
 
 	//API = s.API
 	//_, err := app.NewApp(s)

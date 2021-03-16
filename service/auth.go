@@ -1,10 +1,6 @@
-package utils
+package service
 
 type Salt string
-
-type CredentialPlain string
-
-type CredentialObscure []byte
 
 type UUID uint64
 
@@ -22,5 +18,3 @@ func (e ID) UUID() UUID {
 func (e ID) PemID() []PEMID {
 	return e.pemid
 }
-
-type Action interface{}

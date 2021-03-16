@@ -20,13 +20,13 @@ func (s *Service) Root(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("web/templates/index.html")
 	if err != nil {
-		ise(w, err)
+		s.ise(w, err)
 		return
 	}
 
 	err = t.ExecuteTemplate(w, "index", nil)
 	if err != nil {
-		ise(w, err)
+		s.ise(w, err)
 		return
 	}
 }

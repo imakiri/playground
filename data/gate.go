@@ -1,16 +1,25 @@
 package data
 
-import "github.com/jackc/pgx/v4"
+import (
+	"context"
+	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/service"
+)
 
-func NewGate() (*Gate, error) {
+type Gate struct {
+	service.Service
+	config *cfg.DataGate
+}
+
+func New(bs service.Service) (*Gate, error) {
 	var s Gate
 	var err error
 
-	// TODO: Data.Gate constructor
+	s.Service = bs
+	s.config, err = s.Cfg().Get4DataGate(context.Background(), &cfg.Request{})
+	if err != nil {
+		return nil, err
+	}
 
 	return &s, err
-}
-
-type Gate struct {
-	db *pgx.Conn
 }

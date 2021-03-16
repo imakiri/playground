@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
 	"github.com/imakiri/gorum/log"
+	"google.golang.org/grpc"
 )
 
 func NewService(cfg_sc cfg.ServiceClient) (*Service, error) {
@@ -23,4 +24,12 @@ type Service struct {
 	log    log.Service
 	cfg_sc cfg.ServiceClient
 	config *cfg.Gate
+}
+
+func (s Service) UnaryServerInterceptor() grpc.UnaryServerInterceptor {
+	var f grpc.UnaryServerInterceptor
+
+	// TODO: service.UnaryServerInterceptor
+
+	return f
 }

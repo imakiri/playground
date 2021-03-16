@@ -4,23 +4,23 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/service"
 	"net/http"
 )
 
 type Service struct {
-	//gate        *gate.Service
-	cfg         cfg.ServiceClient
+	service.Service
 	config      *cfg.Web
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(cfgc cfg.ServiceClient) (*Service, error) {
+func New(bs service.Service) (*Service, error) {
 	var s Service
 	var err error
 
-	s.cfg = cfgc
-	s.config, err = s.cfg.Get4Web(context.Background(), &cfg.Request{})
+	s.Service = bs
+	s.config, err = s.Cfg().Get4Web(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func NewService(cfgc cfg.ServiceClient) (*Service, error) {
 	router := mux.NewRouter()
 	redirRouter := mux.NewRouter()
 
-	redirRouter.HandleFunc("/", redirect)
+	redirRouter.HandleFunc("/", s.redirect)
 
 	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
 	router.HandleFunc("/", s.Root)
@@ -63,14 +63,12 @@ func (s *Service) Launch() error {
 	}
 }
 
-// Redirect from HTTP to HTTPS
-func redirect(w http.ResponseWriter, r *http.Request) {
+func (Service) redirect(w http.ResponseWriter, r *http.Request) {
 	newURI := "https://" + r.Host + r.URL.String()
 	http.Redirect(w, r, newURI, http.StatusFound)
 }
 
-// Internal ServiceInt Error Response
-func ise(w http.ResponseWriter, err error) {
+func (Service) ise(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusInternalServerError)
 	_, _ = w.Write([]byte(err.Error()))

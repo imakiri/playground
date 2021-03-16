@@ -1,18 +1,5 @@
 package app
 
-//func (e *App) Detect(u uuid.UUID, image []byte) ([]byte, error) {
-//	if !checkPermissionForUUID(e.gate, u, core.FN_Detect) {
-//		return nil, core.Status_AccessDenied
-//	}
-//
-//	response, _ := e.services.FaceDetection.Detect(context.Background(), &core.DetectionRequest{Img: image})
-//	if err := response.GetErr(); err != nil {
-//		return nil, errors.New(err.String())
-//	}
-//
-//	return response.GetImg().GetData(), nil
-//}
-//
 //func (e *App) CreateUser(u uuid.UUID, login string, password string, avatar []byte, name string) error {
 //	if !checkPermissionForUUID(e.gate, u, core.FN_CreateUser) {
 //		return core.Status_AccessDenied

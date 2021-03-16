@@ -1,30 +1,30 @@
 package app
 
 import (
-	"github.com/imakiri/gorum/data"
-	"github.com/imakiri/gorum/transport"
-	"github.com/imakiri/gorum/utils"
-	"github.com/jackc/pgx/v4"
+	"context"
+	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/service"
 )
 
-//type User struct {
-//	db       *pgx.Conn
-//	log      utils.LogService
-//	config   *transport.App
-//	configDB *transport.Data
-//}
-//
-//func NewService(c *transport.System) (*User, error) {
-//	var s User
-//	var err error
-//
-//	s.config = c.GetApp()
-//	s.configDB = c.GetData()
-//
-//	s.db, err = data.Connect(c.GetData())
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return &s, err
-//}
+type Data interface {
+	SomeDataFunc()
+}
+
+type Service struct {
+	service.Service
+	config *cfg.App
+	data   Data
+}
+
+func New(bs service.Service) (*Service, error) {
+	var s Service
+	var err error
+
+	s.Service = bs
+	s.config, err = s.Cfg().Get4App(context.Background(), &cfg.Request{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, err
+}

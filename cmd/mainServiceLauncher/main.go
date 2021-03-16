@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/log"
+	"github.com/imakiri/gorum/service"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
-	"log"
+	bi_log "log"
 	"net"
 )
 
@@ -37,9 +39,15 @@ func NewLauncher(otps opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	l.cfg = cfg.NewServiceClient(conn)
+	var cfgc = cfg.NewServiceClient(conn)
+	var log2 log.Service
 
-	l.web, err = web.NewService(l.cfg)
+	l.bs, err = service.New(&log2, cfgc)
+	if err != nil {
+		return nil, err
+	}
+
+	l.web, err = web.New(l.bs)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +56,7 @@ func NewLauncher(otps opts) (*Launcher, error) {
 }
 
 type Launcher struct {
-	cfg cfg.ServiceClient
+	bs  service.Service
 	web *web.Service
 }
 
@@ -67,8 +75,8 @@ func main() {
 
 	var l, err = NewLauncher(o)
 	if err != nil {
-		log.Fatalln(err)
+		bi_log.Fatalln(err)
 	} else {
-		log.Fatalln(l.Launch())
+		bi_log.Fatalln(l.Launch())
 	}
 }

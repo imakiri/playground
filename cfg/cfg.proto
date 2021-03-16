@@ -52,6 +52,9 @@ service Service {
   rpc Get4App(Request) returns (App);
   rpc Get4Auth(Request) returns (Auth);
   rpc Get4Data(Request) returns (Data);
+  rpc Get4DataApp(Request) returns (DataApp);
+  rpc Get4DataAuth(Request) returns (DataAuth);
+  rpc Get4DataGate(Request) returns (DataGate);
   rpc Get4Gate(Request) returns (Gate);
   rpc Get4Web(Request) returns (Web);
 }

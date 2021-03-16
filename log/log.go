@@ -1,11 +1,16 @@
 package log
 
-func NewService() (*Service, error) {
+type Service struct {
+
+	// TODO: Service
+
+}
+
+func New() (*Service, error) {
 	var s Service
 	var err error
 
-	return &s, err
-}
+	// TODO: Constructor.Service
 
-type Service struct {
+	return &s, err
 }

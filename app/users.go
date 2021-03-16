@@ -1,10 +1,5 @@
 package app
 
-import (
-	"context"
-	"github.com/imakiri/gorum/utils"
-)
-
 //func (e *User) CreateUser(ctx context.Context, r *utils.ContentRequestCreateUser) (utils.ContentResponseCreateUser, error) {
 //	panic("implement me")
 //}
