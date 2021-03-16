@@ -3,19 +3,8 @@ package cfg
 import (
 	"context"
 	"fmt"
-	"github.com/imakiri/gorum/core"
-	"github.com/imakiri/gorum/transport"
 	"github.com/spf13/viper"
 )
-
-type Config struct {
-	Api  *core.CfgApi
-	App  *core.CfgApp
-	Auth *core.CfgAuth
-	Data *core.CfgData
-	Gate *core.CfgGate
-	Web  *core.CfgWeb
-}
 
 func New() (*Service, error) {
 	var s Service
@@ -30,41 +19,41 @@ func New() (*Service, error) {
 }
 
 type Service struct {
-	transport.UnimplementedCfgServer
+	UnimplementedServiceServer
 	config *Config
 }
 
-func (e Service) Api(_ context.Context, _ *core.Request) (*core.CfgApi, error) {
+func (e Service) Get4Api(_ context.Context, _ *Request) (*Api, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Api.String())
 	return e.config.Api, nil
 }
 
-func (e Service) App(_ context.Context, _ *core.Request) (*core.CfgApp, error) {
+func (e Service) Get4App(_ context.Context, _ *Request) (*App, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.App.String())
 	return e.config.App, nil
 }
 
-func (e Service) Auth(_ context.Context, _ *core.Request) (*core.CfgAuth, error) {
+func (e Service) Get4Auth(_ context.Context, _ *Request) (*Auth, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Auth.String())
 	return e.config.Auth, nil
 }
 
-func (e Service) Data(_ context.Context, _ *core.Request) (*core.CfgData, error) {
+func (e Service) Get4Data(_ context.Context, _ *Request) (*Data, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Data.String())
 	return e.config.Data, nil
 }
 
-func (e Service) Gate(_ context.Context, _ *core.Request) (*core.CfgGate, error) {
+func (e Service) Get4Gate(_ context.Context, _ *Request) (*Gate, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Gate.String())
 	return e.config.Gate, nil
 }
 
-func (e Service) Web(_ context.Context, _ *core.Request) (*core.CfgWeb, error) {
+func (e Service) Get4Web(_ context.Context, _ *Request) (*Web, error) {
 	fmt.Println("Config sent")
 	fmt.Println(e.config.Web.String())
 	return e.config.Web, nil

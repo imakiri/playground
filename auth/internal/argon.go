@@ -2,7 +2,7 @@ package internal
 
 import (
 	"bytes"
-	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/utils"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -32,8 +32,8 @@ type argon struct {
 	memory     uint32
 }
 
-func (e argon) Hash(plain core.CredentialPlain) core.CredentialObscure {
-	var obscure core.CredentialObscure
+func (e argon) Hash(plain utils.CredentialPlain) utils.CredentialObscure {
+	var obscure utils.CredentialObscure
 
 	switch e._type {
 	case Argon2i:
@@ -47,6 +47,6 @@ func (e argon) Hash(plain core.CredentialPlain) core.CredentialObscure {
 	return obscure
 }
 
-func (e argon) Compare(obscure0, obscure1 core.CredentialObscure) bool {
+func (e argon) Compare(obscure0, obscure1 utils.CredentialObscure) bool {
 	return bytes.Equal(obscure0, obscure1)
 }

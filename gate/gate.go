@@ -1,30 +1,26 @@
 package gate
 
 import (
-	"github.com/imakiri/gorum/core"
-	"github.com/imakiri/gorum/transport"
+	"context"
+	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/log"
 )
 
-type Service struct {
-	log       core.LogService
-	config    *transport.Gate
-	configSys *transport.System
-}
-
-func NewService(c *transport.Config) (*Service, error) {
+func NewService(cfg_sc cfg.ServiceClient) (*Service, error) {
 	var s Service
 	var err error
 
-	s.config = c.GetGate()
-	s.configSys = c.GetSystem()
+	s.cfg_sc = cfg_sc
+	s.config, err = s.cfg_sc.Get4Gate(context.Background(), &cfg.Request{})
+	if err != nil {
+		return nil, err
+	}
 
 	return &s, err
 }
 
-//func (e *Service) checkWorker() error {
-//	if e.app == nil {
-//		return errors.New("app error")
-//	}
-//
-//	return nil
-//}
+type Service struct {
+	log    log.Service
+	cfg_sc cfg.ServiceClient
+	config *cfg.Gate
+}

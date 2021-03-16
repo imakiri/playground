@@ -2,8 +2,8 @@ package gate
 
 import (
 	"context"
-	"github.com/imakiri/gorum/core"
 	"github.com/imakiri/gorum/data"
+	"github.com/imakiri/gorum/utils"
 )
 
 // Gate
@@ -11,36 +11,36 @@ import (
 // Request
 
 type RequestGetThreadContent struct {
-	Key core.AuthKey
-	core.ContentRequestGetThreadContent
+	Key utils.AuthKey
+	utils.ContentRequestGetThreadContent
 }
 type RequestPostToThread struct {
-	Key core.AuthKey
-	core.ContentRequestPostToThread
+	Key utils.AuthKey
+	utils.ContentRequestPostToThread
 }
 
 type RequestCreateUser struct {
-	Key core.AuthKey
-	core.ContentRequestCreateUser
+	Key utils.AuthKey
+	utils.ContentRequestCreateUser
 }
 type RequestGetUserInfo struct {
-	Key core.AuthKey
-	core.ContentRequestGetUserInfo
+	Key utils.AuthKey
+	utils.ContentRequestGetUserInfo
 }
 type RequestUpdateUserInfo struct {
-	Key core.AuthKey
-	core.ContentRequestUpdateUserInfo
+	Key utils.AuthKey
+	utils.ContentRequestUpdateUserInfo
 }
 type RequestGetUserList struct {
-	Key core.AuthKey
-	core.ContentRequestGetUserList
+	Key utils.AuthKey
+	utils.ContentRequestGetUserList
 }
 
 type RequestLogin struct {
-	core.AuthRequestLogin
+	utils.AuthRequestLogin
 }
 type RequestLogout struct {
-	core.AuthRequestLogout
+	utils.AuthRequestLogout
 }
 
 //
@@ -52,18 +52,18 @@ type ResponseGetThreadContent struct {
 }
 
 type ResponseCreateUser struct {
-	core.AuthKey
+	utils.AuthKey
 }
 type ResponseGetUserInfo struct {
 	data.ViewUserPublicInfoExt
 }
 type ResponseGetUserList struct {
-	core.Meta
+	utils.Meta
 	Users []data.ViewUserPublicInfo
 }
 
 type ResponseLogin struct {
-	core.AuthKey
+	utils.AuthKey
 }
 
 type UserService interface {

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/imakiri/gorum/transport"
+	"github.com/imakiri/gorum/cfg"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -9,42 +9,66 @@ import (
 	"net"
 )
 
-func newConfigClient(from string, port string, certFile string) (transport.CfgClient, error) {
-	var client transport.CfgClient
+type opts struct {
+	domain    string
+	port      string
+	cert_path string
+}
+
+func NewLauncher(otps opts) (*Launcher, error) {
+	var l Launcher
 	var err error
 
 	var ips []net.IP
-	ips, err = net.LookupIP(from)
+	ips, err = net.LookupIP(otps.domain)
 	if err != nil {
 		return nil, err
 	}
 
 	var creds credentials.TransportCredentials
-	creds, err = credentials.NewClientTLSFromFile(certFile, "imakiri-ips.ddns.net")
+	creds, err = credentials.NewClientTLSFromFile(otps.cert_path, "imakiri-ips.ddns.net")
 	if err != nil {
 		return nil, err
 	}
 
 	var conn *grpc.ClientConn
-	conn, err = grpc.Dial(ips[0].String()+port, grpc.WithTransportCredentials(creds))
+	conn, err = grpc.Dial(ips[0].String()+otps.port, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, err
 	}
 
-	client = transport.NewCfgClient(conn)
-	return client, err
+	l.cfg = cfg.NewServiceClient(conn)
+
+	l.web, err = web.NewService(l.cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &l, err
+}
+
+type Launcher struct {
+	cfg cfg.ServiceClient
+	web *web.Service
+}
+
+func (l *Launcher) Launch() error {
+	return l.web.Launch()
 }
 
 func main() {
-	var cc transport.CfgClient
-	var err error
 
 	// TODO: Grab func args from command line args
 
-	cc, err = newConfigClient("imakiri-ips.ddns.net", ":25565", "cfg/grpc/cert.crt")
-	if err != nil {
-		log.Fatal(err)
-	}
+	var o opts
+	o.domain = "imakiri-ips.ddns.net"
+	o.port = ":25565"
+	o.cert_path = "cfg/grpc/cert_path.crt"
 
-	log.Fatal(web.NewService(cc))
+	var l, err = NewLauncher(o)
+	if err != nil {
+		log.Fatalln(err)
+	} else {
+		log.Fatalln(l.Launch())
+	}
 }

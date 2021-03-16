@@ -1,5 +1,0 @@
-package transport
-
-func init() {
-
-}

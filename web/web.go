@@ -3,27 +3,26 @@ package web
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/gorum/core"
-	"github.com/imakiri/gorum/transport"
+	"github.com/imakiri/gorum/cfg"
 	"net/http"
 )
 
 type Service struct {
-	//gate        *gate.GeneralService
-	cc          transport.CfgClient
-	config      *core.CfgWeb
+	//gate        *gate.Service
+	cfg         cfg.ServiceClient
+	config      *cfg.Web
 	Server      *http.Server
 	RedirServer *http.Server
 }
 
-func NewService(cc transport.CfgClient) error {
+func NewService(cfgc cfg.ServiceClient) (*Service, error) {
 	var s Service
 	var err error
 
-	s.cc = cc
-	s.config, err = s.cc.Web(context.Background(), &core.Request{})
+	s.cfg = cfgc
+	s.config, err = s.cfg.Get4Web(context.Background(), &cfg.Request{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	router := mux.NewRouter()
@@ -38,6 +37,12 @@ func NewService(cc transport.CfgClient) error {
 	s.RedirServer = &http.Server{}
 	s.Server.Handler = router
 	s.RedirServer.Handler = redirRouter
+
+	return &s, err
+}
+
+func (s *Service) Launch() error {
+	var err error
 
 	rsc := make(chan error)
 	sc := make(chan error)

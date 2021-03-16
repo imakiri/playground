@@ -1,13 +1,15 @@
 package api
 
 import (
-	"github.com/imakiri/gorum/transport"
+	"github.com/imakiri/gorum/cfg"
 )
 
 type Service struct {
+	cfg    cfg.ServiceClient
+	config cfg.Config
 }
 
-func NewService(c transport.API) (*Service, error) {
+func NewService(cfgc cfg.ServiceClient) (*Service, error) {
 	var s Service
 	var err error
 

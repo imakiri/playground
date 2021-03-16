@@ -1,11 +1,11 @@
 package auth
 
-import "github.com/imakiri/gorum/core"
+import "github.com/imakiri/gorum/utils"
 
 type Plain interface {
-	Create(pemid core.PEMID, credential core.Credential) (core.UUID, error)
-	Read(credential core.Credential) (core.UUID, core.PEMID, error)
-	ReadCred(uuid core.UUID) (core.PEMID, core.Credential, error)
-	Update(uuid core.UUID, pemid *core.PEMID, credential *core.Credential) error
-	Delete(uuid core.UUID) error
+	Create(pemid utils.PEMID, credential utils.Credential) (utils.UUID, error)
+	Read(credential utils.Credential) (utils.UUID, utils.PEMID, error)
+	ReadCred(uuid utils.UUID) (utils.PEMID, utils.Credential, error)
+	Update(uuid utils.UUID, pemid *utils.PEMID, credential *utils.Credential) error
+	Delete(uuid utils.UUID) error
 }

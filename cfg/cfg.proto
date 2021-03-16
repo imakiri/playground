@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package cfg;
+
+option go_package = "github.com/imakiri/gorum/cfg";
+
+message Request {}
+
+message DataApp {
+  string DSN = 1;
+}
+message DataAuth {
+  string DSN = 1;
+}
+message DataGate {
+  string DSN = 1;
+}
+
+message Api {
+
+}
+message App {
+
+}
+message Auth {
+  int32 HashCost = 1;
+  string Salt = 2;
+}
+message Data {
+  DataApp App = 1;
+  DataAuth Auth = 2;
+  DataGate Gate = 3;
+}
+message Gate {
+
+}
+message Web {
+  string CertFile = 1;
+  string KeyFile = 2;
+}
+message Config {
+  Api Api = 1;
+  App App = 2;
+  Auth Auth = 3;
+  Data Data = 4;
+  Gate Gate = 5;
+  Web Web = 6;
+}
+
+service Service {
+  rpc Get4Api(Request) returns (Api);
+  rpc Get4App(Request) returns (App);
+  rpc Get4Auth(Request) returns (Auth);
+  rpc Get4Data(Request) returns (Data);
+  rpc Get4Gate(Request) returns (Gate);
+  rpc Get4Web(Request) returns (Web);
+}

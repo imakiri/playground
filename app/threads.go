@@ -1,14 +1,9 @@
 package app
 
-import (
-	"context"
-	"github.com/imakiri/gorum/core"
-)
-
-func (e *User) GetThreadContent(ctx context.Context, r *core.ContentRequestGetThreadContent) (*core.ContentResponseGetThreadContent, error) {
-	panic("implement me")
-}
-
-func (e *User) PostToThread(ctx context.Context, r *core.ContentRequestPostToThread) (*core.ContentResponsePostToThread, error) {
-	panic("implement me")
-}
+//func (e *User) GetThreadContent(ctx context.Context, r *utils.ContentRequestGetThreadContent) (*utils.ContentResponseGetThreadContent, error) {
+//	panic("implement me")
+//}
+//
+//func (e *User) PostToThread(ctx context.Context, r *utils.ContentRequestPostToThread) (*utils.ContentResponsePostToThread, error) {
+//	panic("implement me")
+//}

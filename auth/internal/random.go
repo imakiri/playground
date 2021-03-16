@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/imakiri/gorum/core"
+	"github.com/imakiri/gorum/utils"
 	"math/rand"
 )
 
@@ -17,7 +17,7 @@ type random struct {
 	length uint
 }
 
-func (e random) Random() core.CredentialObscure {
+func (e random) Random() utils.CredentialObscure {
 	const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	b := make([]byte, e.length)
 	for i := range b {

@@ -2,48 +2,69 @@ package main
 
 import (
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 )
 
-func launchService(addr, certFile, keyFile string) error {
+type opts struct {
+	port      string
+	cert_path string
+	key_path  string
+}
+
+func NewLauncher(o opts) (*Launcher, error) {
+	var l Launcher
 	var err error
 
-	var lis net.Listener
-	lis, err = net.Listen("tcp", addr)
+	l.lis, err = net.Listen("tcp", o.port)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var creds credentials.TransportCredentials
-	creds, err = credentials.NewServerTLSFromFile(certFile, keyFile)
+	creds, err = credentials.NewServerTLSFromFile(o.cert_path, o.key_path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var server *grpc.Server
-	server = grpc.NewServer(grpc.Creds(creds))
+	l.server = grpc.NewServer(grpc.Creds(creds))
 
 	var service *cfg.Service
 	service, err = cfg.New()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	transport.RegisterCfgServer(server, service)
-	return server.Serve(lis)
+	cfg.RegisterServiceServer(l.server, service)
+
+	return &l, err
+}
+
+type Launcher struct {
+	lis    net.Listener
+	server *grpc.Server
+}
+
+func (l *Launcher) Launch() error {
+	return l.server.Serve(l.lis)
 }
 
 func main() {
 
 	// TODO: Grab func args from command line args
 
-	var err error
-	err = launchService(":25565", "cfg/grpc/cert.crt", "cfg/grpc/key.pem")
+	var o opts
+	o.port = ":25565"
+	o.cert_path = "cfg/grpc/cert.crt"
+	o.key_path = "cfg/grpc/key.pem"
+
+	var l, err = NewLauncher(o)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err)
+	} else {
+		log.Fatalln(l.Launch())
 	}
+
 }
