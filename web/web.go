@@ -4,23 +4,27 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
+	"google.golang.org/grpc"
 	"net/http"
 )
 
-type Service struct {
-	service.Service
-	config      *cfg.Web
-	Server      *http.Server
-	RedirServer *http.Server
+type Config interface {
+	Get4Web(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.Web, error)
 }
 
-func New(bs service.Service) (*Service, error) {
+type Service struct {
+	config       Config
+	configCached *cfg.Web
+	Server       *http.Server
+	RedirServer  *http.Server
+}
+
+func New(c Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.Service = bs
-	s.config, err = s.Cfg().Get4Web(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4Web(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +56,7 @@ func (s *Service) Launch() error {
 	}(rsc)
 
 	go func(sc chan error) {
-		sc <- s.Server.ListenAndServeTLS(s.config.CertFile, s.config.KeyFile)
+		sc <- s.Server.ListenAndServeTLS(s.configCached.CertFile, s.configCached.KeyFile)
 	}(sc)
 
 	select {

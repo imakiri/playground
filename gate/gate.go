@@ -3,27 +3,29 @@ package gate
 import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/log"
 	"google.golang.org/grpc"
 )
 
-func NewService(cfg_sc cfg.ServiceClient) (*Service, error) {
+type Config interface {
+	Get4Gate(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.Gate, error)
+}
+
+type Service struct {
+	config       Config
+	configCached *cfg.Gate
+}
+
+func NewService(c Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.cfg_sc = cfg_sc
-	s.config, err = s.cfg_sc.Get4Gate(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4Gate(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
 
 	return &s, err
-}
-
-type Service struct {
-	log    log.Service
-	cfg_sc cfg.ServiceClient
-	config *cfg.Gate
 }
 
 func (s Service) UnaryServerInterceptor() grpc.UnaryServerInterceptor {

@@ -9,6 +9,7 @@ type Error string
 
 const (
 	E_InvalidArgument      Error = "invalid argument"
+	E_ConnectionError      Error = "connection error"
 	E_NotSupported         Error = "not supported"
 	E_ClosedChannel        Error = "closed channel"
 	E_TypeMismatch         Error = "type mismatch"

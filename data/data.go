@@ -4,52 +4,47 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
-type ModelUserID uint64
-type ModelUserName string
-type ModelUserAvatar []byte
-type ModelUserEmail string
-type ModelUserJoinDate timestamp.Timestamp
+type (
+	ModelUserUUID             string
+	ModelUserPemID            int16
+	ModelUserNickname         string
+	ModelUserFullname         string
+	ModelUserAvatar           []byte
+	ModelUserRegistrationDate int64
 
-type ModelCredentialsUserID ModelUserID
-type ModelCredentialsLogin string
-type ModelCredentialsPassHash []byte
-type ModelCredentialsPermissions []byte
+	UserID struct {
+		UUID  ModelUserUUID
+		PemID ModelUserPemID
+	}
+)
 
-type ModelPostUserID ModelUserID
+type ModelPostUserID UserID
 type ModelPostUUID uint64
 type ModelPostTimestamp timestamp.Timestamp
 type ModelPostContent string
 
 type ViewUserGeneral struct {
-	ID       ModelUserID
-	Name     ModelUserName
+	ID       UserID
+	Name     ModelUserNickname
 	Avatar   ModelUserAvatar
-	Email    ModelUserEmail
-	JoinDate ModelUserJoinDate
+	JoinDate ModelUserRegistrationDate
 }
 type ViewUserStats struct {
 	TotalPosts uint64
 }
 type ViewUserPublicInfo struct {
-	ID     ModelUserID
-	Name   ModelUserName
+	ID     UserID
+	Name   ModelUserNickname
 	Avatar ModelUserAvatar
 }
 type ViewUserPublicInfoExt struct {
 	ViewUserPublicInfo
-	JoinDate ModelUserJoinDate
+	JoinDate ModelUserRegistrationDate
 	ViewUserStats
 }
 type ViewUserOptions struct {
-	Name   ModelUserName
+	Name   ModelUserNickname
 	Avatar ModelUserAvatar
-	Email  ModelUserEmail
-}
-
-type ViewCredentialsGeneral struct {
-	Login       ModelCredentialsLogin
-	PassHash    ModelCredentialsPassHash
-	Permissions ModelCredentialsPermissions
 }
 
 type ViewPostGeneral struct {

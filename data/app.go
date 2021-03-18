@@ -3,25 +3,35 @@ package data
 import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
+	"github.com/imakiri/gorum/erres"
+	"google.golang.org/grpc"
+
+	"github.com/jmoiron/sqlx"
 )
 
-type App struct {
-	service.Service
-	config *cfg.DataApp
+type ConfigApp interface {
+	Get4DataApp(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataApp, error)
 }
 
-func NewApp(bs service.Service) (*App, error) {
+type App struct {
+	config       ConfigApp
+	configCached *cfg.DataApp
+	db           *sqlx.DB
+}
+
+func NewApp(c ConfigApp) (*App, error) {
 	var s App
 	var err error
 
-	s.Service = bs
-	s.config, err = s.Cfg().Get4DataApp(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4DataApp(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: App constructor
-
+	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
+	if err != nil {
+		return nil, erres.E_ConnectionError.SetTime("").SetDescription(err.Error())
+	}
 	return &s, err
 }

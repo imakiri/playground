@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
+	"google.golang.org/grpc"
 )
 
 //type Storage interface {
@@ -53,17 +53,21 @@ import (
 //	WeakAuthenticator
 //}
 
-type Service struct {
-	service.Service
-	config *cfg.Auth
+type Config interface {
+	Get4Auth(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.Auth, error)
 }
 
-func New(bs service.Service) (*Service, error) {
+type Service struct {
+	config       Config
+	configCached *cfg.Auth
+}
+
+func NewService(c Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.Service = bs
-	s.config, err = s.Cfg().Get4Auth(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4Auth(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +78,6 @@ func New(bs service.Service) (*Service, error) {
 //func (s Service) Authenticate(credentials []service.Credential) (service.ID, error) {
 //	var id service.ID
 //	var err error
-//
-//	// TODO: Implement Authenticate
 //
 //	return id, err
 //}

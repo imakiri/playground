@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/log"
 	"github.com/imakiri/gorum/service"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
@@ -39,15 +38,8 @@ func NewLauncher(otps opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	var cfgc = cfg.NewServiceClient(conn)
-	var log2 log.Service
-
-	l.bs, err = service.New(&log2, cfgc)
-	if err != nil {
-		return nil, err
-	}
-
-	l.web, err = web.New(l.bs)
+	var config = cfg.NewServiceClient(conn)
+	l.web, err = web.New(config)
 	if err != nil {
 		return nil, err
 	}

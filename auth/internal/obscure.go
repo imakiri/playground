@@ -1,4 +1,6 @@
-package auth
+package internal
+
+import "github.com/imakiri/gorum/erres"
 
 const (
 	Temporary typeObscure = "temporary"
@@ -11,6 +13,33 @@ type typeObscure string
 type Obscure interface {
 	Type() typeObscure
 	Key() []byte
+}
+
+func NewObscure(t typeObscure, key []byte) (Obscure, error) {
+	var o Obscure
+	var err error
+
+	switch t {
+	case Temporary:
+		o = temporary{
+			_type: Temporary,
+			data:  key,
+		}
+	case Cookie:
+		o = cookie{
+			_type: Cookie,
+			data:  key,
+		}
+	case JWT:
+		o = jwt{
+			_type: JWT,
+			data:  key,
+		}
+	default:
+		err = erres.E_TypeMismatch.SetTime("")
+	}
+
+	return o, err
 }
 
 // Temporary -----------------------------------------------------------------------------------------------------------

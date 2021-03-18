@@ -1,4 +1,4 @@
-package auth
+package internal
 
 import (
 	"golang.org/x/crypto/argon2"
