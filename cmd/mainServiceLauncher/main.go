@@ -63,7 +63,7 @@ func main() {
 	var o opts
 	o.domain = "imakiri-ips.ddns.net"
 	o.port = ":25565"
-	o.cert_path = "cfg/grpc/cert_path.crt"
+	o.cert_path = "cfg/grpc/cert.crt"
 
 	var l, err = NewLauncher(o)
 	if err != nil {

@@ -3,25 +3,29 @@ package app
 import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
+	"google.golang.org/grpc"
 )
 
-type Data interface {
-	SomeDataFunc()
+type DataAuth interface{}
+type DataApp interface{}
+
+type Config interface {
+	Get4App(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.App, error)
 }
 
 type Service struct {
-	service.Service
-	config *cfg.App
-	data   Data
+	config       Config
+	configCached *cfg.App
+	dataAuth     DataAuth
+	dataApp      DataApp
 }
 
-func New(bs service.Service) (*Service, error) {
+func New(c Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.Service = bs
-	s.config, err = s.Cfg().Get4App(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4App(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}

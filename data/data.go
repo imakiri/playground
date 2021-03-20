@@ -1,10 +1,10 @@
 package data
 
-import (
-	"github.com/golang/protobuf/ptypes/timestamp"
-)
-
+// Model's types ---------------------------------------------------------------------------------------------------------
 type (
+
+	// Model.User types ------------------------------------------------------------------------------------------------
+
 	ModelUserUUID             string
 	ModelUserPemID            int16
 	ModelUserNickname         string
@@ -12,50 +12,73 @@ type (
 	ModelUserAvatar           []byte
 	ModelUserRegistrationDate int64
 
+	// Model.Post types ------------------------------------------------------------------------------------------------
+
+	ModelPostUUID     uint64
+	ModelPostDate     int64
+	ModelPostLastEdit int64
+	ModelPostContent  string
+
+	// Model.Thread types ----------------------------------------------------------------------------------------------
+
+	ModelThreadUUID         string
+	ModelThreadCreationDate int64
+	ModelThreadTopic        int16
+	ModelThreadName         string
+
+	// Model.Cookie types ----------------------------------------------------------------------------------------------
+
+	ModelCookieKey            string
+	ModelCookieExpirationDate int64
+
+	// Model.Logpass types ---------------------------------------------------------------------------------------------
+
+	ModelLogpassLogin    []byte
+	ModelLogpassPassword []byte
+)
+
+// Model types ---------------------------------------------------------------------------------------------------------
+type (
+	ModelUser struct {
+		UUID             ModelUserUUID
+		Nickname         ModelUserNickname
+		Fullname         ModelUserFullname
+		Avatar           ModelUserAvatar
+		RegistrationDate ModelUserRegistrationDate
+	}
+	ModelThread struct {
+		UUID         ModelThreadUUID
+		UserUUID     ModelUserUUID
+		CreationDate ModelThreadCreationDate
+		Topic        ModelThreadTopic
+		Name         ModelThreadName
+	}
+	ModelPost struct {
+		ThreadUUID ModelThreadUUID
+		UserUUID   ModelUserUUID
+		Date       ModelPostDate
+		LastEdit   ModelPostLastEdit
+		Content    ModelPostContent
+		UUID       ModelPostUUID
+	}
+	ModelCookie struct {
+		Key            ModelCookieKey
+		UUID           ModelUserUUID
+		PemID          ModelUserPemID
+		ExpirationDate ModelCookieExpirationDate
+	}
+	ModelLogpass struct {
+		UUID     ModelUserUUID
+		Login    ModelLogpassLogin
+		Password ModelLogpassPassword
+		PemID    ModelUserPemID
+	}
+)
+
+// Custom types --------------------------------------------------------------------------------------------------------
+type (
 	UserID struct {
 		UUID  ModelUserUUID
 		PemID ModelUserPemID
 	}
 )
-
-type ModelPostUserID UserID
-type ModelPostUUID uint64
-type ModelPostTimestamp timestamp.Timestamp
-type ModelPostContent string
-
-type ViewUserGeneral struct {
-	ID       UserID
-	Name     ModelUserNickname
-	Avatar   ModelUserAvatar
-	JoinDate ModelUserRegistrationDate
-}
-type ViewUserStats struct {
-	TotalPosts uint64
-}
-type ViewUserPublicInfo struct {
-	ID     UserID
-	Name   ModelUserNickname
-	Avatar ModelUserAvatar
-}
-type ViewUserPublicInfoExt struct {
-	ViewUserPublicInfo
-	JoinDate ModelUserRegistrationDate
-	ViewUserStats
-}
-type ViewUserOptions struct {
-	Name   ModelUserNickname
-	Avatar ModelUserAvatar
-}
-
-type ViewPostGeneral struct {
-	UUID      ModelPostUUID
-	UserID    ModelPostUserID
-	Timestamp ModelPostTimestamp
-	Content   ModelPostContent
-}
-type ViewPostDetails struct {
-	UUID      ModelPostUUID
-	Timestamp ModelPostTimestamp
-	Content   ModelPostContent
-	ViewUserPublicInfoExt
-}

@@ -74,10 +74,3 @@ func NewService(c Config) (*Service, error) {
 
 	return &s, err
 }
-
-//func (s Service) Authenticate(credentials []service.Credential) (service.ID, error) {
-//	var id service.ID
-//	var err error
-//
-//	return id, err
-//}

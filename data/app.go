@@ -9,6 +9,26 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// App.View types ------------------------------------------------------------------------------------------------------
+type (
+	ViewPostByThreadUUID struct {
+		UserUUID ModelUserUUID
+		PostUUID ModelPostUUID
+		Date     ModelPostDate
+		LastEdit ModelPostLastEdit
+		Content  ModelPostContent
+	}
+	ViewThread struct {
+		CreationDate ModelThreadCreationDate
+		Topic        ModelThreadTopic
+		Name         ModelThreadName
+		Users        []ModelUser
+		Posts        []ViewPostByThreadUUID
+	}
+)
+
+// Auth.Service --------------------------------------------------------------------------------------------------------
+
 type ConfigApp interface {
 	Get4DataApp(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataApp, error)
 }

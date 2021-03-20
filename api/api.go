@@ -3,38 +3,27 @@ package api
 import (
 	"context"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
+	"google.golang.org/grpc"
 )
 
-type Service struct {
-	service.Service
-	config *cfg.Api
+type Config interface {
+	Get4Api(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.Api, error)
 }
 
-func New(bs service.Service) (*Service, error) {
+type Service struct {
+	config       Config
+	configCached *cfg.Api
+}
+
+func New(c Config) (*Service, error) {
 	var s Service
 	var err error
 
-	s.Service = bs
-	s.config, err = s.Cfg().Get4Api(context.Background(), &cfg.Request{})
+	s.config = c
+	s.configCached, err = s.config.Get4Api(context.Background(), &cfg.Request{})
 	if err != nil {
 		return nil, err
 	}
-
-	//API = s.API
-	//_, err := app.NewApp(s)
-	//if err != nil {
-	//	return nil, nil, err
-	//}
-	//
-	//var router = mux.NewRouter()
-	//var redirRouter = mux.NewRouter()
-	//
-	////redirRouter.HandleFunc("/", redirect)
-	////
-	////router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./web/assets/"))))
-	////router.Handle("/", root{a})
-	////router.Handle("/detect", detect{a})
 
 	return &s, err
 }

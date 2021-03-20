@@ -10,35 +10,26 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Auth.Views types ----------------------------------------------------------------------------------------------------
 type (
-	ModelAuthKey            string
-	ModelAuthExpirationDate int64
-
-	ModelAuthLogin    []byte
-	ModelAuthPassword []byte
-
-	ModelAuthObscureCookie struct {
-		UserID
-		Key            ModelAuthKey
-		ExpirationDate ModelAuthExpirationDate
-	}
-	ModelAuthHashedLogpass struct {
-		UserID
-		Login    ModelAuthLogin
-		Password ModelAuthPassword
-	}
-
-	ViewAuthObscureCookie struct {
+	ViewCookieByUUID struct {
 		PemID          ModelUserPemID
-		Key            ModelAuthKey
-		ExpirationDate ModelAuthExpirationDate
+		Key            ModelCookieKey
+		ExpirationDate ModelCookieExpirationDate
 	}
-	ViewAuthHashedLogpass struct {
+	ViewLogpassByUUID struct {
 		PemID    ModelUserPemID
-		Login    ModelAuthLogin
-		Password ModelAuthPassword
+		Login    ModelLogpassLogin
+		Password ModelLogpassPassword
+	}
+	ViewLogpassByLogin struct {
+		UUID     ModelUserUUID
+		PemID    ModelUserPemID
+		Password ModelLogpassPassword
 	}
 )
+
+// Auth.Service --------------------------------------------------------------------------------------------------------
 
 type ConfigAuth interface {
 	Get4DataAuth(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataAuth, error)
@@ -72,10 +63,10 @@ func NewAuth(cs ConfigAuth) (*Auth, error) {
 	return &s, err
 }
 
-//
+// Auth.Service.Cookie methods -----------------------------------------------------------------------------------------
 
-func (a Auth) AddCookie(uuid ModelUserUUID, cookie ViewAuthObscureCookie) error {
-	var c ModelAuthObscureCookie
+func (a Auth) AddCookie(uuid ModelUserUUID, cookie ViewCookieByUUID) error {
+	var c ModelCookie
 
 	if uuid == "" {
 		c.UUID = ModelUserUUID(nanoid.New())
@@ -89,7 +80,7 @@ func (a Auth) AddCookie(uuid ModelUserUUID, cookie ViewAuthObscureCookie) error 
 	return err
 }
 
-func (a Auth) GetCookie(key ModelAuthKey, container *ViewAuthObscureCookie) error {
+func (a Auth) GetCookie(key ModelCookieKey, container *ViewCookieByUUID) error {
 	return a.db.Get(container, "SELECT uuid, pemid, expiration_date FROM main.auth.cookie WHERE key = $1", key)
 }
 
@@ -98,10 +89,10 @@ func (a Auth) DeleteCookie(uuid ModelUserUUID) error {
 	return err
 }
 
-//
+// Auth.Service.Logpass methods ----------------------------------------------------------------------------------------
 
-func (a Auth) AddLogpass(uuid ModelUserUUID, logpass ViewAuthHashedLogpass) error {
-	var l ModelAuthHashedLogpass
+func (a Auth) AddLogpass(uuid ModelUserUUID, logpass ViewLogpassByUUID) error {
+	var l ModelLogpass
 
 	if uuid == "" {
 		l.UUID = ModelUserUUID(nanoid.New())
@@ -115,7 +106,7 @@ func (a Auth) AddLogpass(uuid ModelUserUUID, logpass ViewAuthHashedLogpass) erro
 	return err
 }
 
-func (a Auth) GetLogpass(login ModelAuthLogin, container *ViewAuthHashedLogpass) error {
+func (a Auth) GetLogpass(login ModelLogpassLogin, container *ViewLogpassByUUID) error {
 	return a.db.Get(container, "SELECT uuid, pemid, password FROM main.auth.logpass WHERE login = $1", login)
 }
 
