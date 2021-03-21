@@ -1,6 +1,8 @@
 package internal
 
-import "github.com/imakiri/gorum/erres"
+import (
+	"github.com/imakiri/erres"
+)
 
 const (
 	Temporary typeObscure = "temporary"
@@ -36,7 +38,7 @@ func NewObscure(t typeObscure, key []byte) (Obscure, error) {
 			data:  key,
 		}
 	default:
-		err = erres.E_TypeMismatch.SetTime("")
+		err = erres.TypeMismatch.SetTime("")
 	}
 
 	return o, err

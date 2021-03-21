@@ -3,14 +3,13 @@ package data
 import (
 	"context"
 	"github.com/aidarkhanov/nanoid"
+	"github.com/imakiri/erres"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/erres"
 	_ "github.com/jackc/pgx/stdlib"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
 )
 
-// Auth.Views types ----------------------------------------------------------------------------------------------------
 type (
 	ViewCookieByUUID struct {
 		PemID          ModelUserPemID
@@ -29,8 +28,6 @@ type (
 	}
 )
 
-// Auth.Service --------------------------------------------------------------------------------------------------------
-
 type ConfigAuth interface {
 	Get4DataAuth(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataAuth, error)
 }
@@ -46,7 +43,7 @@ func NewAuth(cs ConfigAuth) (*Auth, error) {
 	var err error
 
 	if cs == nil {
-		return nil, erres.E_InvalidArgument.SetTime("").SetDescription("ConfigAuth is nil")
+		return nil, erres.InvalidArgument.SetTime("").SetDescription("ConfigAuth is nil")
 	}
 
 	s.config = cs
@@ -57,13 +54,11 @@ func NewAuth(cs ConfigAuth) (*Auth, error) {
 
 	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
 	if err != nil {
-		return nil, erres.E_ConnectionError.SetTime("").SetDescription(err.Error())
+		return nil, erres.ConnectionError.SetTime("").SetDescription(err.Error())
 	}
 
 	return &s, err
 }
-
-// Auth.Service.Cookie methods -----------------------------------------------------------------------------------------
 
 func (a Auth) AddCookie(uuid ModelUserUUID, cookie ViewCookieByUUID) error {
 	var c ModelCookie
@@ -88,8 +83,6 @@ func (a Auth) DeleteCookie(uuid ModelUserUUID) error {
 	var _, err = a.db.Exec("DELETE FROM main.auth.cookie WHERE uuid = $1", uuid)
 	return err
 }
-
-// Auth.Service.Logpass methods ----------------------------------------------------------------------------------------
 
 func (a Auth) AddLogpass(uuid ModelUserUUID, logpass ViewLogpassByUUID) error {
 	var l ModelLogpass

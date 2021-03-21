@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/service"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -48,7 +47,6 @@ func NewLauncher(otps opts) (*Launcher, error) {
 }
 
 type Launcher struct {
-	bs  service.Service
 	web *web.Service
 }
 

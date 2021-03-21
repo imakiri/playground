@@ -2,14 +2,13 @@ package data
 
 import (
 	"context"
+	"github.com/imakiri/erres"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/erres"
 	"google.golang.org/grpc"
 
 	"github.com/jmoiron/sqlx"
 )
 
-// App.View types ------------------------------------------------------------------------------------------------------
 type (
 	ViewPostByThreadUUID struct {
 		UserUUID ModelUserUUID
@@ -26,8 +25,6 @@ type (
 		Posts        []ViewPostByThreadUUID
 	}
 )
-
-// Auth.Service --------------------------------------------------------------------------------------------------------
 
 type ConfigApp interface {
 	Get4DataApp(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataApp, error)
@@ -51,7 +48,7 @@ func NewApp(c ConfigApp) (*App, error) {
 
 	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
 	if err != nil {
-		return nil, erres.E_ConnectionError.SetTime("").SetDescription(err.Error())
+		return nil, erres.ConnectionError.SetTime("").SetDescription(err.Error())
 	}
 	return &s, err
 }

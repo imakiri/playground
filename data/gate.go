@@ -2,8 +2,8 @@ package data
 
 import (
 	"context"
+	"github.com/imakiri/erres"
 	"github.com/imakiri/gorum/cfg"
-	"github.com/imakiri/gorum/erres"
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
 )
@@ -30,7 +30,7 @@ func NewGate(cg ConfigGate) (*Gate, error) {
 
 	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
 	if err != nil {
-		return nil, erres.E_ConnectionError.SetTime("").SetDescription(err.Error())
+		return nil, erres.ConnectionError.SetTime("").SetDescription(err.Error())
 	}
 
 	return &s, err

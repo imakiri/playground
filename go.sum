@@ -138,7 +138,11 @@ github.com/hashicorp/logutils v1.0.0/go.mod h1:QIAnNjmIWmVIIkWDTG1z5v++HQmx9WQRO
 github.com/hashicorp/mdns v1.0.0/go.mod h1:tL+uN++7HEJ6SQLQ2/p+z2pH24WQKWjBPkE0mNTz8vQ=
 github.com/hashicorp/memberlist v0.1.3/go.mod h1:ajVTdAv/9Im8oMAAj5G31PhhMCZJV2pPBoIllUwCN7I=
 github.com/hashicorp/serf v0.8.2/go.mod h1:6hOLApaqBFA1NXqRQAsxw9QxuDEvNxSQRwA/JwenrHc=
+github.com/imakiri/erres v0.0.0-20210321153221-34ade35b508c h1:d4YAnlHinUP77cawStuWjCaKJO90xM7rg1C+ifO0hZg=
+github.com/imakiri/erres v0.0.0-20210321162426-92ec4172dd11 h1:63FZWFsICjXiF/iIIqsqyM+t18nLeOEMN+i2Iqo5yn0=
+github.com/imakiri/erres v0.0.0-20210321162426-92ec4172dd11/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
 github.com/imakiri/playground v0.0.0-20210316211138-d3be1485dc19 h1:KhtuGE4L8xwXzfurOulTTFjpd9GGlf4VU29QWieckwc=
+github.com/imakiri/playground v0.0.0-20210320225259-b786225eea1a h1:bnP8RJbViSZndNK3zxLZ6I1rkLrPbZB7b427L8ri+ZI=
 github.com/jackc/chunkreader v1.0.0 h1:4s39bBR8ByfqH+DKm8rQA3E1LHZWB9XWcrz8fqaZbe0=
 github.com/jackc/chunkreader v1.0.0/go.mod h1:RT6O25fNZIuasFJRyZ4R/Y2BbhasbmZXF9QQ7T3kePo=
 github.com/jackc/chunkreader/v2 v2.0.0/go.mod h1:odVSm741yZoC3dpHEUXIqA9tQRhFrgOHwnPIn9lDKlk=

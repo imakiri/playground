@@ -1,10 +1,6 @@
 package data
 
-// Model's types ---------------------------------------------------------------------------------------------------------
 type (
-
-	// Model.User types ------------------------------------------------------------------------------------------------
-
 	ModelUserUUID             string
 	ModelUserPemID            int16
 	ModelUserNickname         string
@@ -12,32 +8,23 @@ type (
 	ModelUserAvatar           []byte
 	ModelUserRegistrationDate int64
 
-	// Model.Post types ------------------------------------------------------------------------------------------------
-
 	ModelPostUUID     uint64
 	ModelPostDate     int64
 	ModelPostLastEdit int64
 	ModelPostContent  string
-
-	// Model.Thread types ----------------------------------------------------------------------------------------------
 
 	ModelThreadUUID         string
 	ModelThreadCreationDate int64
 	ModelThreadTopic        int16
 	ModelThreadName         string
 
-	// Model.Cookie types ----------------------------------------------------------------------------------------------
-
 	ModelCookieKey            string
 	ModelCookieExpirationDate int64
-
-	// Model.Logpass types ---------------------------------------------------------------------------------------------
 
 	ModelLogpassLogin    []byte
 	ModelLogpassPassword []byte
 )
 
-// Model types ---------------------------------------------------------------------------------------------------------
 type (
 	ModelUser struct {
 		UUID             ModelUserUUID
@@ -75,7 +62,6 @@ type (
 	}
 )
 
-// Custom types --------------------------------------------------------------------------------------------------------
 type (
 	UserID struct {
 		UUID  ModelUserUUID

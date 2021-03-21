@@ -2,7 +2,7 @@ package message
 
 import (
 	"bytes"
-	"github.com/imakiri/gorum/erres"
+	"github.com/imakiri/erres"
 	"net/smtp"
 	"text/template"
 )
@@ -22,7 +22,7 @@ func NewEmail(addr ...string) (email, error) {
 		if isEmail(a) {
 			e = append(e, a)
 		} else {
-			return nil, erres.E_TypeMismatch.SetRoute("message").SetRoute("NewEmail").SetTime("")
+			return nil, erres.TypeMismatch.SetRoute("message").SetRoute("NewEmail").SetTime("")
 		}
 	}
 
@@ -38,7 +38,7 @@ func (e email) Address() []string {
 func NewServiceEmail(addr, user, password, from string, template *template.Template) (*ServiceEmail, error) {
 	var err error
 	if !isEmail(addr) {
-		return nil, erres.E_TypeMismatch.SetRoute("message").SetRoute("NewServiceEmail").SetDescription("addr").SetDescription(addr).SetTime("")
+		return nil, erres.TypeMismatch.SetRoute("message").SetRoute("NewServiceEmail").SetDescription("addr").SetDescription(addr).SetTime("")
 	}
 
 	var email ServiceEmail
@@ -63,12 +63,12 @@ func (e ServiceEmail) Send(addr email, msg []byte) error {
 
 	err = e.template.Execute(msg_buf, msg)
 	if err != nil {
-		return erres.E_DeserializationError.SetDescription(err.Error())
+		return erres.DeserializationError.SetDescription(err.Error())
 	}
 
 	err = smtp.SendMail(e.addr, e.auth, e.from, addr.Address(), msg_buf.Bytes())
 	if err != nil {
-		return erres.E_InternalServiceError.SetDescription(err.Error())
+		return erres.InternalServiceError.SetDescription(err.Error())
 	}
 
 	return err

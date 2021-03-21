@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/imakiri/gorum/erres"
+	"github.com/imakiri/erres"
 )
 
 type _type string
@@ -50,7 +50,7 @@ func (s service) New(p _type, addr []string) (Messenger, error) {
 	switch p {
 	case Email:
 		if _, ok := s.features[p]; !ok {
-			return nil, erres.E_NotFound.SetTime("")
+			return nil, erres.NotFound.SetTime("")
 		}
 
 		var m messengerEmail
@@ -64,6 +64,6 @@ func (s service) New(p _type, addr []string) (Messenger, error) {
 			return m, err
 		}
 	default:
-		return nil, erres.E_TypeMismatch.SetTime("")
+		return nil, erres.TypeMismatch.SetTime("")
 	}
 }
