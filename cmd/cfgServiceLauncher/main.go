@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/imakiri/gorum/cfg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -9,9 +10,9 @@ import (
 )
 
 type opts struct {
-	port      string
-	cert_path string
-	key_path  string
+	port     string
+	certPath string
+	keyPath  string
 }
 
 func NewLauncher(o opts) (*Launcher, error) {
@@ -24,7 +25,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 	}
 
 	var creds credentials.TransportCredentials
-	creds, err = credentials.NewServerTLSFromFile(o.cert_path, o.key_path)
+	creds, err = credentials.NewServerTLSFromFile(o.certPath, o.keyPath)
 	if err != nil {
 		return nil, err
 	}
@@ -51,14 +52,18 @@ func (l *Launcher) Launch() error {
 	return l.server.Serve(l.lis)
 }
 
+const (
+	Port     = 25565
+	CertPath = "/cfg/grpc/cert.crt"
+	KeyPath  = "/cfg/grpc/key.pem"
+)
+
 func main() {
-
-	// TODO: Grab func args from command line args
-
 	var o opts
-	o.port = ":25565"
-	o.cert_path = "cfg/grpc/cert.crt"
-	o.key_path = "cfg/grpc/key.pem"
+
+	o.port = string(*flag.Int("port", Port, "port of cfg server"))
+	o.certPath = CertPath
+	o.keyPath = KeyPath
 
 	var l, err = NewLauncher(o)
 	if err != nil {

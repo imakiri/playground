@@ -16,23 +16,6 @@ h1 {
     box-shadow: 0 4px;
 }
 
-.detect {
-    color: #141515;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    top: 30%;
-    align-self: center;
-}
-
-.detect-button {
-    align-self: center;
-}
-
-.detect-title {
-    color: #141515;
-}
-
 p {
     vertical-align: bottom;
     text-align: center;

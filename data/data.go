@@ -14,8 +14,9 @@ type (
 	ModelPostContent  string
 
 	ModelThreadUUID         string
+	ModelThreadPemID        int16
 	ModelThreadCreationDate int64
-	ModelThreadTopic        int16
+	ModelThreadCategory     int16
 	ModelThreadName         string
 
 	ModelCookieKey            string
@@ -35,9 +36,10 @@ type (
 	}
 	ModelThread struct {
 		UUID         ModelThreadUUID
+		PemID        ModelThreadPemID
 		UserUUID     ModelUserUUID
 		CreationDate ModelThreadCreationDate
-		Topic        ModelThreadTopic
+		Category     ModelThreadCategory
 		Name         ModelThreadName
 	}
 	ModelPost struct {
@@ -59,12 +61,5 @@ type (
 		Login    ModelLogpassLogin
 		Password ModelLogpassPassword
 		PemID    ModelUserPemID
-	}
-)
-
-type (
-	UserID struct {
-		UUID  ModelUserUUID
-		PemID ModelUserPemID
 	}
 )

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"github.com/imakiri/gorum/cfg"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
@@ -10,9 +11,9 @@ import (
 )
 
 type opts struct {
-	domain    string
-	port      string
-	cert_path string
+	domain   string
+	port     string
+	certPath string
 }
 
 func NewLauncher(otps opts) (*Launcher, error) {
@@ -26,19 +27,19 @@ func NewLauncher(otps opts) (*Launcher, error) {
 	}
 
 	var creds credentials.TransportCredentials
-	creds, err = credentials.NewClientTLSFromFile(otps.cert_path, "imakiri-ips.ddns.net")
+	creds, err = credentials.NewClientTLSFromFile(otps.certPath, otps.domain)
 	if err != nil {
 		return nil, err
 	}
 
 	var conn *grpc.ClientConn
-	conn, err = grpc.Dial(ips[0].String()+otps.port, grpc.WithTransportCredentials(creds))
+	conn, err = grpc.Dial(ips[0].String()+":"+otps.port, grpc.WithTransportCredentials(creds))
 	if err != nil {
 		return nil, err
 	}
 
 	var config = cfg.NewServiceClient(conn)
-	l.web, err = web.New(config)
+	l.web, err = web.NewService(config)
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +55,18 @@ func (l *Launcher) Launch() error {
 	return l.web.Launch()
 }
 
+const (
+	Domain   = "imakiri-ips.ddns.net"
+	Port     = 25565
+	CertPath = "/cfg/grpc/cert.crt"
+)
+
 func main() {
-
-	// TODO: Grab func args from command line args
-
 	var o opts
-	o.domain = "imakiri-ips.ddns.net"
-	o.port = ":25565"
-	o.cert_path = "cfg/grpc/cert.crt"
+
+	o.domain = *flag.String("domain", Domain, "domain of cfg server")
+	o.port = string(*flag.Int("port", Port, "port of cfg server"))
+	o.certPath = CertPath
 
 	var l, err = NewLauncher(o)
 	if err != nil {

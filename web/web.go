@@ -19,7 +19,7 @@ type Service struct {
 	RedirServer  *http.Server
 }
 
-func New(c Config) (*Service, error) {
+func NewService(c Config) (*Service, error) {
 	var s Service
 	var err error
 

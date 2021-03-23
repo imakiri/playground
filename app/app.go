@@ -20,7 +20,7 @@ type Service struct {
 	dataApp      DataApp
 }
 
-func New(c Config) (*Service, error) {
+func NewService(c Config) (*Service, error) {
 	var s Service
 	var err error
 

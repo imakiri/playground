@@ -19,8 +19,19 @@ message DataGate {
 message Api {
 
 }
-message App {
+message AppPost {
 
+}
+message AppThread {
+
+}
+message AppUser {
+
+}
+message App {
+  AppPost Post = 1;
+  AppThread Thread = 2;
+  AppUser User = 3;
 }
 message Auth {
   int32 HashCost = 1;
@@ -50,6 +61,9 @@ message Config {
 service Service {
   rpc Get4Api(Request) returns (Api);
   rpc Get4App(Request) returns (App);
+  rpc Get4AppPost(Request) returns (AppPost);
+  rpc Get4AppThread(Request) returns (AppThread);
+  rpc Get4AppUser(Request) returns (AppUser);
   rpc Get4Auth(Request) returns (Auth);
   rpc Get4Data(Request) returns (Data);
   rpc Get4DataApp(Request) returns (DataApp);
