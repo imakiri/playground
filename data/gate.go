@@ -30,7 +30,7 @@ func NewGate(cg ConfigGate) (*Gate, error) {
 
 	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
 	if err != nil {
-		return nil, erres.ConnectionError.SetTime("").SetDescription(err.Error())
+		return nil, erres.ConnectionError.Extend()
 	}
 
 	return &s, err

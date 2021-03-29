@@ -19,6 +19,29 @@ type Service struct {
 	RedirServer  *http.Server
 }
 
+func registerRouts(s *Service) error {
+	var forum *HandlerForum
+	var err error
+
+	forum, err = newHandlerForum()
+	if err != nil {
+		return err
+	}
+
+	var router = mux.NewRouter()
+	var redirRouter = mux.NewRouter()
+
+	redirRouter.HandleFunc("/", s.redirect)
+	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
+	router.HandleFunc("/", s.Root)
+	router.Handle("/forum/", forum)
+
+	s.Server.Handler = router
+	s.RedirServer.Handler = redirRouter
+
+	return err
+}
+
 func NewService(c Config) (*Service, error) {
 	var s Service
 	var err error
@@ -29,18 +52,13 @@ func NewService(c Config) (*Service, error) {
 		return nil, err
 	}
 
-	router := mux.NewRouter()
-	redirRouter := mux.NewRouter()
-
-	redirRouter.HandleFunc("/", s.redirect)
-
-	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-	router.HandleFunc("/", s.Root)
-
 	s.Server = &http.Server{}
 	s.RedirServer = &http.Server{}
-	s.Server.Handler = router
-	s.RedirServer.Handler = redirRouter
+
+	err = registerRouts(&s)
+	if err != nil {
+		return nil, err
+	}
 
 	return &s, err
 }

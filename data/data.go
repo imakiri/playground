@@ -1,23 +1,33 @@
 package data
 
+import (
+	"database/sql"
+	"github.com/imakiri/erres"
+	"runtime"
+	"strings"
+)
+
 type (
 	ModelUserUUID             string
 	ModelUserPemID            int16
-	ModelUserNickname         string
-	ModelUserFullname         string
-	ModelUserAvatar           []byte
+	ModelUserNickName         string
+	ModelUserFullName         string
+	ModelUserPosts            int32
+	ModelUserAvatar512        []byte
+	ModelUserAvatar256        []byte
+	ModelUserAvatar128        []byte
 	ModelUserRegistrationDate int64
 
-	ModelPostUUID     uint64
-	ModelPostDate     int64
-	ModelPostLastEdit int64
-	ModelPostContent  string
+	ModelDate    int64
+	ModelContent string
 
-	ModelThreadUUID         string
-	ModelThreadPemID        int16
-	ModelThreadCreationDate int64
-	ModelThreadCategory     int16
-	ModelThreadName         string
+	ModelPostUUID string
+
+	ModelThreadUUID string
+	ModelThreadName string
+
+	ModelCategoryUUID string
+	ModelCategoryName string
 
 	ModelCookieKey            string
 	ModelCookieExpirationDate int64
@@ -28,27 +38,34 @@ type (
 
 type (
 	ModelUser struct {
-		UUID             ModelUserUUID
-		Nickname         ModelUserNickname
-		Fullname         ModelUserFullname
-		Avatar           ModelUserAvatar
+		UserUUID         ModelUserUUID
 		RegistrationDate ModelUserRegistrationDate
+		Nickname         ModelUserNickName
+		Fullname         ModelUserFullName
+		Avatar512        ModelUserAvatar512
+		Avatar256        ModelUserAvatar256
+		Avatar128        ModelUserAvatar128
 	}
 	ModelThread struct {
-		UUID         ModelThreadUUID
-		PemID        ModelThreadPemID
+		ThreadUUID   ModelThreadUUID
+		CategoryUUID ModelCategoryUUID
 		UserUUID     ModelUserUUID
-		CreationDate ModelThreadCreationDate
-		Category     ModelThreadCategory
 		Name         ModelThreadName
+		DateAdded    ModelDate
+		DateLastEdit ModelDate
+		Header       ModelContent
 	}
 	ModelPost struct {
-		ThreadUUID ModelThreadUUID
-		UserUUID   ModelUserUUID
-		Date       ModelPostDate
-		LastEdit   ModelPostLastEdit
-		Content    ModelPostContent
-		UUID       ModelPostUUID
+		PostUUID     ModelPostUUID
+		ThreadUUID   ModelThreadUUID
+		UserUUID     ModelUserUUID
+		DateAdded    ModelDate
+		DateLastEdit ModelDate
+		Content      ModelContent
+	}
+	ModelCategory struct {
+		CategoryUUID ModelCategoryUUID
+		Name         ModelCategoryName
 	}
 	ModelCookie struct {
 		Key            ModelCookieKey
@@ -63,3 +80,32 @@ type (
 		PemID    ModelUserPemID
 	}
 )
+
+func funcName() string {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(3, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, _ := frames.Next()
+	return frame.Function
+}
+
+// Wrapper for raw sql/sqlx/pgx error strings. Will panic if err == nil
+func errrapper(err error) erres.Error {
+	var f = funcName()
+
+	switch {
+	case err == nil:
+		panic(f + ": nil error")
+	case err == sql.ErrTxDone:
+		return erres.InternalServiceError.Extend()
+	}
+
+	var e = err.Error()
+
+	switch {
+	case strings.Contains(e, "sqlx.bindNamedMapper: unsupported map type:"):
+		return erres.InternalServiceError.Extend()
+	default:
+		return erres.JustError.Extend().AddRoute(f).AddDescription(e)
+	}
+}

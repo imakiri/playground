@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"github.com/imakiri/gorum/cfg"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
@@ -57,15 +56,15 @@ func (l *Launcher) Launch() error {
 
 const (
 	Domain   = "imakiri-ips.ddns.net"
-	Port     = 25565
-	CertPath = "/cfg/grpc/cert.crt"
+	Port     = "25565"
+	CertPath = "cfg/grpc/cert.crt"
 )
 
 func main() {
 	var o opts
 
-	o.domain = *flag.String("domain", Domain, "domain of cfg server")
-	o.port = string(*flag.Int("port", Port, "port of cfg server"))
+	o.domain = Domain
+	o.port = Port
 	o.certPath = CertPath
 
 	var l, err = NewLauncher(o)

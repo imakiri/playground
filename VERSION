@@ -4,6 +4,12 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!V0.77:
+    --data: Схема базы данных
+    --data: Postgres сервис, добавленны новые методы данных
+    --web: Добавлен HandlerForum
+    --Множественные исправления кода
+
 !V0.76:
     --VERSION: 1.1
     --app: Добавленны сервисы User, Thread, Post и их конструкторы

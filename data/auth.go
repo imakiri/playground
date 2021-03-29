@@ -43,7 +43,7 @@ func NewAuth(cs ConfigAuth) (*Auth, error) {
 	var err error
 
 	if cs == nil {
-		return nil, erres.InvalidArgument.SetTime("").SetDescription("ConfigAuth is nil")
+		return nil, erres.InvalidArgument.Extend().AddDescription("ConfigAuth is nil")
 	}
 
 	s.config = cs
@@ -54,7 +54,7 @@ func NewAuth(cs ConfigAuth) (*Auth, error) {
 
 	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
 	if err != nil {
-		return nil, erres.ConnectionError.SetTime("").SetDescription(err.Error())
+		return nil, erres.ConnectionError.Extend()
 	}
 
 	return &s, err

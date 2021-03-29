@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"github.com/imakiri/gorum/cfg"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -19,7 +18,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 	var l Launcher
 	var err error
 
-	l.lis, err = net.Listen("tcp", o.port)
+	l.lis, err = net.Listen("tcp", ":"+o.port)
 	if err != nil {
 		return nil, err
 	}
@@ -53,15 +52,16 @@ func (l *Launcher) Launch() error {
 }
 
 const (
-	Port     = 25565
-	CertPath = "/cfg/grpc/cert.crt"
-	KeyPath  = "/cfg/grpc/key.pem"
+	Port     = "25565"
+	CertPath = "cfg/grpc/cert.crt"
+	KeyPath  = "cfg/grpc/key.pem"
 )
 
 func main() {
 	var o opts
 
-	o.port = string(*flag.Int("port", Port, "port of cfg server"))
+	//o.port = string(*flag.Int("port", Port, "port of cfg server"))
+	o.port = Port
 	o.certPath = CertPath
 	o.keyPath = KeyPath
 
