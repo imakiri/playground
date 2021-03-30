@@ -38,7 +38,7 @@ func NewObscure(t typeObscure, key []byte) (Obscure, error) {
 			data:  key,
 		}
 	default:
-		err = erres.TypeMismatch.SetTime("")
+		err = erres.TypeMismatch.Extend()
 	}
 
 	return o, err

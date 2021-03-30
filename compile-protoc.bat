@@ -1,0 +1,2 @@
+protoc --go_out=./types --go_opt=module=github.com/imakiri/gorum/types ./types/cfg.proto
+protoc -I . --go-grpc_out=./transport --go-grpc_opt=module=github.com/imakiri/gorum/transport ./transport/cfg.proto

@@ -1,22 +1,15 @@
 package web
 
 import (
-	"context"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/gorum/cfg"
-	"google.golang.org/grpc"
+	"github.com/imakiri/gorum/types"
 	"net/http"
 )
 
-type Config interface {
-	Get4Web(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.Web, error)
-}
-
 type Service struct {
-	config       Config
-	configCached *cfg.Web
-	Server       *http.Server
-	RedirServer  *http.Server
+	config      *types.ConfigWeb
+	Server      *http.Server
+	RedirServer *http.Server
 }
 
 func registerRouts(s *Service) error {
@@ -42,16 +35,11 @@ func registerRouts(s *Service) error {
 	return err
 }
 
-func NewService(c Config) (*Service, error) {
+func NewService(c *types.ConfigWeb) (*Service, error) {
 	var s Service
 	var err error
 
 	s.config = c
-	s.configCached, err = s.config.Get4Web(context.Background(), &cfg.Request{})
-	if err != nil {
-		return nil, err
-	}
-
 	s.Server = &http.Server{}
 	s.RedirServer = &http.Server{}
 
@@ -74,7 +62,7 @@ func (s *Service) Launch() error {
 	}(rsc)
 
 	go func(sc chan error) {
-		sc <- s.Server.ListenAndServeTLS(s.configCached.CertFile, s.configCached.KeyFile)
+		sc <- s.Server.ListenAndServeTLS(s.config.CertFile, s.config.KeyFile)
 	}(sc)
 
 	select {

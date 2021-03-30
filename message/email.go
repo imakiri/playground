@@ -22,7 +22,7 @@ func NewEmail(addr ...string) (email, error) {
 		if isEmail(a) {
 			e = append(e, a)
 		} else {
-			return nil, erres.TypeMismatch.SetRoute("message").SetRoute("NewEmail").SetTime("")
+			return nil, erres.TypeMismatch.Extend()
 		}
 	}
 
@@ -38,7 +38,7 @@ func (e email) Address() []string {
 func NewServiceEmail(addr, user, password, from string, template *template.Template) (*ServiceEmail, error) {
 	var err error
 	if !isEmail(addr) {
-		return nil, erres.TypeMismatch.SetRoute("message").SetRoute("NewServiceEmail").SetDescription("addr").SetDescription(addr).SetTime("")
+		return nil, erres.TypeMismatch.Extend()
 	}
 
 	var email ServiceEmail
@@ -63,12 +63,12 @@ func (e ServiceEmail) Send(addr email, msg []byte) error {
 
 	err = e.template.Execute(msg_buf, msg)
 	if err != nil {
-		return erres.DeserializationError.SetDescription(err.Error())
+		return erres.DeserializationError.Extend()
 	}
 
 	err = smtp.SendMail(e.addr, e.auth, e.from, addr.Address(), msg_buf.Bytes())
 	if err != nil {
-		return erres.InternalServiceError.SetDescription(err.Error())
+		return erres.InternalServiceError.Extend()
 	}
 
 	return err

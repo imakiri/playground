@@ -1,111 +1,115 @@
 package data
 
 import (
-	"database/sql"
 	"github.com/imakiri/erres"
-	"runtime"
-	"strings"
+	"github.com/imakiri/gorum/types"
+	"github.com/jmoiron/sqlx"
 )
 
-type (
-	ModelUserUUID             string
-	ModelUserPemID            int16
-	ModelUserNickName         string
-	ModelUserFullName         string
-	ModelUserPosts            int32
-	ModelUserAvatar512        []byte
-	ModelUserAvatar256        []byte
-	ModelUserAvatar128        []byte
-	ModelUserRegistrationDate int64
-
-	ModelDate    int64
-	ModelContent string
-
-	ModelPostUUID string
-
-	ModelThreadUUID string
-	ModelThreadName string
-
-	ModelCategoryUUID string
-	ModelCategoryName string
-
-	ModelCookieKey            string
-	ModelCookieExpirationDate int64
-
-	ModelLogpassLogin    []byte
-	ModelLogpassPassword []byte
-)
-
-type (
-	ModelUser struct {
-		UserUUID         ModelUserUUID
-		RegistrationDate ModelUserRegistrationDate
-		Nickname         ModelUserNickName
-		Fullname         ModelUserFullName
-		Avatar512        ModelUserAvatar512
-		Avatar256        ModelUserAvatar256
-		Avatar128        ModelUserAvatar128
-	}
-	ModelThread struct {
-		ThreadUUID   ModelThreadUUID
-		CategoryUUID ModelCategoryUUID
-		UserUUID     ModelUserUUID
-		Name         ModelThreadName
-		DateAdded    ModelDate
-		DateLastEdit ModelDate
-		Header       ModelContent
-	}
-	ModelPost struct {
-		PostUUID     ModelPostUUID
-		ThreadUUID   ModelThreadUUID
-		UserUUID     ModelUserUUID
-		DateAdded    ModelDate
-		DateLastEdit ModelDate
-		Content      ModelContent
-	}
-	ModelCategory struct {
-		CategoryUUID ModelCategoryUUID
-		Name         ModelCategoryName
-	}
-	ModelCookie struct {
-		Key            ModelCookieKey
-		UUID           ModelUserUUID
-		PemID          ModelUserPemID
-		ExpirationDate ModelCookieExpirationDate
-	}
-	ModelLogpass struct {
-		UUID     ModelUserUUID
-		Login    ModelLogpassLogin
-		Password ModelLogpassPassword
-		PemID    ModelUserPemID
-	}
-)
-
-func funcName() string {
-	pc := make([]uintptr, 15)
-	n := runtime.Callers(3, pc)
-	frames := runtime.CallersFrames(pc[:n])
-	frame, _ := frames.Next()
-	return frame.Function
+type ServicePostgres struct {
+	config *types.ConfigDataPostgres
+	db     *sqlx.DB
 }
 
-// Wrapper for raw sql/sqlx/pgx error strings. Will panic if err == nil
-func errrapper(err error) erres.Error {
-	var f = funcName()
+// --
 
-	switch {
-	case err == nil:
-		panic(f + ": nil error")
-	case err == sql.ErrTxDone:
-		return erres.InternalServiceError.Extend()
+func (p ServicePostgres) AddCookie(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID) error {
+	return postgres_AddCookie_v1(uuid, cookie, p)
+}
+
+func (p ServicePostgres) GetCookie(key types.ModelCookieKey, container *types.ViewCookieByUUID) error {
+	return postgres_GetCookie_v1(key, container, p)
+}
+
+func (p ServicePostgres) DeleteCookie(uuid types.ModelUserUUID) error {
+	return postgres_DeleteCookie_v1(uuid, p)
+}
+
+func (p ServicePostgres) AddLogpass(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID) error {
+	return postgres_AddLogpass_v1(uuid, logpass, p)
+}
+
+func (p ServicePostgres) GetLogpass(login types.ModelLogpassLogin, container *types.ViewLogpassByUUID) error {
+	return postgres_GetLogpass_v1(login, container, p)
+}
+
+func (p ServicePostgres) DeleteLogpass(uuid types.ModelUserUUID) error {
+	return postgres_DeleteLogpass_v1(uuid, p)
+}
+
+// --
+
+func (p ServicePostgres) GetUserProfile(uuid types.ModelUserUUID, container *types.ViewUserProfile) error {
+	return postgres_GetUserProfile_v1(uuid, container, p)
+}
+
+func (p ServicePostgres) UpdateUserProfile(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate) error {
+	return postgres_UpdateUserProfile_v1(uuid, container, p)
+}
+
+func (p ServicePostgres) CreateThread(container types.ViewThreadCreate) error {
+	return postgres_CreateThread_v1(container, p)
+}
+
+func (p ServicePostgres) GetThread(thread_uuid types.ModelThreadUUID, container *types.ViewThread) error {
+	return postgres_GetThread_v1(thread_uuid, container, p)
+}
+
+func (p ServicePostgres) GetThreads(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory) error {
+	return postgres_GetThreads_v1(category, container, p)
+}
+
+func (p ServicePostgres) UpdateThread(uuid types.ModelThreadUUID, container types.ViewThreadUpdate) error {
+	var err error
+
+	//
+
+	return errrapper(err)
+}
+
+func (p ServicePostgres) DeleteThread(uuid types.ModelThreadUUID) error {
+	var err error
+
+	//
+
+	return errrapper(err)
+}
+
+func (p ServicePostgres) CreatePost(container types.ViewPostCreate) error {
+	var err error
+
+	//
+
+	return errrapper(err)
+}
+
+func (p ServicePostgres) UpdatePost(uuid types.ModelPostUUID, container types.ViewPostCreate) error {
+	var err error
+
+	//
+
+	return errrapper(err)
+}
+
+func (p ServicePostgres) DeletePost(uuid types.ModelPostUUID) error {
+	var err error
+
+	//
+
+	return errrapper(err)
+}
+
+// --
+
+func NewServicePostgres(c *types.ConfigDataPostgres) (*ServicePostgres, error) {
+	var s ServicePostgres
+	var err error
+
+	s.config = c
+
+	s.db, err = sqlx.Connect("pgx", s.config.GetDSN())
+	if err != nil {
+		return nil, erres.ConnectionError.Extend().AddDescription(err.Error())
 	}
-
-	var e = err.Error()
-
-	switch {
-	case strings.Contains(e, "sqlx.bindNamedMapper: unsupported map type:"):
-		return erres.InternalServiceError.Extend()
-	default:
-		return erres.JustError.Extend().AddRoute(f).AddDescription(e)
-	}
+	return &s, err
 }

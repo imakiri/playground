@@ -1,112 +1,92 @@
 package data
 
 import (
-	"context"
+	"database/sql"
 	"github.com/aidarkhanov/nanoid"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/cfg"
-	"github.com/jmoiron/sqlx"
-	"google.golang.org/grpc"
+	"github.com/imakiri/gorum/types"
+	"runtime"
+	"strings"
 	"time"
 )
 
-type (
-	ViewUserID struct {
-		UserUUID ModelUserUUID
-		PemID    ModelUserPemID
-	}
-	ViewUserAvatar struct {
-		Avatar512 ModelUserAvatar512
-		Avatar256 ModelUserAvatar256
-		Avatar128 ModelUserAvatar128
-	}
-)
-
-type (
-	ViewUserProfile struct {
-		RegistrationDate ModelUserRegistrationDate
-		NickName         ModelUserNickName
-		FullName         ModelUserFullName
-		Avatar512        ModelUserAvatar512
-	}
-	ViewUserProfileFromThread struct {
-		UserUUID         ModelUserUUID
-		RegistrationDate ModelUserRegistrationDate
-		NickName         ModelUserNickName
-		FullName         ModelUserFullName
-		Avatar256        ModelUserAvatar256
-	}
-	ViewUserProfileFromMain struct {
-		UserUUID  ModelUserUUID
-		NickName  ModelUserNickName
-		Avatar128 ModelUserAvatar128
-	}
-	ViewUserProfileUpdate struct {
-		NickName *ModelUserNickName
-		FullName *ModelUserFullName
-		Avatar   *ViewUserAvatar
-	}
-	ViewPostCreate struct {
-		UserUUID   ModelUserUUID
-		ThreadUUID ModelThreadUUID
-		Content    ModelContent
-	}
-	ViewPostUpdate struct {
-		Content ModelContent
-	}
-	ViewPostByThreadUUID struct {
-		PostUUID     ModelPostUUID
-		UserUUID     ModelUserUUID
-		DateAdded    ModelDate
-		DateLastEdit ModelDate
-		Content      ModelContent
-	}
-	ViewThreadCreate struct {
-		CategoryUUID ModelCategoryUUID
-		UserUUID     ModelUserUUID
-		Name         ModelThreadName
-		Header       ModelContent
-	}
-	ViewThread struct {
-		Category     ModelCategory
-		Author       ViewUserProfileFromThread
-		Name         ModelThreadName
-		DateAdded    ModelDate
-		DateLastEdit ModelDate
-		Header       ModelContent
-		Content      ViewThreadContent
-	}
-	ViewThreadContent struct {
-		Users []ViewUserProfileFromThread
-		Posts []ViewPostByThreadUUID
-	}
-	ViewThreadsByCategory struct {
-		ThreadUUID ModelThreadUUID
-		Name       ModelThreadName
-	}
-	ViewThreadUpdate struct {
-		CategoryUUID *ModelCategoryUUID
-		Name         *ModelThreadName
-		Header       *ModelContent
-	}
-)
-
-type ConfigApp interface {
-	Get4DataApp(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.DataApp, error)
+func funcName() string {
+	pc := make([]uintptr, 15)
+	n := runtime.Callers(3, pc)
+	frames := runtime.CallersFrames(pc[:n])
+	frame, _ := frames.Next()
+	return frame.Function
 }
 
-type ServicePostgres struct {
-	config       ConfigApp
-	configCached *cfg.DataApp
-	db           *sqlx.DB
+// Wrapper for raw sql/sqlx/pgx error strings. Will panic if err == nil
+func errrapper(err error) erres.Error {
+	var f = funcName()
+
+	switch {
+	case err == nil:
+		panic(f + ": nil error")
+	case err == sql.ErrTxDone:
+		return erres.InternalServiceError.Extend()
+	}
+
+	var e = err.Error()
+
+	switch {
+	case strings.Contains(e, "sqlx.bindNamedMapper: unsupported map type:"):
+		return erres.InternalServiceError.Extend()
+	default:
+		return erres.JustError.Extend().AddRoute(f).AddDescription(e)
+	}
 }
 
-func (p ServicePostgres) GetUserProfile(uuid ModelUserUUID, container *ViewUserProfile) error {
+func postgres_AddCookie_v1(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID, p ServicePostgres) error {
+	var c types.ModelCookie
+
+	if uuid == "" {
+		c.UUID = types.ModelUserUUID(nanoid.New())
+	}
+
+	c.Key = cookie.Key
+	c.PemID = cookie.PemID
+	c.ExpirationDate = cookie.ExpirationDate
+
+	var _, err = p.db.NamedQuery("INSERT INTO main.auth.cookie VALUES (:key, :uuid, :pemid, :expirationDate)", c)
+	return err
+}
+func postgres_GetCookie_v1(key types.ModelCookieKey, container *types.ViewCookieByUUID, p ServicePostgres) error {
+	return p.db.Get(container, "SELECT uuid, pemid, expiration_date FROM main.auth.cookie WHERE key = $1", key)
+}
+func postgres_DeleteCookie_v1(uuid types.ModelUserUUID, p ServicePostgres) error {
+	var _, err = p.db.Exec("DELETE FROM main.auth.cookie WHERE uuid = $1", uuid)
+	return err
+}
+func postgres_AddLogpass_v1(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, p ServicePostgres) error {
+	var l types.ModelLogpass
+
+	if uuid == "" {
+		l.UUID = types.ModelUserUUID(nanoid.New())
+	}
+
+	l.PemID = logpass.PemID
+	l.Password = logpass.Password
+	l.Login = logpass.Login
+
+	var _, err = p.db.NamedQuery("INSERT INTO main.auth.logpass VALUES (:uuid, :login, :password, :pemid)", l)
+	return err
+}
+func postgres_GetLogpass_v1(login types.ModelLogpassLogin, container *types.ViewLogpassByUUID, p ServicePostgres) error {
+	return p.db.Get(container, "SELECT uuid, pemid, password FROM main.auth.logpass WHERE login = $1", login)
+}
+func postgres_DeleteLogpass_v1(uuid types.ModelUserUUID, p ServicePostgres) error {
+	var _, err = p.db.Exec("DELETE FROM main.auth.logpass WHERE uuid = $1", uuid)
+	return err
+}
+
+func postgres_GetUserProfile_v1(uuid types.ModelUserUUID, container *types.ViewUserProfile, p ServicePostgres) error {
 	var err = p.db.Get(container, "SELECT registration_date, nick_name, full_name, avatar512 FROM main.app.users", uuid)
 	return errrapper(err)
 }
-
-func (p ServicePostgres) UpdateUserProfile(uuid ModelUserUUID, container ViewUserProfileUpdate) error {
+func postgres_UpdateUserProfile_v1(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate, p ServicePostgres) error {
 	var tx, err = p.db.Begin()
 	if err != nil {
 		return errrapper(err)
@@ -143,11 +123,10 @@ func (p ServicePostgres) UpdateUserProfile(uuid ModelUserUUID, container ViewUse
 	err = tx.Commit()
 	return errrapper(err)
 }
-
-func (p ServicePostgres) CreateThread(container ViewThreadCreate) error {
-	var threadUUID = ModelThreadUUID(nanoid.New())
-	var now = ModelDate(time.Now().UnixNano())
-	var thread = ModelThread{
+func postgres_CreateThread_v1(container types.ViewThreadCreate, p ServicePostgres) error {
+	var threadUUID = types.ModelThreadUUID(nanoid.New())
+	var now = types.ModelDate(time.Now().UnixNano())
+	var thread = types.ModelThread{
 		ThreadUUID:   threadUUID,
 		CategoryUUID: container.CategoryUUID,
 		UserUUID:     container.UserUUID,
@@ -160,8 +139,7 @@ func (p ServicePostgres) CreateThread(container ViewThreadCreate) error {
 	var _, err = p.db.NamedExec("INSERT INTO app.threads VALUES (:ThreadUUID, :CategoryUUID, :UserUUID, :Name, :DateAdded, :DateLastEdit, :Header)", thread)
 	return errrapper(err)
 }
-
-func (p ServicePostgres) GetThread(thread_uuid ModelThreadUUID, container *ViewThread) error {
+func postgres_GetThread_v1(thread_uuid types.ModelThreadUUID, container *types.ViewThread, p ServicePostgres) error {
 	var err error
 
 	err = p.db.Get(container, "SELECT category_uuid, name FROM app.threads WHERE thread_uuid = $1", thread_uuid) // ----------------------
@@ -181,65 +159,7 @@ func (p ServicePostgres) GetThread(thread_uuid ModelThreadUUID, container *ViewT
 
 	return errrapper(err)
 }
-
-func (p ServicePostgres) GetThreads(category ModelCategoryUUID, container *ViewThreadsByCategory) error {
+func postgres_GetThreads_v1(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory, p ServicePostgres) error {
 	var err = p.db.Get(container, "", category)
 	return errrapper(err)
-}
-
-func (p ServicePostgres) UpdateThread(uuid ModelThreadUUID, container ViewThreadUpdate) error {
-	var err error
-
-	//
-
-	return errrapper(err)
-}
-
-func (p ServicePostgres) DeleteThread(uuid ModelThreadUUID) error {
-	var err error
-
-	//
-
-	return errrapper(err)
-}
-
-func (p ServicePostgres) CreatePost(container ViewPostCreate) error {
-	var err error
-
-	//
-
-	return errrapper(err)
-}
-
-func (p ServicePostgres) UpdatePost(uuid ModelPostUUID, container ViewPostCreate) error {
-	var err error
-
-	//
-
-	return errrapper(err)
-}
-
-func (p ServicePostgres) DeletePost(uuid ModelPostUUID) error {
-	var err error
-
-	//
-
-	return errrapper(err)
-}
-
-func NewServicePostgres(c ConfigApp) (*ServicePostgres, error) {
-	var s ServicePostgres
-	var err error
-
-	s.config = c
-	s.configCached, err = s.config.Get4DataApp(context.Background(), &cfg.Request{})
-	if err != nil {
-		return nil, err
-	}
-
-	s.db, err = sqlx.Connect("pgx", s.configCached.GetDSN())
-	if err != nil {
-		return nil, erres.ConnectionError.Extend().AddDescription(err.Error())
-	}
-	return &s, err
 }

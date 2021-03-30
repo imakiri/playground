@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package types;
+
+option go_package = "github.com/imakiri/gorum/types";
+
+message ConfigRequest {}
+
+message ConfigDataPostgres {
+  string DSN = 1;
+}
+message ConfigDataMongo {
+  string DSN = 1;
+}
+
+message ConfigApi {
+
+}
+message ConfigAppPost {
+
+}
+message ConfigAppThread {
+
+}
+message ConfigAppUser {
+
+}
+message ConfigApp {
+  ConfigAppPost Post = 1;
+  ConfigAppThread Thread = 2;
+  ConfigAppUser User = 3;
+}
+message ConfigAuth {
+  int32 HashCost = 1;
+  string Salt = 2;
+}
+message ConfigData {
+  ConfigDataPostgres Postgres = 1;
+  ConfigDataMongo Mongo = 2;
+}
+message ConfigGate {
+
+}
+message ConfigWeb {
+  string CertFile = 1;
+  string KeyFile = 2;
+}
+message Config {
+  ConfigApi Api = 1;
+  ConfigApp App = 2;
+  ConfigAuth Auth = 3;
+  ConfigData Data = 4;
+  ConfigGate Gate = 5;
+  ConfigWeb Web = 6;
+}

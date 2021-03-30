@@ -50,7 +50,7 @@ func (s service) New(p _type, addr []string) (Messenger, error) {
 	switch p {
 	case Email:
 		if _, ok := s.features[p]; !ok {
-			return nil, erres.NotFound.SetTime("")
+			return nil, erres.NotFound.Extend()
 		}
 
 		var m messengerEmail
@@ -64,6 +64,6 @@ func (s service) New(p _type, addr []string) (Messenger, error) {
 			return m, err
 		}
 	default:
-		return nil, erres.TypeMismatch.SetTime("")
+		return nil, erres.TypeMismatch.Extend()
 	}
 }

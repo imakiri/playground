@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-package app;
-
-option go_package = "github.com/imakiri/gorum/app";
-

@@ -1,7 +1,10 @@
 package main
 
 import (
-	"github.com/imakiri/gorum/cfg"
+	"context"
+	"github.com/imakiri/erres"
+	"github.com/imakiri/gorum/transport"
+	"github.com/imakiri/gorum/types"
 	"github.com/imakiri/gorum/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -37,21 +40,27 @@ func NewLauncher(otps opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	var config = cfg.NewServiceClient(conn)
-	l.web, err = web.NewService(config)
-	if err != nil {
-		return nil, err
-	}
-
+	l.config = transport.NewConfigClient(conn)
 	return &l, err
 }
 
 type Launcher struct {
-	web *web.Service
+	config transport.ConfigClient
 }
 
 func (l *Launcher) Launch() error {
-	return l.web.Launch()
+	var config, err = l.config.Get4Web(context.Background(), &types.ConfigRequest{})
+	if err != nil {
+		return erres.InternalServiceError.Extend()
+	}
+
+	var w *web.Service
+	w, err = web.NewService(config)
+	if err != nil {
+		return erres.InternalServiceError.Extend()
+	}
+
+	return w.Launch()
 }
 
 const (

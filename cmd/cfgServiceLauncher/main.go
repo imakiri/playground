@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -37,7 +38,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	cfg.RegisterServiceServer(l.server, service)
+	transport.RegisterConfigServer(l.server, service)
 
 	return &l, err
 }

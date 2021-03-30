@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package transport;
+
+option go_package = "github.com/imakiri/gorum/transport";
+
+import "types/cfg.proto";
+
+service Config {
+  rpc Get4Api(types.ConfigRequest) returns (types.ConfigApi);
+  rpc Get4App(types.ConfigRequest) returns (types.ConfigApp);
+  rpc Get4AppPost(types.ConfigRequest) returns (types.ConfigAppPost);
+  rpc Get4AppThread(types.ConfigRequest) returns (types.ConfigAppThread);
+  rpc Get4AppUser(types.ConfigRequest) returns (types.ConfigAppUser);
+  rpc Get4Auth(types.ConfigRequest) returns (types.ConfigAuth);
+  rpc Get4Data(types.ConfigRequest) returns (types.ConfigData);
+  rpc Get4DataPostgres(types.ConfigRequest) returns (types.ConfigDataPostgres);
+  rpc Get4DataMongo(types.ConfigRequest) returns (types.ConfigDataMongo);
+  rpc Get4Gate(types.ConfigRequest) returns (types.ConfigGate);
+  rpc Get4Web(types.ConfigRequest) returns (types.ConfigWeb);
+}
