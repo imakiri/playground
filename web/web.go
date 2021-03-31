@@ -1,8 +1,11 @@
 package web
 
 import (
+	"context"
+	"crypto/tls"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/gorum/types"
+	"net"
 	"net/http"
 )
 
@@ -39,9 +42,47 @@ func NewService(c *types.ConfigWeb) (*Service, error) {
 	var s Service
 	var err error
 
+	var cert tls.Certificate
+	cert, err = tls.LoadX509KeyPair("secrets/web/certificate.crt", "secrets/web/key.txt")
+	if err != nil {
+		return nil, err
+	}
+
 	s.config = c
 	s.Server = &http.Server{}
 	s.RedirServer = &http.Server{}
+	s.Server.TLSConfig = &tls.Config{
+		Rand:                  nil,
+		Time:                  nil,
+		Certificates:          []tls.Certificate{cert},
+		NameToCertificate:     nil,
+		GetCertificate:        nil,
+		GetClientCertificate:  nil,
+		GetConfigForClient:    nil,
+		VerifyPeerCertificate: nil,
+		VerifyConnection:      nil,
+		RootCAs:               nil,
+		NextProtos:            nil,
+		ServerName:            "",
+		ClientAuth:            0,
+		ClientCAs:             nil,
+		InsecureSkipVerify:    false,
+		CipherSuites: []uint16{
+			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+		},
+		PreferServerCipherSuites:    false,
+		SessionTicketsDisabled:      false,
+		SessionTicketKey:            [32]byte{},
+		ClientSessionCache:          nil,
+		MinVersion:                  tls.VersionTLS13,
+		MaxVersion:                  0,
+		CurvePreferences:            nil,
+		DynamicRecordSizingDisabled: false,
+		Renegotiation:               0,
+		KeyLogWriter:                nil,
+	}
 
 	err = registerRouts(&s)
 	if err != nil {
@@ -61,14 +102,22 @@ func (s *Service) Launch() error {
 		rsc <- s.RedirServer.ListenAndServe()
 	}(rsc)
 
+	var l net.Listener
+	l, err = tls.Listen("tcp", ":443", s.Server.TLSConfig)
+	if err != nil {
+		return err
+	}
+
 	go func(sc chan error) {
-		sc <- s.Server.ListenAndServeTLS(s.config.CertFile, s.config.KeyFile)
+		sc <- s.Server.Serve(l)
 	}(sc)
 
 	select {
 	case err = <-rsc:
+		_ = s.Server.Shutdown(context.Background())
 		return err
 	case err = <-sc:
+		_ = s.RedirServer.Shutdown(context.Background())
 		return err
 	}
 }

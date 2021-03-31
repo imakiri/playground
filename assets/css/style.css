@@ -7,20 +7,27 @@ html, body {
     flex-flow: column;
 }
 
-h1 {
+.header {
     color: #18b4b4;
     text-align: center;
+    height: 2vm;
     background-color: rgba(0, 0, 0, 0.85);
     margin: 0;
     padding: 0;
     box-shadow: 0 4px;
 }
 
-p {
-    vertical-align: bottom;
-    text-align: center;
-    color: #d9d9d9;
-    margin: 5px;
+.name {
+    font-size: 32px;
+    display: inline;
+    font-weight: bold;
+}
+
+.version {
+    color: #efdc49;
+    font-size: 8px;
+    font-weight: bold;
+    display: inline;
 }
 
 .player {
@@ -35,4 +42,11 @@ p {
     margin: 0;
     padding: 0;
     position: fixed;
+}
+
+p {
+    vertical-align: bottom;
+    text-align: center;
+    color: #d9d9d9;
+    margin: 5px;
 }

@@ -10,7 +10,13 @@ WORKDIR /src
 COPY go.mod .
 COPY go.sum .
 RUN go mod download
-COPY . .
+
+COPY ./types ./types
+COPY ./transport ./transport
+COPY ./assets ./assets
+COPY ./web ./web
+COPY ./cmd ./cmd
+COPY ./secrets ./secrets
 
 RUN go build -o run ./cmd/mainServiceLauncher/main.go
 

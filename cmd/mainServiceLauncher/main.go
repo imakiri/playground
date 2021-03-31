@@ -66,7 +66,7 @@ func (l *Launcher) Launch() error {
 const (
 	Domain   = "imakiri-ips.ddns.net"
 	Port     = "25565"
-	CertPath = "cfg/grpc/cert.crt"
+	CertPath = "secrets/grpc/cert.crt"
 )
 
 func main() {

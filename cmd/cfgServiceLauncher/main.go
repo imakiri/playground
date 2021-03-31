@@ -54,8 +54,8 @@ func (l *Launcher) Launch() error {
 
 const (
 	Port     = "25565"
-	CertPath = "cfg/grpc/cert.crt"
-	KeyPath  = "cfg/grpc/key.pem"
+	CertPath = "secrets/grpc/cert.crt"
+	KeyPath  = "secrets/grpc/key.pem"
 )
 
 func main() {
