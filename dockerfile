@@ -18,7 +18,7 @@ COPY ./web ./web
 COPY ./cmd ./cmd
 COPY ./secrets ./secrets
 
-RUN go build -o run ./cmd/mainServiceLauncher/main.go
+RUN go build -o run ./cmd/web/main.go
 
 FROM amd64/ubuntu:bionic AS run-env
 

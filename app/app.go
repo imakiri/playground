@@ -2,16 +2,9 @@ package app
 
 import (
 	"context"
-	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/configs"
 	"google.golang.org/grpc"
 )
-
-type DataAuth interface{}
-type DataApp interface{}
-
-type Config interface {
-	Get4App(ctx context.Context, in *cfg.Request, opts ...grpc.CallOption) (*cfg.App, error)
-}
 
 type Service struct {
 	config       Config

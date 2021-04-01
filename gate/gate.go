@@ -2,7 +2,7 @@ package gate
 
 import (
 	"context"
-	"github.com/imakiri/gorum/cfg"
+	"github.com/imakiri/gorum/configs"
 	"google.golang.org/grpc"
 )
 

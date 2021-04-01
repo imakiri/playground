@@ -4,6 +4,13 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!V0.80:
+    --cfg: Удалён
+    --postgres: Добавлен. Пакет функций-запросов к постгрес базе
+    --data: Функции-запросы вынесены в postgres
+    --cmd: web, app лаунчеры
+    --Множественные исправления и улучшения кода
+
 !V0.79:
     --web: TLS 1.3 only
     --Секреты перемещенны cfg -> secrets

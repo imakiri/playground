@@ -4,13 +4,15 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/gorum/types"
-	"net"
 	"net/http"
 )
 
+const (
+	path_key  = "secrets/web/key.txt"
+	path_cert = "secrets/web/certificate.crt"
+)
+
 type Service struct {
-	config      *types.ConfigWeb
 	Server      *http.Server
 	RedirServer *http.Server
 }
@@ -38,24 +40,19 @@ func registerRouts(s *Service) error {
 	return err
 }
 
-func NewService(c *types.ConfigWeb) (*Service, error) {
-	var s Service
-	var err error
-
-	var cert tls.Certificate
-	cert, err = tls.LoadX509KeyPair("secrets/web/certificate.crt", "secrets/web/key.txt")
+func NewService() (*Service, error) {
+	var cert, err = tls.LoadX509KeyPair(path_cert, path_key)
 	if err != nil {
 		return nil, err
 	}
 
-	s.config = c
+	var s Service
 	s.Server = &http.Server{}
 	s.RedirServer = &http.Server{}
 	s.Server.TLSConfig = &tls.Config{
 		Rand:                  nil,
 		Time:                  nil,
 		Certificates:          []tls.Certificate{cert},
-		NameToCertificate:     nil,
 		GetCertificate:        nil,
 		GetClientCertificate:  nil,
 		GetConfigForClient:    nil,
@@ -74,7 +71,6 @@ func NewService(c *types.ConfigWeb) (*Service, error) {
 		},
 		PreferServerCipherSuites:    false,
 		SessionTicketsDisabled:      false,
-		SessionTicketKey:            [32]byte{},
 		ClientSessionCache:          nil,
 		MinVersion:                  tls.VersionTLS13,
 		MaxVersion:                  0,
@@ -93,17 +89,14 @@ func NewService(c *types.ConfigWeb) (*Service, error) {
 }
 
 func (s *Service) Launch() error {
-	var err error
-
-	rsc := make(chan error)
-	sc := make(chan error)
+	var rsc = make(chan error)
+	var sc = make(chan error)
 
 	go func(rsc chan error) {
 		rsc <- s.RedirServer.ListenAndServe()
 	}(rsc)
 
-	var l net.Listener
-	l, err = tls.Listen("tcp", ":443", s.Server.TLSConfig)
+	var l, err = tls.Listen("tcp", ":443", s.Server.TLSConfig)
 	if err != nil {
 		return err
 	}
