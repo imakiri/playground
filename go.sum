@@ -187,6 +187,12 @@ github.com/imakiri/erres v0.0.0-20210321162426-92ec4172dd11 h1:63FZWFsICjXiF/iII
 github.com/imakiri/erres v0.0.0-20210321162426-92ec4172dd11/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
 github.com/imakiri/erres v2.0.0+incompatible h1:Hri58wu3RoIG/BA9mBrgJW3Z+WhpWDTthFdh/7aZu8M=
 github.com/imakiri/erres v2.0.0+incompatible/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
+github.com/imakiri/erres v3.0.0+incompatible h1:cH7LlTXsYdSE2ZXNKnZHOkZ9W7BkV5YoFLaxHbVAT2A=
+github.com/imakiri/erres v3.0.0+incompatible/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
+github.com/imakiri/erres v3.3.0+incompatible h1:u9/YGf8XWwHcqG0590R5qjQAPLOELZej14YIeLG6qP0=
+github.com/imakiri/erres v3.3.0+incompatible/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
+github.com/imakiri/erres v3.4.0+incompatible h1:Mxdw85Mh3IgJHfgvUsamJEyBQF6ALNTraWCvhmsxqCY=
+github.com/imakiri/erres v3.4.0+incompatible/go.mod h1:VwILB4W/RYPvUuTlJjDOFM94gjdJmPaP8fNq4L7A2Oc=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/influxdata/influxdb1-client v0.0.0-20191209144304-8bf82d3c094d/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/jackc/chunkreader v1.0.0 h1:4s39bBR8ByfqH+DKm8rQA3E1LHZWB9XWcrz8fqaZbe0=

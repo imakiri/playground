@@ -10,22 +10,22 @@ import (
 	"time"
 )
 
-// Wrapper for raw sql/sqlx/pgx error strings. Will panic if err == nil
-func Errrapper(err error) erres.Error {
+// Wrapper for raw sql/sqlx/pgx error strings
+func errWrapper(err error) *erres.Error {
 	switch {
 	case err == nil:
-		panic("nil error")
+		return nil
 	case err == sql.ErrTxDone:
-		return erres.InternalServiceError.Extend()
+		return erres.InternalServiceError.Extend(1).SetDescription(err.Error())
 	}
 
 	var e = err.Error()
 
 	switch {
 	case strings.Contains(e, "sqlx.bindNamedMapper: unsupported map type:"):
-		return erres.InternalServiceError.Extend()
+		return erres.InternalServiceError.Extend(1).SetDescription(err.Error())
 	default:
-		return erres.JustError.Extend().AddDescription(e)
+		return erres.JustError.Extend(1).SetDescription(err.Error())
 	}
 }
 
@@ -41,14 +41,14 @@ func AddCookieV1(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID, db *sq
 	c.ExpirationDate = cookie.ExpirationDate
 
 	var _, err = db.NamedQuery("INSERT INTO main.auth.cookie VALUES (:key, :uuid, :pemid, :expirationDate)", c)
-	return err
+	return errWrapper(err)
 }
 func GetCookieV1(key types.ModelCookieKey, container *types.ViewCookieByUUID, db *sqlx.DB) error {
 	return db.Get(container, "SELECT uuid, pemid, expiration_date FROM main.auth.cookie WHERE key = $1", key)
 }
 func DeleteCookieV1(uuid types.ModelUserUUID, db *sqlx.DB) error {
 	var _, err = db.Exec("DELETE FROM main.auth.cookie WHERE uuid = $1", uuid)
-	return err
+	return errWrapper(err)
 }
 func AddLogpassV1(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, db *sqlx.DB) error {
 	var l types.ModelLogpass
@@ -62,56 +62,57 @@ func AddLogpassV1(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, db 
 	l.Login = logpass.Login
 
 	var _, err = db.NamedQuery("INSERT INTO main.auth.logpass VALUES (:uuid, :login, :password, :pemid)", l)
-	return err
+	return errWrapper(err)
 }
 func GetLogpassV1(login types.ModelLogpassLogin, container *types.ViewLogpassByUUID, db *sqlx.DB) error {
-	return db.Get(container, "SELECT uuid, pemid, password FROM main.auth.logpass WHERE login = $1", login)
+	var err = db.Get(container, "SELECT uuid, pemid, password FROM main.auth.logpass WHERE login = $1", login)
+	return errWrapper(err)
 }
 func DeleteLogpassV1(uuid types.ModelUserUUID, db *sqlx.DB) error {
 	var _, err = db.Exec("DELETE FROM main.auth.logpass WHERE uuid = $1", uuid)
-	return err
+	return errWrapper(err)
 }
 
 func GetUserProfileV1(uuid types.ModelUserUUID, container *types.ViewUserProfile, db *sqlx.DB) error {
-	var err = db.Get(container, "SELECT registration_date, nick_name, full_name, avatar512 FROM main.app.users", uuid)
-	return Errrapper(err)
+	var err = db.Get(container, "SELECT registration_date, nick_name, full_name, avatar512 FROM main.app.users WHERE user_uuid = $1", uuid)
+	return errWrapper(err)
 }
 func UpdateUserProfileV1(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate, db *sqlx.DB) error {
 	var tx, err = db.Begin()
 	if err != nil {
-		return Errrapper(err)
+		return errWrapper(err)
 	}
 
 	if container.Avatar != nil {
 		_, err = tx.Exec("UPDATE app.users SET avatar512 = $2, avatar256 = $3, avatar128 = $4 WHERE user_uuid = $1", uuid, container.Avatar.Avatar512, container.Avatar.Avatar256, container.Avatar.Avatar128)
 		if err != nil {
 			if e := tx.Rollback(); e != nil {
-				return Errrapper(e).AddRoute("Avatar")
+				return errWrapper(e).SetName("Avatar")
 			}
-			return Errrapper(err).AddRoute("Avatar")
+			return errWrapper(err).SetName("Avatar")
 		}
 	}
 	if container.FullName != nil {
 		_, err = tx.Exec("UPDATE app.users SET full_name = $2 WHERE user_uuid = $1", uuid, container.FullName)
 		if err != nil {
 			if e := tx.Rollback(); e != nil {
-				return Errrapper(e).AddRoute("Fullname")
+				return errWrapper(e).SetName("Fullname")
 			}
-			return Errrapper(err).AddRoute("Fullname")
+			return errWrapper(err).SetName("Fullname")
 		}
 	}
 	if container.NickName != nil {
 		_, err = tx.Exec("UPDATE app.users SET nick_name = $2 WHERE user_uuid = $1", uuid, container.NickName)
 		if err != nil {
 			if e := tx.Rollback(); e != nil {
-				return Errrapper(e).AddRoute("Nickname")
+				return errWrapper(e).SetName("Nickname")
 			}
-			return Errrapper(err).AddRoute("Nickname")
+			return errWrapper(err).SetName("Nickname")
 		}
 	}
 
 	err = tx.Commit()
-	return Errrapper(err)
+	return errWrapper(err)
 }
 func CreateThreadV1(container types.ViewThreadCreate, db *sqlx.DB) error {
 	var threadUUID = types.ModelThreadUUID(nanoid.New())
@@ -127,29 +128,29 @@ func CreateThreadV1(container types.ViewThreadCreate, db *sqlx.DB) error {
 	}
 
 	var _, err = db.NamedExec("INSERT INTO app.threads VALUES (:ThreadUUID, :CategoryUUID, :UserUUID, :Name, :DateAdded, :DateLastEdit, :Header)", thread)
-	return Errrapper(err)
+	return errWrapper(err)
 }
 func GetThreadV1(thread_uuid types.ModelThreadUUID, container *types.ViewThread, db *sqlx.DB) error {
 	var err error
 
-	err = db.Get(container, "SELECT category_uuid, name FROM app.threads WHERE thread_uuid = $1", thread_uuid) // ----------------------
+	err = db.Get(container, "SELECT category_uuid, name FROM app.threads WHERE thread_uuid = $1", thread_uuid)
 	if err != nil {
-		return Errrapper(err)
+		return errWrapper(err)
 	}
 
 	err = db.Get(container.Content.Posts, "SELECT user_uuid, post_uuid, date_added, date_last_edit, content  FROM app.posts WHERE thread_uuid = $1", thread_uuid)
 	if err != nil {
-		return Errrapper(err)
+		return errWrapper(err)
 	}
 
 	err = db.Get(container.Content.Users, "SELECT DISTINCT users.user_uuid, registration_date, nick_name, full_name, avatar256 FROM app.posts INNER JOIN app.users ON users.user_uuid = posts.user_uuid WHERE thread_uuid = $1", thread_uuid)
 	if err != nil {
-		return Errrapper(err)
+		return errWrapper(err)
 	}
 
-	return Errrapper(err)
+	return errWrapper(err)
 }
 func GetThreadsV1(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory, db *sqlx.DB) error {
 	var err = db.Get(container, "", category)
-	return Errrapper(err)
+	return errWrapper(err)
 }

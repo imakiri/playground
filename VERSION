@@ -4,6 +4,10 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!V0.81:
+    --web.dockerfile
+    --Минорные улучшения кода
+
 !V0.80:
     --cfg: Удалён
     --postgres: Добавлен. Пакет функций-запросов к постгрес базе

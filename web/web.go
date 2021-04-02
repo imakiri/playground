@@ -72,7 +72,7 @@ func NewService() (*Service, error) {
 		PreferServerCipherSuites:    false,
 		SessionTicketsDisabled:      false,
 		ClientSessionCache:          nil,
-		MinVersion:                  tls.VersionTLS13,
+		MinVersion:                  tls.VersionTLS12,
 		MaxVersion:                  0,
 		CurvePreferences:            nil,
 		DynamicRecordSizingDisabled: false,
@@ -123,5 +123,6 @@ func (Service) redirect(w http.ResponseWriter, r *http.Request) {
 func (Service) ise(w http.ResponseWriter, err error) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusInternalServerError)
+
 	_, _ = w.Write([]byte(err.Error()))
 }

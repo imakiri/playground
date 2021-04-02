@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+  web:
+    image: imakiri/web
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+
+    deploy:
+      replicas: 2
+    secrets:
+      - source: web_certificate
+        target:
+
+networks:
+
+secrets:
+  postgres:
+    file: secrets/postgres.yaml
+  web_certificate:
+    file: ./secrets/web/certificate.crt
+  web_key:
+    file: ./secrets/web/key.txt

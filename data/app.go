@@ -25,33 +25,33 @@ func (s Service) UpdateThread(uuid types.ModelThreadUUID, container types.ViewTh
 
 	//
 
-	return postgres.Errrapper(err)
+	return err
 }
 func (s Service) DeleteThread(uuid types.ModelThreadUUID) error {
 	var err error
 
 	//
 
-	return postgres.Errrapper(err)
+	return err
 }
 func (s Service) CreatePost(container types.ViewPostCreate) error {
 	var err error
 
 	//
 
-	return postgres.Errrapper(err)
+	return err
 }
 func (s Service) UpdatePost(uuid types.ModelPostUUID, container types.ViewPostCreate) error {
 	var err error
 
 	//
 
-	return postgres.Errrapper(err)
+	return err
 }
 func (s Service) DeletePost(uuid types.ModelPostUUID) error {
 	var err error
 
 	//
 
-	return postgres.Errrapper(err)
+	return err
 }
