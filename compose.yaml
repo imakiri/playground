@@ -1,24 +1,32 @@
-version: '3.9'
+version: "3.9"
 services:
   web:
-    image: imakiri/web
+    image: imakiri/web:latest
     ports:
       - "80:80"
       - "443:443"
     networks:
-
+      - web
     deploy:
       replicas: 2
+      placement:
+        max_replicas_per_node: 1
+      restart_policy:
+        condition: on-failure
     secrets:
       - source: web_certificate
-        target:
+        target: /srv/secrets/web/certificate.crt
+      - source: web_key
+        target: /srv/secrets/web/key.txt
 
 networks:
+  web:
+    driver: overlay
 
 secrets:
   postgres:
-    file: secrets/postgres.yaml
+    file: .\\secrets\\postgres.yaml
   web_certificate:
-    file: ./secrets/web/certificate.crt
+    file: .\\secrets\\web\\certificate.crt
   web_key:
-    file: ./secrets/web/key.txt
+    file: .\\secrets\\web\\key.txt

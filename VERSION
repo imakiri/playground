@@ -4,6 +4,11 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!V0.83:
+    --Секреты вынесены из контейнера и подключаются при запуске контейнера
+    --Изображение web модуля теперь доступно по адресу https://hub.docker.com/r/imakiri/web
+    --Настроен docker stack deploy
+
 !V0.82:
     --web: Реорганизация структуры пакета и сервисов
     --cmd: Обновлен web лаунчер

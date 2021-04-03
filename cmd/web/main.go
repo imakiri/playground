@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/imakiri/gorum/web"
 	"log"
 )
@@ -72,16 +73,21 @@ func (l *Launcher) Launch() error {
 }
 
 const (
-	debug_domain = "imakiri-ips.ddns.net"
+	domain       = "imakiri-ips.ddns.net"
 	default_port = "25565"
 )
 
 func main() {
 	var o opts
 
-	o.debug = *flag.Bool("debug", true, "set to false to launch a production ready system")
-	o.domain = debug_domain
+	var debug = flag.Bool("debug", true, "set to false to launch a production ready system")
+	flag.Parse()
+
+	o.debug = *debug
+	o.domain = domain
 	o.port = default_port
+
+	fmt.Println(o)
 
 	var l, err = NewLauncher(o)
 	if err != nil {
