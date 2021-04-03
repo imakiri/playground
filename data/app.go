@@ -6,19 +6,19 @@ import (
 )
 
 func (s Service) GetUserProfile(uuid types.ModelUserUUID, container *types.ViewUserProfile) error {
-	return postgres.GetUserProfileV1(uuid, container, s.db)
+	return postgres.GetUserProfile(uuid, container, s.db)
 }
 func (s Service) UpdateUserProfile(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate) error {
-	return postgres.UpdateUserProfileV1(uuid, container, s.db)
+	return postgres.UpdateUserProfile(uuid, container, s.db)
 }
 func (s Service) CreateThread(container types.ViewThreadCreate) error {
-	return postgres.CreateThreadV1(container, s.db)
+	return postgres.CreateThread(container, s.db)
 }
 func (s Service) GetThread(thread_uuid types.ModelThreadUUID, container *types.ViewThread) error {
-	return postgres.GetThreadV1(thread_uuid, container, s.db)
+	return postgres.GetThread(thread_uuid, container, s.db)
 }
 func (s Service) GetThreads(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory) error {
-	return postgres.GetThreadsV1(category, container, s.db)
+	return postgres.GetThreads(category, container, s.db)
 }
 func (s Service) UpdateThread(uuid types.ModelThreadUUID, container types.ViewThreadUpdate) error {
 	var err error

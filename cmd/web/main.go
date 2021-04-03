@@ -1,46 +1,41 @@
 package main
 
 import (
+	"flag"
 	"github.com/imakiri/gorum/web"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	bi_log "log"
-	"net"
+	"log"
 )
 
 const path_cert = "secrets/grpc/cert.crt"
 
 type opts struct {
+	debug  bool
 	domain string
 	port   string
 }
 
-func connect(otps opts) (*grpc.ClientConn, error) {
-	var ips, err = net.LookupIP(otps.domain)
-	if err != nil {
-		return nil, err
-	}
-
-	var creds credentials.TransportCredentials
-	creds, err = credentials.NewClientTLSFromFile(path_cert, otps.domain)
-	if err != nil {
-		return nil, err
-	}
-
-	var conn *grpc.ClientConn
-	conn, err = grpc.Dial(ips[0].String()+":"+otps.port, grpc.WithTransportCredentials(creds))
-	if err != nil {
-		return nil, err
-	}
-
-	return conn, err
-}
-
-func NewLauncher(otps opts) (*Launcher, error) {
+func NewLauncher(o opts) (*Launcher, error) {
 	var l Launcher
 	var err error
+	l.debug = o.debug
+	l.statusWeb = make(chan error)
+	l.statusRedirector = make(chan error)
 
-	l.web, err = web.NewService()
+	if l.debug {
+		l.web, err = web.NewService(l.statusWeb, false, web.Registrars.Main())
+		if err != nil {
+			return nil, err
+		}
+
+		return &l, err
+	}
+
+	l.redirector, err = web.NewHTTPSRedirector(l.statusRedirector)
+	if err != nil {
+		return nil, err
+	}
+
+	l.web, err = web.NewService(l.statusWeb, true, web.Registrars.Main())
 	if err != nil {
 		return nil, err
 	}
@@ -49,11 +44,31 @@ func NewLauncher(otps opts) (*Launcher, error) {
 }
 
 type Launcher struct {
-	web *web.Service
+	debug            bool
+	web              *web.Service
+	redirector       *web.HTTPSRedirector
+	statusWeb        chan error
+	statusRedirector chan error
 }
 
 func (l *Launcher) Launch() error {
-	return l.web.Launch()
+	if l.debug {
+		l.web.Launch()
+		return <-l.statusWeb
+	} else {
+		var err error
+		l.web.Launch()
+		l.redirector.Launch()
+
+		select {
+		case err = <-l.statusRedirector:
+			l.web.Stop()
+		case err = <-l.statusWeb:
+			l.redirector.Stop()
+		}
+
+		return err
+	}
 }
 
 const (
@@ -64,13 +79,14 @@ const (
 func main() {
 	var o opts
 
+	o.debug = *flag.Bool("debug", true, "set to false to launch a production ready system")
 	o.domain = debug_domain
 	o.port = default_port
 
 	var l, err = NewLauncher(o)
 	if err != nil {
-		bi_log.Fatalln(err)
-	} else {
-		bi_log.Fatalln(l.Launch())
+		log.Fatalln(err)
 	}
+
+	log.Fatalln(l.Launch())
 }

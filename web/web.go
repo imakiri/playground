@@ -3,7 +3,8 @@ package web
 import (
 	"context"
 	"crypto/tls"
-	"github.com/gorilla/mux"
+	"log"
+	"net"
 	"net/http"
 )
 
@@ -12,75 +13,59 @@ const (
 	path_cert = "secrets/web/certificate.crt"
 )
 
+type registrar func(*http.Server) error
+
 type Service struct {
-	Server      *http.Server
-	RedirServer *http.Server
+	https  bool
+	server *http.Server
+	status chan error
 }
 
-func registerRouts(s *Service) error {
-	var forum *HandlerForum
-	var err error
-
-	forum, err = newHandlerForum()
-	if err != nil {
-		return err
-	}
-
-	var router = mux.NewRouter()
-	var redirRouter = mux.NewRouter()
-
-	redirRouter.HandleFunc("/", s.redirect)
-	router.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets/"))))
-	router.HandleFunc("/", s.Root)
-	router.Handle("/forum/", forum)
-
-	s.Server.Handler = router
-	s.RedirServer.Handler = redirRouter
-
-	return err
-}
-
-func NewService() (*Service, error) {
-	var cert, err = tls.LoadX509KeyPair(path_cert, path_key)
-	if err != nil {
-		return nil, err
-	}
-
+func NewService(status chan error, https bool, reg registrar) (*Service, error) {
 	var s Service
-	s.Server = &http.Server{}
-	s.RedirServer = &http.Server{}
-	s.Server.TLSConfig = &tls.Config{
-		Rand:                  nil,
-		Time:                  nil,
-		Certificates:          []tls.Certificate{cert},
-		GetCertificate:        nil,
-		GetClientCertificate:  nil,
-		GetConfigForClient:    nil,
-		VerifyPeerCertificate: nil,
-		VerifyConnection:      nil,
-		RootCAs:               nil,
-		NextProtos:            nil,
-		ServerName:            "",
-		ClientAuth:            0,
-		ClientCAs:             nil,
-		InsecureSkipVerify:    false,
-		CipherSuites: []uint16{
-			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
-		},
-		PreferServerCipherSuites:    false,
-		SessionTicketsDisabled:      false,
-		ClientSessionCache:          nil,
-		MinVersion:                  tls.VersionTLS12,
-		MaxVersion:                  0,
-		CurvePreferences:            nil,
-		DynamicRecordSizingDisabled: false,
-		Renegotiation:               0,
-		KeyLogWriter:                nil,
+	s.https = https
+	s.server = &http.Server{}
+	s.status = status
+
+	if https {
+		var cert, err = tls.LoadX509KeyPair(path_cert, path_key)
+		if err != nil {
+			return nil, err
+		}
+
+		s.server.TLSConfig = &tls.Config{
+			Rand:                  nil,
+			Time:                  nil,
+			Certificates:          []tls.Certificate{cert},
+			GetCertificate:        nil,
+			GetClientCertificate:  nil,
+			GetConfigForClient:    nil,
+			VerifyPeerCertificate: nil,
+			VerifyConnection:      nil,
+			RootCAs:               nil,
+			NextProtos:            nil,
+			ServerName:            "",
+			ClientAuth:            0,
+			ClientCAs:             nil,
+			InsecureSkipVerify:    false,
+			CipherSuites: []uint16{
+				tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+				tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256,
+			},
+			PreferServerCipherSuites:    false,
+			SessionTicketsDisabled:      false,
+			ClientSessionCache:          nil,
+			MinVersion:                  tls.VersionTLS12,
+			MaxVersion:                  0,
+			CurvePreferences:            nil,
+			DynamicRecordSizingDisabled: false,
+			Renegotiation:               0,
+			KeyLogWriter:                nil,
+		}
 	}
 
-	err = registerRouts(&s)
+	var err = reg(s.server)
 	if err != nil {
 		return nil, err
 	}
@@ -88,41 +73,30 @@ func NewService() (*Service, error) {
 	return &s, err
 }
 
-func (s *Service) Launch() error {
-	var rsc = make(chan error)
-	var sc = make(chan error)
+func (s *Service) Launch() {
+	var l net.Listener
+	var err error
 
-	go func(rsc chan error) {
-		rsc <- s.RedirServer.ListenAndServe()
-	}(rsc)
+	if s.https {
+		l, err = tls.Listen("tcp", ":443", s.server.TLSConfig)
+		if err != nil {
+			s.status <- err
+		}
+	} else {
+		l, err = net.Listen("tcp", ":80")
+		if err != nil {
+			s.status <- err
+		}
+	}
 
-	var l, err = tls.Listen("tcp", ":443", s.Server.TLSConfig)
+	go func() {
+		s.status <- s.server.Serve(l)
+	}()
+}
+
+func (s *Service) Stop() {
+	var err = s.server.Shutdown(context.Background())
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-
-	go func(sc chan error) {
-		sc <- s.Server.Serve(l)
-	}(sc)
-
-	select {
-	case err = <-rsc:
-		_ = s.Server.Shutdown(context.Background())
-		return err
-	case err = <-sc:
-		_ = s.RedirServer.Shutdown(context.Background())
-		return err
-	}
-}
-
-func (Service) redirect(w http.ResponseWriter, r *http.Request) {
-	newURI := "https://" + r.Host + r.URL.String()
-	http.Redirect(w, r, newURI, http.StatusFound)
-}
-
-func (Service) ise(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusInternalServerError)
-
-	_, _ = w.Write([]byte(err.Error()))
 }

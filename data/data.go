@@ -20,13 +20,13 @@ func NewService() (*Service, error) {
 	var config types.SecretPostgres
 	err = utils.ReadYAML(path, &config)
 	if err != nil {
-		return nil, erres.InternalServiceError.Extend().AddDescription(err.Error())
+		return nil, erres.InternalServiceError.Extend(0)
 	}
 
 	var s Service
 	s.db, err = sqlx.Connect("pgx", config.DSN)
 	if err != nil {
-		return nil, erres.ConnectionError.Extend().AddDescription(err.Error())
+		return nil, erres.ConnectionError.Extend(0)
 	}
 	return &s, err
 }

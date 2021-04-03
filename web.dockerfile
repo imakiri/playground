@@ -27,4 +27,4 @@ WORKDIR /srv
 
 COPY --from=build-env /src .
 
-CMD ./run
+CMD ./run -debug=false

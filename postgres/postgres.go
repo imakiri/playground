@@ -29,7 +29,7 @@ func errWrapper(err error) *erres.Error {
 	}
 }
 
-func AddCookieV1(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID, db *sqlx.DB) error {
+func AddCookie(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID, db *sqlx.DB) error {
 	var c types.ModelCookie
 
 	if uuid == "" {
@@ -43,14 +43,14 @@ func AddCookieV1(uuid types.ModelUserUUID, cookie types.ViewCookieByUUID, db *sq
 	var _, err = db.NamedQuery("INSERT INTO main.auth.cookie VALUES (:key, :uuid, :pemid, :expirationDate)", c)
 	return errWrapper(err)
 }
-func GetCookieV1(key types.ModelCookieKey, container *types.ViewCookieByUUID, db *sqlx.DB) error {
+func GetCookie(key types.ModelCookieKey, container *types.ViewCookieByUUID, db *sqlx.DB) error {
 	return db.Get(container, "SELECT uuid, pemid, expiration_date FROM main.auth.cookie WHERE key = $1", key)
 }
-func DeleteCookieV1(uuid types.ModelUserUUID, db *sqlx.DB) error {
+func DeleteCookie(uuid types.ModelUserUUID, db *sqlx.DB) error {
 	var _, err = db.Exec("DELETE FROM main.auth.cookie WHERE uuid = $1", uuid)
 	return errWrapper(err)
 }
-func AddLogpassV1(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, db *sqlx.DB) error {
+func AddLogpass(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, db *sqlx.DB) error {
 	var l types.ModelLogpass
 
 	if uuid == "" {
@@ -64,20 +64,20 @@ func AddLogpassV1(uuid types.ModelUserUUID, logpass types.ViewLogpassByUUID, db 
 	var _, err = db.NamedQuery("INSERT INTO main.auth.logpass VALUES (:uuid, :login, :password, :pemid)", l)
 	return errWrapper(err)
 }
-func GetLogpassV1(login types.ModelLogpassLogin, container *types.ViewLogpassByUUID, db *sqlx.DB) error {
+func GetLogpass(login types.ModelLogpassLogin, container *types.ViewLogpassByUUID, db *sqlx.DB) error {
 	var err = db.Get(container, "SELECT uuid, pemid, password FROM main.auth.logpass WHERE login = $1", login)
 	return errWrapper(err)
 }
-func DeleteLogpassV1(uuid types.ModelUserUUID, db *sqlx.DB) error {
+func DeleteLogpass(uuid types.ModelUserUUID, db *sqlx.DB) error {
 	var _, err = db.Exec("DELETE FROM main.auth.logpass WHERE uuid = $1", uuid)
 	return errWrapper(err)
 }
 
-func GetUserProfileV1(uuid types.ModelUserUUID, container *types.ViewUserProfile, db *sqlx.DB) error {
+func GetUserProfile(uuid types.ModelUserUUID, container *types.ViewUserProfile, db *sqlx.DB) error {
 	var err = db.Get(container, "SELECT registration_date, nick_name, full_name, avatar512 FROM main.app.users WHERE user_uuid = $1", uuid)
 	return errWrapper(err)
 }
-func UpdateUserProfileV1(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate, db *sqlx.DB) error {
+func UpdateUserProfile(uuid types.ModelUserUUID, container types.ViewUserProfileUpdate, db *sqlx.DB) error {
 	var tx, err = db.Begin()
 	if err != nil {
 		return errWrapper(err)
@@ -114,7 +114,7 @@ func UpdateUserProfileV1(uuid types.ModelUserUUID, container types.ViewUserProfi
 	err = tx.Commit()
 	return errWrapper(err)
 }
-func CreateThreadV1(container types.ViewThreadCreate, db *sqlx.DB) error {
+func CreateThread(container types.ViewThreadCreate, db *sqlx.DB) error {
 	var threadUUID = types.ModelThreadUUID(nanoid.New())
 	var now = types.ModelDate(time.Now().UnixNano())
 	var thread = types.ModelThread{
@@ -130,7 +130,7 @@ func CreateThreadV1(container types.ViewThreadCreate, db *sqlx.DB) error {
 	var _, err = db.NamedExec("INSERT INTO app.threads VALUES (:ThreadUUID, :CategoryUUID, :UserUUID, :Name, :DateAdded, :DateLastEdit, :Header)", thread)
 	return errWrapper(err)
 }
-func GetThreadV1(thread_uuid types.ModelThreadUUID, container *types.ViewThread, db *sqlx.DB) error {
+func GetThread(thread_uuid types.ModelThreadUUID, container *types.ViewThread, db *sqlx.DB) error {
 	var err error
 
 	err = db.Get(container, "SELECT category_uuid, name FROM app.threads WHERE thread_uuid = $1", thread_uuid)
@@ -150,7 +150,7 @@ func GetThreadV1(thread_uuid types.ModelThreadUUID, container *types.ViewThread,
 
 	return errWrapper(err)
 }
-func GetThreadsV1(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory, db *sqlx.DB) error {
+func GetThreads(category types.ModelCategoryUUID, container *types.ViewThreadsByCategory, db *sqlx.DB) error {
 	var err = db.Get(container, "", category)
 	return errWrapper(err)
 }
