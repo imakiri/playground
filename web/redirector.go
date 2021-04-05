@@ -2,6 +2,7 @@ package web
 
 import (
 	"context"
+	"github.com/gorilla/mux"
 	"github.com/imakiri/gorum/web/internal"
 	"log"
 	"net"
@@ -33,13 +34,13 @@ func (s *HTTPSRedirector) Stop() {
 
 func NewHTTPSRedirector(status chan error) (*HTTPSRedirector, error) {
 	var r HTTPSRedirector
+	var err error
 	r.server = &http.Server{}
 	r.status = status
 
-	var err = internal.RedirectorHTTPS(r.server)
-	if err != nil {
-		return nil, err
-	}
+	var router = mux.NewRouter()
+	router.HandleFunc("/", internal.Go2HTTPS)
+	r.server.Handler = router
 
 	return &r, err
 }

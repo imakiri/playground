@@ -3,6 +3,9 @@ package web
 import (
 	"context"
 	"crypto/tls"
+	"github.com/gorilla/mux"
+	"golang.org/x/net/http2"
+	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
@@ -13,23 +16,37 @@ const (
 	path_cert = "secrets/web/certificate.crt"
 )
 
-type registrar func(*http.Server) error
-
 type Service struct {
 	https  bool
 	server *http.Server
 	status chan error
+	data   struct {
+		ico []byte
+		css []byte
+	}
 }
 
-func NewService(status chan error, https bool, reg registrar) (*Service, error) {
+func register(s *Service) {
+	var router = mux.NewRouter()
+
+	router.HandleFunc("/assets/css", s.css)
+	router.HandleFunc("/assets/ico", s.ico)
+	router.HandleFunc("/", s.root)
+	//router.HandleFunc("/forum", s.forum)
+
+	s.server.Handler = router
+}
+
+func NewService(status chan error, https bool) (*Service, error) {
 	var s Service
+	var err error
 	s.https = https
 	s.server = &http.Server{}
 	s.status = status
 
 	if https {
-		var cert, err = tls.LoadX509KeyPair(path_cert, path_key)
-		if err != nil {
+		var cert tls.Certificate
+		if cert, err = tls.LoadX509KeyPair(path_cert, path_key); err != nil {
 			return nil, err
 		}
 
@@ -65,11 +82,17 @@ func NewService(status chan error, https bool, reg registrar) (*Service, error) 
 		}
 	}
 
-	var err = reg(s.server)
-	if err != nil {
+	if err = http2.ConfigureServer(s.server, nil); err != nil {
+		return nil, err
+	}
+	if s.data.css, err = ioutil.ReadFile("assets/style.css"); err != nil {
+		return nil, err
+	}
+	if s.data.ico, err = ioutil.ReadFile("assets/ico.png"); err != nil {
 		return nil, err
 	}
 
+	register(&s)
 	return &s, err
 }
 
@@ -78,13 +101,11 @@ func (s *Service) Launch() {
 	var err error
 
 	if s.https {
-		l, err = tls.Listen("tcp", ":443", s.server.TLSConfig)
-		if err != nil {
+		if l, err = tls.Listen("tcp", ":443", s.server.TLSConfig); err != nil {
 			s.status <- err
 		}
 	} else {
-		l, err = net.Listen("tcp", ":80")
-		if err != nil {
+		if l, err = net.Listen("tcp", ":80"); err != nil {
 			s.status <- err
 		}
 	}
@@ -95,8 +116,8 @@ func (s *Service) Launch() {
 }
 
 func (s *Service) Stop() {
-	var err = s.server.Shutdown(context.Background())
-	if err != nil {
+	var err error
+	if err = s.server.Shutdown(context.Background()); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -7,26 +7,32 @@ import (
 	"time"
 )
 
-func root(w http.ResponseWriter, r *http.Request) {
-	n := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("[%s] web.root hit by ip:%s\n", n, r.RemoteAddr)
+func Root(w http.ResponseWriter, r *http.Request) error {
+	var err error
+	var t = time.Now().Format("2006-01-02 15:04:05")
+	fmt.Printf("[%s] web.root hit by ip:%s\n", t, r.RemoteAddr)
 
-	//if pusher, ok := w.(http.Pusher); ok {
-	//	_ = pusher.Push("assets/css/style.css", nil)
-	//	_ = pusher.Push("assets/favicon.ico", nil)
-	//}
+	if pusher, ok := w.(http.Pusher); ok {
+		if err = pusher.Push("/assets/css", nil); err != nil {
+			fmt.Println(err)
+		}
+		if err = pusher.Push("/assets/ico", nil); err != nil {
+			fmt.Println(err)
+		}
+	}
 
 	w.Header().Set("Content-Type", "text/html")
 
-	t, err := template.ParseFiles("web/templates/index.html")
+	var templ *template.Template
+	templ, err = template.ParseFiles("web/templates/index.html")
 	if err != nil {
-		ise(w, err)
-		return
+		return err
 	}
 
-	err = t.ExecuteTemplate(w, "index", nil)
+	err = templ.ExecuteTemplate(w, "index", nil)
 	if err != nil {
-		ise(w, err)
-		return
+		return err
 	}
+
+	return err
 }

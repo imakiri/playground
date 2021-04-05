@@ -23,7 +23,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 	l.statusRedirector = make(chan error)
 
 	if l.debug {
-		l.web, err = web.NewService(l.statusWeb, false, web.Registrars.Main())
+		l.web, err = web.NewService(l.statusWeb, false)
 		if err != nil {
 			return nil, err
 		}
@@ -36,7 +36,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	l.web, err = web.NewService(l.statusWeb, true, web.Registrars.Main())
+	l.web, err = web.NewService(l.statusWeb, true)
 	if err != nil {
 		return nil, err
 	}
