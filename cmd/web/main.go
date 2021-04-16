@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/imakiri/erres"
+	"github.com/imakiri/gorum/transport"
 	"github.com/imakiri/gorum/web"
 	"log"
 )
-
-const path_cert = "secrets/grpc/cert.crt"
 
 type opts struct {
 	debug  bool
@@ -17,13 +17,20 @@ type opts struct {
 
 func NewLauncher(o opts) (*Launcher, error) {
 	var l Launcher
-	var err error
 	l.debug = o.debug
 	l.statusWeb = make(chan error)
 	l.statusRedirector = make(chan error)
 
+	var cc, err = connect(o)
+	if err != nil {
+		return nil, erres.ConnectionError.Extend(0).SetName("grpc").SetDescription(err.Error())
+	}
+
+	var ss web.Services
+	ss.Assets = transport.NewAssetsClient(cc)
+
 	if l.debug {
-		l.web, err = web.NewService(l.statusWeb, false)
+		l.web, err = web.NewService(ss, l.statusWeb, false)
 		if err != nil {
 			return nil, err
 		}
@@ -31,12 +38,12 @@ func NewLauncher(o opts) (*Launcher, error) {
 		return &l, err
 	}
 
-	l.redirector, err = web.NewHTTPSRedirector(l.statusRedirector)
+	l.redirector, err = web.NewRedirector(l.statusRedirector)
 	if err != nil {
 		return nil, err
 	}
 
-	l.web, err = web.NewService(l.statusWeb, true)
+	l.web, err = web.NewService(ss, l.statusWeb, true)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +54,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 type Launcher struct {
 	debug            bool
 	web              *web.Service
-	redirector       *web.HTTPSRedirector
+	redirector       *web.Redirector
 	statusWeb        chan error
 	statusRedirector chan error
 }

@@ -4,3 +4,8 @@ package transport;
 
 option go_package = "github.com/imakiri/gorum/transport";
 
+import "types/assets.proto";
+
+service Assets {
+  rpc Get(types.Request) returns (types.Assets);
+}

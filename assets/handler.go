@@ -1,18 +1,16 @@
-package web
+package assets
 
 import (
-	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/imakiri/gorum/utils"
-	"github.com/imakiri/gorum/web/handlers"
 	"net/http"
-	"time"
 )
 
-func (s *Service) load(w http.ResponseWriter, r *http.Request) {
-	var err error
-	if err = s.Load(); err != nil {
-		handlers.ISE(w, err)
-	}
+func Handler(s *Service) *mux.Router {
+	var router = mux.NewRouter()
+	router.HandleFunc("/css", s.css)
+	router.HandleFunc("/ico", s.ico)
+	return router
 }
 
 func (s *Service) css(w http.ResponseWriter, r *http.Request) {
@@ -27,16 +25,4 @@ func (s *Service) ico(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "public")
 	w.Header().Set("Cache-Control", "max-age=86400")
 	_ = utils.SendBytes(s.assets.Ico, w, r)
-}
-
-func (s *Service) root(w http.ResponseWriter, r *http.Request) {
-	var t = time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("[%s] web.root hit by ip:%s\n", t, r.RemoteAddr)
-
-	w.Header().Set("Content-Type", "text/html")
-
-	var err = handlers.Root(s.index, w, r)
-	if err != nil {
-		handlers.ISE(w, err)
-	}
 }

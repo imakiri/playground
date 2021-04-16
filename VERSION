@@ -4,6 +4,14 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!V0.85:
+    --assets: Менеджер служебных html-related файлов
+    --content: CDN на минималках
+    --message: Удалён
+    --data: Файловая реструктуризация
+    --postgres: Файловая реструктуризация
+    --web: Сломан(нужно починить потом)
+
 !V0.84:
     --web: Доработана архитектура пакета
     --web: Убран файл-сервер, добавлены /assets/css и /assets/ico

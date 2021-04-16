@@ -3,18 +3,18 @@ package web
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/gorum/web/internal"
+	"github.com/imakiri/gorum/web/handlers"
 	"log"
 	"net"
 	"net/http"
 )
 
-type HTTPSRedirector struct {
+type Redirector struct {
 	server *http.Server
 	status chan error
 }
 
-func (s *HTTPSRedirector) Launch() {
+func (s *Redirector) Launch() {
 	var l, err = net.Listen("tcp", ":80")
 	if err != nil {
 		s.status <- err
@@ -25,21 +25,21 @@ func (s *HTTPSRedirector) Launch() {
 	}()
 }
 
-func (s *HTTPSRedirector) Stop() {
+func (s *Redirector) Stop() {
 	var err = s.server.Shutdown(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func NewHTTPSRedirector(status chan error) (*HTTPSRedirector, error) {
-	var r HTTPSRedirector
+func NewRedirector(status chan error) (*Redirector, error) {
+	var r Redirector
 	var err error
 	r.server = &http.Server{}
 	r.status = status
 
 	var router = mux.NewRouter()
-	router.HandleFunc("/", internal.Go2HTTPS)
+	router.HandleFunc("/", handlers.Go2HTTPS)
 	r.server.Handler = router
 
 	return &r, err

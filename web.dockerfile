@@ -14,7 +14,7 @@ RUN go mod download
 COPY ./types ./types
 COPY ./transport ./transport
 COPY ./assets ./assets
-COPY ./web ./web
+COPY web/handlers ./web
 COPY ./cmd ./cmd
 
 RUN go build -o run ./cmd/web/main.go

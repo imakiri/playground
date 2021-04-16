@@ -3,23 +3,24 @@ package utils
 import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"net/http"
 )
 
-func IsNilSafe(l ...interface{}) bool {
+func IsNil(l ...interface{}) bool {
 	for i := 0; i < len(l); i++ {
 		if l[i] == nil {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
 }
 
-func IsNilSafeEx(l ...interface{}) (b []bool) {
+func IsNilEx(l ...interface{}) (b []bool) {
 	for i := 0; i < len(l); i++ {
 		if l[i] == nil {
-			b = append(b, false)
-		} else {
 			b = append(b, true)
+		} else {
+			b = append(b, false)
 		}
 	}
 	return
@@ -32,4 +33,9 @@ func ReadYAML(path string, dest interface{}) error {
 	}
 
 	return yaml.Unmarshal(raw, dest)
+}
+
+func SendBytes(data []byte, w http.ResponseWriter, r *http.Request) error {
+	var _, err = w.Write(data)
+	return err
 }

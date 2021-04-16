@@ -4,8 +4,12 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/gorilla/mux"
+	"github.com/imakiri/erres"
+	"github.com/imakiri/gorum/assets"
+	"github.com/imakiri/gorum/types"
+	"github.com/imakiri/gorum/utils"
 	"golang.org/x/net/http2"
-	"io/ioutil"
+	"html/template"
 	"log"
 	"net"
 	"net/http"
@@ -16,33 +20,37 @@ const (
 	path_cert = "secrets/web/certificate.crt"
 )
 
+type Services struct {
+	Assets *assets.Service
+}
+
 type Service struct {
-	https  bool
-	server *http.Server
-	status chan error
-	data   struct {
-		ico []byte
-		css []byte
-	}
+	https    bool
+	server   *http.Server
+	status   chan error
+	index    *template.Template
+	services Services
 }
 
 func register(s *Service) {
 	var router = mux.NewRouter()
-
-	router.HandleFunc("/assets/css", s.css)
-	router.HandleFunc("/assets/ico", s.ico)
+	router.Handle("/assets/", assets.Handler(s.services.Assets))
 	router.HandleFunc("/", s.root)
-	//router.HandleFunc("/forum", s.forum)
-
+	router.HandleFunc("/admin/load", s.load)
 	s.server.Handler = router
 }
 
-func NewService(status chan error, https bool) (*Service, error) {
+func NewService(ss Services, status chan error, https bool) (*Service, error) {
+	if utils.IsNil(ss) {
+		return nil, erres.NilArgument.Extend(0).SetDescription("services cannot be nil")
+	}
+
 	var s Service
 	var err error
 	s.https = https
 	s.server = &http.Server{}
 	s.status = status
+	s.services = ss
 
 	if https {
 		var cert tls.Certificate
@@ -85,15 +93,20 @@ func NewService(status chan error, https bool) (*Service, error) {
 	if err = http2.ConfigureServer(s.server, nil); err != nil {
 		return nil, err
 	}
-	if s.data.css, err = ioutil.ReadFile("assets/style.css"); err != nil {
-		return nil, err
-	}
-	if s.data.ico, err = ioutil.ReadFile("assets/ico.png"); err != nil {
-		return nil, err
-	}
 
 	register(&s)
 	return &s, err
+}
+
+func (s *Service) Load() error {
+	var assets, err = s.services.Assets.Get(context.Background(), &types.Request{})
+	if err != nil {
+		return err
+	}
+
+	s.assets = assets
+	s.index, err = template.New("index").Parse(string(s.assets.Index))
+	return err
 }
 
 func (s *Service) Launch() {

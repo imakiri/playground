@@ -1,9 +1,17 @@
 package types
 
 type Secret struct {
-	Postgres SecretPostgres
+	Data    SecretData
+	Content SecretContent
 }
 
-type SecretPostgres struct {
+type SecretData struct {
+	Postgres SecretDataPostgres
+}
+type SecretContent struct {
+	Postgres SecretDataPostgres
+}
+
+type SecretDataPostgres struct {
 	DSN string
 }

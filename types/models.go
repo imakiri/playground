@@ -1,15 +1,21 @@
 package types
 
 type (
-	ModelUserUUID             string
-	ModelUserPemID            int16
-	ModelUserNickName         string
-	ModelUserFullName         string
-	ModelUserPosts            int32
-	ModelUserAvatar512        []byte
-	ModelUserAvatar256        []byte
-	ModelUserAvatar128        []byte
-	ModelUserRegistrationDate int64
+	Page struct {
+		Start  uint64
+		Length uint64
+	}
+)
+
+type (
+	ModelUserUUID      string
+	ModelUserPemID     int16
+	ModelUserNickName  string
+	ModelUserFullName  string
+	ModelUserPosts     int32
+	ModelUserAvatar512 []byte
+	ModelUserAvatar256 []byte
+	ModelUserAvatar128 []byte
 
 	ModelDate    int64
 	ModelContent string
@@ -22,8 +28,7 @@ type (
 	ModelCategoryUUID string
 	ModelCategoryName string
 
-	ModelCookieKey            string
-	ModelCookieExpirationDate int64
+	ModelCookieKey string
 
 	ModelLogpassLogin    []byte
 	ModelLogpassPassword []byte
@@ -32,7 +37,7 @@ type (
 type (
 	ModelUser struct {
 		UserUUID         ModelUserUUID
-		RegistrationDate ModelUserRegistrationDate
+		RegistrationDate ModelDate
 		Nickname         ModelUserNickName
 		Fullname         ModelUserFullName
 		Avatar512        ModelUserAvatar512
@@ -62,12 +67,12 @@ type (
 	}
 	ModelCookie struct {
 		Key            ModelCookieKey
-		UUID           ModelUserUUID
+		UserUUID       ModelUserUUID
 		PemID          ModelUserPemID
-		ExpirationDate ModelCookieExpirationDate
+		ExpirationDate ModelDate
 	}
 	ModelLogpass struct {
-		UUID     ModelUserUUID
+		UserUUID ModelUserUUID
 		Login    ModelLogpassLogin
 		Password ModelLogpassPassword
 		PemID    ModelUserPemID

@@ -6,6 +6,8 @@ import (
 	"net"
 )
 
+const path_cert = "secrets/grpc/cert.crt"
+
 func connect(o opts) (*grpc.ClientConn, error) {
 	var ips, err = net.LookupIP(o.domain)
 	if err != nil {

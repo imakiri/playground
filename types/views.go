@@ -13,12 +13,12 @@ type (
 )
 
 type (
-	ViewCookieByUUID struct {
+	ViewCookie struct {
 		PemID          ModelUserPemID
 		Key            ModelCookieKey
-		ExpirationDate ModelCookieExpirationDate
+		ExpirationDate ModelDate
 	}
-	ViewLogpassByUUID struct {
+	ViewLogpass struct {
 		PemID    ModelUserPemID
 		Login    ModelLogpassLogin
 		Password ModelLogpassPassword
@@ -32,14 +32,14 @@ type (
 
 type (
 	ViewUserProfile struct {
-		RegistrationDate ModelUserRegistrationDate
+		RegistrationDate ModelDate
 		NickName         ModelUserNickName
 		FullName         ModelUserFullName
 		Avatar512        ModelUserAvatar512
 	}
 	ViewUserProfileFromThread struct {
 		UserUUID         ModelUserUUID
-		RegistrationDate ModelUserRegistrationDate
+		RegistrationDate ModelDate
 		NickName         ModelUserNickName
 		FullName         ModelUserFullName
 		Avatar256        ModelUserAvatar256
