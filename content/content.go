@@ -9,26 +9,22 @@ import (
 
 const path = "secrets/content.yaml"
 
-type service struct {
+type connectionPostgres struct {
 	secret types.SecretData
 	db     *sqlx.DB
 }
 
-func newService() (*service, error) {
+func newConnectionPostgres() (*connectionPostgres, error) {
 	var secret types.SecretData
 	var err = utils.ReadYAML(path, &secret)
 	if err != nil {
 		return nil, erres.InternalServiceError.Extend(0)
 	}
 
-	var s service
+	var s = new(connectionPostgres)
 	s.secret = secret
 	if s.db, err = sqlx.Connect("pgx", secret.Postgres.DSN); err != nil {
 		return nil, erres.ConnectionError.Extend(0)
 	}
-	return &s, err
-}
-
-func NewAvatarService() {
-
+	return s, err
 }

@@ -12,22 +12,22 @@ type Avatar interface {
 	Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error
 }
 
-type avatar struct {
-	*service
+type avatarPostgres struct {
+	*connectionPostgres
 }
 
-func (s avatar) Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
+func (s avatarPostgres) Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
 	return postgres.AvatarGet128(s.db, userUUID, container)
 }
 
-func (s avatar) Get256(userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error {
+func (s avatarPostgres) Get256(userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error {
 	return postgres.AvatarGet256(s.db, userUUID, container)
 }
 
-func (s avatar) Get512(userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error {
+func (s avatarPostgres) Get512(userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error {
 	return postgres.AvatarGet512(s.db, userUUID, container)
 }
 
-func (s avatar) Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error {
+func (s avatarPostgres) Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error {
 	return postgres.AvatarSet(s.db, update, userUUID, avatar)
 }
