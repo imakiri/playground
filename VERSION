@@ -1,8 +1,12 @@
-VERSION 1.1
+VERSION 1.2
 PROJECT gorum
-SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)/g
+SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?:\.(?<subcommit>\d+))?:(?<noteList>[\s\S]+?)(?=\s!|$)/g
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
+
+!V0.85.1:
+    --content: service -> connectionPostgres
+    --VERSION 1.2
 
 !V0.85:
     --assets: Менеджер служебных html-related файлов
