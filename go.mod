@@ -18,6 +18,7 @@ require (
 	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
+	go.mongodb.org/mongo-driver v1.5.1
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 // indirect

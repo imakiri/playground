@@ -2,9 +2,11 @@ package content
 
 import (
 	"github.com/imakiri/erres"
+	"github.com/imakiri/gorum/mongodb"
 	"github.com/imakiri/gorum/types"
 	"github.com/imakiri/gorum/utils"
 	"github.com/jmoiron/sqlx"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const path = "secrets/content.yaml"
@@ -29,6 +31,21 @@ func newService() (*service, error) {
 	return &s, err
 }
 
-func NewAvatarService() {
+const (
+	MONGODB  = "mongodb"
+	POSTGRES = "postgres"
+)
 
+/* Получается странная связанность, если попытаться обьединить 2 дб-методы в 1 сервис-конструктор.
+
+   Необходимо будет принимать сразу 2 аргумента с разными дб, что нам тогда ставить? 1 nil в аргумент?
+*/
+
+func NewAvatarService(dbType string, db *mongo.Database) (Avatar, error) {
+	switch dbType {
+	case MONGODB:
+		return mongodb.NewMongoRepos(db), nil
+	case POSTGRES:
+		return nil
+	}
 }
