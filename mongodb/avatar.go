@@ -5,24 +5,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type AvatarMongo struct {
-	db *mongo.Collection
-}
-
-func NewAvatarMongo(db *mongo.Database) *AvatarMongo {
-	return &AvatarMongo{
-		db: db.Collection("avatar-blah-blah"),
-	}
-}
-
-func (av *AvatarMongo) Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
+func AvatarGet128(db *mongo.Database, userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
 	return nil
 }
-
-func (av *AvatarMongo) Get256(userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error {
+func AvatarGet256(db *mongo.Database, userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error {
 	return nil
 }
-
-func (av *AvatarMongo) Get512(userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error {
+func AvatarGet512(db *mongo.Database, userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error {
+	return nil
+}
+func AvatarSet(db *mongo.Database, update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error {
 	return nil
 }
