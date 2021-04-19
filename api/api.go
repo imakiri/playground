@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"github.com/imakiri/gorum/configs"
+	"github.com/imakiri/gorum/cfg"
 	"google.golang.org/grpc"
 )
 

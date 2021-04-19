@@ -5,15 +5,8 @@ import (
 	"github.com/imakiri/gorum/types"
 )
 
-type Avatar interface {
-	Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error
-	Get256(userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error
-	Get512(userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error
-	Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error
-}
-
 type avatarPostgres struct {
-	*connectionPostgres
+	connectionPostgres
 }
 
 func (s avatarPostgres) Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
@@ -30,4 +23,24 @@ func (s avatarPostgres) Get512(userUUID types.ModelUserUUID, container *types.Mo
 
 func (s avatarPostgres) Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error {
 	return postgres.AvatarSet(s.db, update, userUUID, avatar)
+}
+
+type avatarMongo struct {
+	connectionMongo
+}
+
+func (s avatarMongo) Get128(userUUID types.ModelUserUUID, container *types.ModelUserAvatar128) error {
+	panic("")
+}
+
+func (s avatarMongo) Get256(userUUID types.ModelUserUUID, container *types.ModelUserAvatar256) error {
+	panic("")
+}
+
+func (s avatarMongo) Get512(userUUID types.ModelUserUUID, container *types.ModelUserAvatar512) error {
+	panic("")
+}
+
+func (s avatarMongo) Set(update bool, userUUID types.ModelUserUUID, avatar types.ViewUserAvatar) error {
+	panic("")
 }

@@ -3,8 +3,18 @@ package postgres
 import (
 	"database/sql"
 	"github.com/imakiri/erres"
+	"github.com/jmoiron/sqlx"
 	"strings"
 )
+
+func NewDB(dsn string) (*sqlx.DB, error) {
+	var db, err = sqlx.Connect("pgx", dsn)
+	if err != nil {
+		return nil, erres.ConnectionError.Extend(0)
+	}
+
+	return db, err
+}
 
 // Wrapper for raw sql/sqlx/pgx error strings
 func errWrapper(err error) *erres.Error {
