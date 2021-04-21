@@ -1,0 +1,12 @@
+connections:
+  postgres:
+    main:
+      host: "imakiri-ips.ddns.net"
+      port: 5432
+      dbname: "service"
+      sslmode: "disable"
+
+services:
+  avatar:
+    dbtype: "postgres"
+    connname: "main"
