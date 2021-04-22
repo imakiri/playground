@@ -1,8 +1,10 @@
 package postgres
 
-import (
-	"github.com/imakiri/gorum/internal/types"
-)
+type ViewUserAvatar struct {
+	Avatar512 []byte
+	Avatar256 []byte
+	Avatar128 []byte
+}
 
 func AvatarGet128(conn Connection, userUUID string, dest []byte) error {
 	return conn.db.Get(dest, "SELECT avatar128 FROM main.content.avatars WHERE user_uuid = $1", userUUID)
@@ -13,11 +15,11 @@ func AvatarGet256(conn Connection, userUUID string, dest []byte) error {
 func AvatarGet512(conn Connection, userUUID string, dest []byte) error {
 	return conn.db.Get(dest, "SELECT avatar512 FROM main.content.avatars WHERE user_uuid = $1", userUUID)
 }
-func AvatarSet(conn Connection, update bool, userUUID string, avatar types.ViewUserAvatar) error {
+func AvatarSet(conn Connection, update bool, userUUID string, avatar ViewUserAvatar) error {
 	var err error
 	var container = struct {
 		UserUUID string
-		types.ViewUserAvatar
+		ViewUserAvatar
 	}{
 		UserUUID:       userUUID,
 		ViewUserAvatar: avatar,

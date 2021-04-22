@@ -31,7 +31,7 @@ func newService() (*service, error) {
 
 func NewUserService() (User, error) {
 	var err error
-	var user user
+	var user serviceUser
 	if user.service, err = newService(); err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func NewUserService() (User, error) {
 
 func NewCookieService() (Cookie, error) {
 	var err error
-	var cookie cookie
+	var cookie serviceCookie
 	if cookie.service, err = newService(); err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func NewCookieService() (Cookie, error) {
 
 func NewLogpassService() (Logpass, error) {
 	var err error
-	var logpass logpass
+	var logpass serviceLogpass
 	if logpass.service, err = newService(); err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func NewLogpassService() (Logpass, error) {
 
 func NewThreadService() (Thread, error) {
 	var err error
-	var thread thread
+	var thread serviceThread
 	if thread.service, err = newService(); err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func NewThreadService() (Thread, error) {
 
 func NewPostService() (Post, error) {
 	var err error
-	var post post
+	var post servicePost
 	if post.service, err = newService(); err != nil {
 		return nil, err
 	}

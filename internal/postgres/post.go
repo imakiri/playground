@@ -1,28 +1,17 @@
 package postgres
 
-import (
-	"github.com/imakiri/gorum/internal/types"
-	"github.com/jmoiron/sqlx"
-)
-
-func PostCreate(container types.ViewPostCreate, db *sqlx.DB) error {
-	var err error
-
-	//
-
-	return err
+type ViewPostCreate struct {
+	UserUUID   string
+	ThreadUUID string
+	Content    string
 }
-func PostUpdate(uuid types.ModelPostUUID, container types.ViewPostCreate, db *sqlx.DB) error {
-	var err error
 
-	//
-
-	return err
+func PostCreate(conn Connection, container ViewPostCreate) error {
+	return nil
 }
-func PostDelete(uuid types.ModelPostUUID, db *sqlx.DB) error {
-	var err error
-
-	//
-
-	return err
+func PostUpdate(conn Connection, postUUID string, container ViewPostCreate) error {
+	return nil
+}
+func PostDelete(conn Connection, postUUID string) error {
+	return nil
 }

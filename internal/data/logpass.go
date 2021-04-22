@@ -2,25 +2,18 @@ package data
 
 import (
 	"github.com/imakiri/gorum/internal/postgres"
-	"github.com/imakiri/gorum/internal/types"
 )
 
-type Logpass interface {
-	Add(logpass types.ModelLogpass) error
-	Get(login types.ModelLogpassLogin, container *types.ViewLogpass) error
-	Delete(uuid types.ModelUserUUID) error
+type serviceLogpass struct {
+	postgres.Connection
 }
 
-type logpass struct {
-	*service
+func (s serviceLogpass) Add(logpass ModelLogpass) error {
+	return postgres.LogpassAdd(s.Connection, logpass)
 }
-
-func (s logpass) Add(logpass types.ModelLogpass) error {
-	return postgres.LogpassAdd(logpass, s.db)
+func (s serviceLogpass) Get(login ModelLogpassLogin, container *ViewLogpass) error {
+	return postgres.LogpassGetWithLogin(s.Connection, login, container)
 }
-func (s logpass) Get(login types.ModelLogpassLogin, container *types.ViewLogpass) error {
-	return postgres.LogpassGetWithLogin(login, container, s.db)
-}
-func (s logpass) Delete(uuid types.ModelUserUUID) error {
-	return postgres.LogpassDelete(uuid, s.db)
+func (s serviceLogpass) Delete(uuid ModelUserUUID) error {
+	return postgres.LogpassDelete(s.Connection, uuid)
 }

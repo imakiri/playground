@@ -85,6 +85,7 @@ func NewService(file string) (*Service, error) {
 	var s = new(Service)
 	s.config = new(Config)
 	s.config.Connections.Postgres = make(map[string]ConfigDatabasePostgres)
+	s.config.Connections.Mongo = make(map[string]ConfigDatabaseMongo)
 	s.secret = new(Secret)
 
 	var wd, err = os.Getwd()
