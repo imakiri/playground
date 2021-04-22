@@ -4,6 +4,11 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?:\.(?<subcommit>\d+))?:(?<no
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!0.86:
+    --web: Теперь при запуске подгружает assets с asset сервера
+    --cmd: Восстановлены лаунчеры asset и web
+    --Обновленны docker-related конфиг файлы
+
 !V0.85.4:
     --postgres: Обновленны сигнатуры функций данных, теперь они принимают тип Connection вместо sqlx.DB
     --data: Частично востановлены сервисы данных

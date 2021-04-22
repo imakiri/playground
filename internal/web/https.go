@@ -5,8 +5,7 @@ import (
 	"crypto/tls"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/asset"
-	"github.com/imakiri/gorum/internal/types"
+	"github.com/imakiri/gorum/internal/asset/transport"
 	"github.com/imakiri/gorum/internal/utils"
 	"golang.org/x/net/http2"
 	"html/template"
@@ -21,36 +20,42 @@ const (
 )
 
 type Services struct {
-	Assets *asset.Service
+	Assets transport.AssetClient
 }
 
-type Service struct {
-	https    bool
-	server   *http.Server
-	status   chan error
-	index    *template.Template
-	services Services
+type Server struct {
+	https     bool
+	server    *http.Server
+	status    chan error
+	assets    *transport.Assets
+	templates *template.Template
+	services  Services
 }
 
-func register(s *Service) {
+func register(s *Server) {
 	var router = mux.NewRouter()
-	router.Handle("/assets/", asset.Handler(s.services.Assets))
+	router.HandleFunc("/assets/css", s.css)
+	router.HandleFunc("/assets/ico", s.ico)
 	router.HandleFunc("/", s.root)
-	router.HandleFunc("/admin/load", s.load)
+	//router.HandleFunc("/admin/load", s.load)
 	s.server.Handler = router
 }
 
-func NewService(ss Services, status chan error, https bool) (*Service, error) {
+func NewServer(ss Services, status chan error, https bool) (*Server, error) {
 	if utils.IsNil(ss) {
 		return nil, erres.NilArgument.Extend(0).SetDescription("services cannot be nil")
 	}
 
-	var s Service
+	var s Server
 	var err error
 	s.https = https
 	s.server = &http.Server{}
 	s.status = status
 	s.services = ss
+
+	if err = s.load(); err != nil {
+		return nil, err
+	}
 
 	if https {
 		var cert tls.Certificate
@@ -98,18 +103,18 @@ func NewService(ss Services, status chan error, https bool) (*Service, error) {
 	return &s, err
 }
 
-func (s *Service) Load() error {
-	var assets, err = s.services.Assets.Get(context.Background(), &types.Request{})
+func (s *Server) load() error {
+	var assets, err = s.services.Assets.Get(context.Background(), &transport.Request{})
 	if err != nil {
 		return err
 	}
-
 	s.assets = assets
-	s.index, err = template.New("index").Parse(string(s.assets.Index))
+
+	s.templates, err = template.New("index").Parse(string(s.assets.Index))
 	return err
 }
 
-func (s *Service) Launch() {
+func (s *Server) Launch() {
 	var l net.Listener
 	var err error
 
@@ -128,7 +133,7 @@ func (s *Service) Launch() {
 	}()
 }
 
-func (s *Service) Stop() {
+func (s *Server) Stop() {
 	var err error
 	if err = s.server.Shutdown(context.Background()); err != nil {
 		log.Fatal(err)

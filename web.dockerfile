@@ -1,6 +1,6 @@
 FROM amd64/golang:1.15-alpine AS build-env
 
-ENV GO111MODULE=on
+ENV GO111MODULE=auto
 ENV GOOS=linux
 ENV GOARCH=amd64
 
@@ -11,13 +11,12 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-COPY internal/types internal/types
-COPY internal/transport internal/transport
-COPY internal/asset internal/assets
+COPY internal/asset/transport internal/asset/transport
 COPY internal/web internal/web
+COPY internal/utils internal/utils
 COPY cmd cmd
 
-RUN go build -o run ./cmd/web/main.go
+RUN go build -o launcher ./cmd/web/main.go
 
 FROM amd64/ubuntu:bionic AS run-env
 
@@ -25,6 +24,6 @@ RUN apt update && apt install libc-dev -y && apt install musl -y
 
 WORKDIR /srv
 
-COPY --from=build-env /src .
+COPY --from=build-env /src/launcher .
 
-CMD ./run -debug=false
+CMD ./launcher -debug=false
