@@ -1,36 +1,62 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"flag"
-	"fmt"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/transport"
+	"github.com/imakiri/gorum/internal/asset/transport"
 	"github.com/imakiri/gorum/internal/web"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	"log"
 )
 
-type opts struct {
-	debug  bool
-	domain string
-	port   string
+func connect(domain string, port string) (*grpc.ClientConn, error) {
+	var err error
+	var ca []byte
+
+	if ca, err = ioutil.ReadFile("secrets/ca/ca.crt"); err != nil {
+		return nil, err
+	}
+
+	var cp = x509.NewCertPool()
+	if !cp.AppendCertsFromPEM(ca) {
+		return nil, erres.CE("certificate error").Extend(0)
+	}
+
+	var conf = &tls.Config{
+		RootCAs:            cp,
+		InsecureSkipVerify: false,
+		MinVersion:         tls.VersionTLS12,
+	}
+
+	var conn *grpc.ClientConn
+	conn, err = grpc.Dial(domain+":"+port, grpc.WithTransportCredentials(credentials.NewTLS(conf)))
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, err
 }
 
-func NewLauncher(o opts) (*Launcher, error) {
+func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 	var l Launcher
-	l.debug = o.debug
+	l.debug = debug
 	l.statusWeb = make(chan error)
 	l.statusRedirector = make(chan error)
 
-	var cc, err = connect(o)
+	var cc, err = connect(domain, port)
 	if err != nil {
-		return nil, erres.ConnectionError.Extend(0).SetName("grpc").SetDescription(err.Error())
+		return nil, err
 	}
 
 	var ss web.Services
-	ss.Assets = transport.NewAssetsClient(cc)
+	ss.Assets = transport.NewAssetClient(cc)
 
 	if l.debug {
-		l.web, err = web.NewService(ss, l.statusWeb, false)
+		l.web, err = web.NewServer(ss, l.statusWeb, false)
 		if err != nil {
 			return nil, err
 		}
@@ -43,7 +69,7 @@ func NewLauncher(o opts) (*Launcher, error) {
 		return nil, err
 	}
 
-	l.web, err = web.NewService(ss, l.statusWeb, true)
+	l.web, err = web.NewServer(ss, l.statusWeb, true)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +79,8 @@ func NewLauncher(o opts) (*Launcher, error) {
 
 type Launcher struct {
 	debug            bool
-	web              *web.Service
+	asset            transport.AssetClient
+	web              *web.Server
 	redirector       *web.Redirector
 	statusWeb        chan error
 	statusRedirector chan error
@@ -80,27 +107,22 @@ func (l *Launcher) Launch() error {
 }
 
 const (
-	domain       = "imakiri-ips.ddns.net"
-	default_port = "25565"
+	domain = "imakiri-ips.ddns.net"
+	port   = "25565"
 )
 
 func main() {
-	var o opts
-
 	var debug = flag.Bool("debug", true, "set to false to launch a production ready system")
-	var debug = flag.Bool("cfgType", true, "set to false to launch a production ready system")
 	flag.Parse()
 
-	o.debug = *debug
-	o.domain = domain
-	o.port = default_port
-
-	fmt.Println(o)
-
-	var l, err = NewLauncher(o)
+	var l, err = NewLauncher(*debug, domain, port)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	log.Fatalln(l.Launch())
+	err = l.Launch()
+	if e, ok := err.(*erres.Error); ok {
+		log.Fatal(e.String())
+	}
+	log.Fatalln(err)
 }
