@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package asset;
+
+option go_package = "github.com/imakiri/gorum/internal/asset/transport";
+
+import "asset/transport/types.proto";
+
+service Asset {
+  rpc Get(types.Request) returns (types.Assets);
+}

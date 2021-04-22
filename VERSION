@@ -1,8 +1,36 @@
-VERSION 1.1
+VERSION 1.2
 PROJECT gorum
-SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?<noteList>[\s\S]+?)(?=\s!|$)/g
+SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?:\.(?<subcommit>\d+))?:(?<noteList>[\s\S]+?)(?=\s!|$)/g
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
+
+!V0.85.4:
+    --postgres: Обновленны сигнатуры функций данных, теперь они принимают тип Connection вместо sqlx.DB
+    --data: Частично востановлены сервисы данных
+    --types: Удалён. Проект стоится на многоуровневой архитектуре, где не требуются глобальные пакеты связности
+    --transport: Удалён. "Расшаренные" пакеты теперь будут содержать внутри себя пакет transport с объявленными типами и сервисами доступными удалённо по gRPC
+    --asset/transport: Добавлен
+
+!V0.85.3:
+    --Все пакеты проекта перемещены в internal
+    --Добавлены папки assets и configs - папки данных пакетов asset и cfg соответственно
+    --log: Теперь сервис удовлетворяет интерфейсу pgx.Logger
+    --log: Обёртка zap.Logger
+    --cfg: Обновлен код и структура конфигов
+    --postgres: Connection перемещён из content
+    --postgres: Обновленны сигнатуры функций данных, теперь они принимают тип Connection вместо sqlx.DB
+    --postgres: Обновленн конструктор типа Connection
+    --Обновленны docker-related конфиг файлы
+    --Множественные исправления и улучшения кода
+
+!V0.85.2:
+    --Добавлен cfg - пакет чтения конфигов
+    --Обновлен конструктор content.NewAvatarService
+    --Множественные исправления и улучшения кода
+
+!V0.85.1:
+    --content: service -> connectionPostgres
+    --VERSION 1.2
 
 !V0.85:
     --assets: Менеджер служебных html-related файлов

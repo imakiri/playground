@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/transport"
-	"github.com/imakiri/gorum/web"
+	"github.com/imakiri/gorum/internal/transport"
+	"github.com/imakiri/gorum/internal/web"
 	"log"
 )
 
@@ -88,6 +88,7 @@ func main() {
 	var o opts
 
 	var debug = flag.Bool("debug", true, "set to false to launch a production ready system")
+	var debug = flag.Bool("cfgType", true, "set to false to launch a production ready system")
 	flag.Parse()
 
 	o.debug = *debug

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/imakiri/gorum/app"
+	"github.com/imakiri/gorum/internal/app"
 	"log"
 	"net"
 )

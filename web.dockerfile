@@ -11,11 +11,11 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 
-COPY ./types ./types
-COPY ./transport ./transport
-COPY ./assets ./assets
-COPY web/handlers ./web
-COPY ./cmd ./cmd
+COPY internal/types internal/types
+COPY internal/transport internal/transport
+COPY internal/asset internal/assets
+COPY internal/web internal/web
+COPY cmd cmd
 
 RUN go build -o run ./cmd/web/main.go
 
