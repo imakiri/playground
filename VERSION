@@ -4,6 +4,13 @@ SCHEMA main /!V(?<release>\d+)(?:\.(?<commit>\d+))(?:\.(?<subcommit>\d+))?:(?<no
 SCHEMA main.notes /--([\s\S]+?)(?=\s--|$)/g
 DATA
 
+!0.87:
+    --Рефакторинг web пакета
+    --web: пакет handler провайдера
+    --http: пакет http сервера
+    --auth: вынесен в отдельный репозиторий gauth
+    --assets: обновление вёрстки и структуры файлов
+
 !0.86:
     --web: Теперь при запуске подгружает assets с asset сервера
     --cmd: Восстановлены лаунчеры asset и web

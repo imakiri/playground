@@ -14,7 +14,7 @@ type Connection struct {
 	db *sqlx.DB
 }
 
-func NewConnection(log pgx.Logger, config cfg.ConfigDatabasePostgres, secret cfg.SecretDatabasePostgres) (*Connection, error) {
+func NewConnection(log pgx.Logger, config *cfg.ConfigDatabasePostgres, secret *cfg.SecretDatabasePostgres) (*Connection, error) {
 	var tlsConf *tls.Config
 	if config.Sslmode == "enable" {
 		//

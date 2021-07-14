@@ -1,5 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&family=Roboto:wght@900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Slab:wght@900&family=Roboto:wght@900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+
 html, body {
     margin: 0;
+    padding: 0;
     background-color: #d9d9d9;
     height: 100%;
     font-family: "Open Sans", serif;
@@ -8,17 +13,56 @@ html, body {
 }
 
 .header {
+    position: fixed;
+    width: 100%;
+    display: flex;
     color: #18b4b4;
-    text-align: center;
-    height: 2vm;
-    background-color: rgba(0, 0, 0, 0.85);
-    margin: 0;
-    padding: 0;
+    height: 72px;
+    background-color: rgba(0, 0, 0, 0.9);
     box-shadow: 0 4px;
 }
 
+.header-space {
+    flex: auto;
+}
+
+.header-center {
+    display: flex;
+    font-family: 'Bebas Neue', sans-serif;
+    flex: 0 0 1440px;
+}
+
+.header-button {
+    display: flex;
+    padding-inline: 3pt;
+    color: #18b4b4;
+    font-size: 36px;
+    text-decoration: none;
+    align-items: flex-end;
+    line-height: 1.4em;
+}
+
+.header-button-home {
+    display: flex;
+    padding-inline: 4pt;
+    color: #18b4b4;
+    font-size: 72px;
+    text-decoration: none;
+    align-items: flex-end;
+    line-height: 72px;
+}
+
+.header-button-home:hover,
+.header-button:hover,
+.header-button-home-active,
+.header-button-active {
+    background-color: #18b4b4;
+    color: #d9d9d9;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.9);
+}
+
 .name {
-    font-size: 32px;
+    font-size: 36px;
     display: inline;
     font-weight: bold;
 }
@@ -36,7 +80,7 @@ html, body {
 }
 
 .footer {
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.9);
     width: 100%;
     bottom: 0;
     margin: 0;
@@ -44,9 +88,17 @@ html, body {
     position: fixed;
 }
 
-p {
+.footer-text {
+    font-weight: bold;
+    height: 36px;
+    font-size: 18px;
+    line-height: 36px;
     vertical-align: bottom;
     text-align: center;
-    color: #d9d9d9;
-    margin: 5px;
+    color: #18b4b4;
+    box-shadow: 0 -4px;
+}
+
+p {
+    margin: inherit;
 }

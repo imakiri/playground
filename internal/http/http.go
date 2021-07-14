@@ -1,9 +1,8 @@
-package web
+package http
 
 import (
 	"context"
 	"github.com/gorilla/mux"
-	"github.com/imakiri/gorum/internal/web/handlers"
 	"log"
 	"net"
 	"net/http"
@@ -39,8 +38,13 @@ func NewRedirector(status chan error) (*Redirector, error) {
 	r.status = status
 
 	var router = mux.NewRouter()
-	router.HandleFunc("/", handlers.Go2HTTPS)
+	router.HandleFunc("/", go2https)
 	r.server.Handler = router
 
 	return &r, err
+}
+
+func go2https(w http.ResponseWriter, r *http.Request) {
+	newURI := "https://" + r.Host + r.URL.String()
+	http.Redirect(w, r, newURI, http.StatusFound)
 }
