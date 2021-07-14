@@ -1,4 +1,4 @@
-FROM amd64/golang:1.15-alpine AS build-env
+FROM amd64/golang:1.16-alpine AS build-env
 
 ENV GO111MODULE=auto
 ENV GOOS=linux
@@ -12,7 +12,8 @@ COPY go.sum .
 RUN go mod download
 
 COPY internal/asset/transport internal/asset/transport
-COPY internal/http internal/web
+COPY internal/http internal/http
+COPY internal/web internal/web
 COPY internal/utils internal/utils
 COPY cmd cmd
 
