@@ -12,7 +12,7 @@ COPY go.sum .
 RUN go mod download
 
 COPY internal/asset/transport internal/asset/transport
-COPY internal/web internal/web
+COPY internal/http internal/web
 COPY internal/utils internal/utils
 COPY cmd cmd
 

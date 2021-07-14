@@ -1,14 +1,11 @@
-package web
+package http
 
 import (
 	"context"
 	"crypto/tls"
-	"github.com/gorilla/mux"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/asset/transport"
 	"github.com/imakiri/gorum/internal/utils"
 	"golang.org/x/net/http2"
-	"html/template"
 	"log"
 	"net"
 	"net/http"
@@ -19,47 +16,26 @@ const (
 	path_cert = "secrets/web/certificate.crt"
 )
 
-type Services struct {
-	Assets transport.AssetClient
-}
-
 type Server struct {
-	https     bool
-	server    *http.Server
-	status    chan error
-	assets    *transport.Assets
-	templates *template.Template
-	services  Services
+	https  bool
+	server *http.Server
+	status chan error
 }
 
-func register(s *Server) {
-	var router = mux.NewRouter()
-	router.HandleFunc("/assets/css", s.css)
-	router.HandleFunc("/assets/ico", s.ico)
-	router.HandleFunc("/", s.root)
-	//router.HandleFunc("/admin/load", s.load)
-	s.server.Handler = router
-}
-
-func NewServer(ss Services, status chan error, https bool) (*Server, error) {
-	if utils.IsNil(ss) {
-		return nil, erres.NilArgument.Extend(0).SetDescription("services cannot be nil")
+func NewServer(web http.Handler, status chan error, https bool) (*Server, error) {
+	if utils.IsNil(web) {
+		return nil, erres.NilArgument.Extend(0).SetDescription("web cannot be nil")
 	}
 
-	var s Server
-	var err error
+	var s = new(Server)
+	s.server = new(http.Server)
+	s.server.Handler = web
 	s.https = https
-	s.server = &http.Server{}
 	s.status = status
-	s.services = ss
-
-	if err = s.load(); err != nil {
-		return nil, err
-	}
 
 	if https {
-		var cert tls.Certificate
-		if cert, err = tls.LoadX509KeyPair(path_cert, path_key); err != nil {
+		var cert, err = tls.LoadX509KeyPair(path_cert, path_key)
+		if err != nil {
 			return nil, err
 		}
 
@@ -95,23 +71,12 @@ func NewServer(ss Services, status chan error, https bool) (*Server, error) {
 		}
 	}
 
-	if err = http2.ConfigureServer(s.server, nil); err != nil {
+	var err = http2.ConfigureServer(s.server, nil)
+	if err != nil {
 		return nil, err
 	}
 
-	register(&s)
-	return &s, err
-}
-
-func (s *Server) load() error {
-	var assets, err = s.services.Assets.Get(context.Background(), &transport.Request{})
-	if err != nil {
-		return err
-	}
-	s.assets = assets
-
-	s.templates, err = template.New("index").Parse(string(s.assets.Index))
-	return err
+	return s, err
 }
 
 func (s *Server) Launch() {

@@ -6,11 +6,13 @@ import (
 	"flag"
 	"github.com/imakiri/erres"
 	"github.com/imakiri/gorum/internal/asset/transport"
+	internalHttp "github.com/imakiri/gorum/internal/http"
 	"github.com/imakiri/gorum/internal/web"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	"log"
+	"net/http"
 )
 
 func connect(domain string, port string) (*grpc.ClientConn, error) {
@@ -23,7 +25,7 @@ func connect(domain string, port string) (*grpc.ClientConn, error) {
 
 	var cp = x509.NewCertPool()
 	if !cp.AppendCertsFromPEM(ca) {
-		return nil, erres.CE("certificate error").Extend(0)
+		return nil, erres.Error("certificate error").Extend(0)
 	}
 
 	var conf = &tls.Config{
@@ -52,11 +54,16 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 		return nil, err
 	}
 
-	var ss web.Services
-	ss.Assets = transport.NewAssetClient(cc)
+	var ass = transport.NewAssetClient(cc)
+
+	var ws http.Handler
+	ws, err = web.NewWebService(ass)
+	if err != nil {
+		return nil, err
+	}
 
 	if l.debug {
-		l.web, err = web.NewServer(ss, l.statusWeb, false)
+		l.web, err = internalHttp.NewServer(ws, l.statusWeb, false)
 		if err != nil {
 			return nil, err
 		}
@@ -64,12 +71,12 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 		return &l, err
 	}
 
-	l.redirector, err = web.NewRedirector(l.statusRedirector)
+	l.redirector, err = internalHttp.NewRedirector(l.statusRedirector)
 	if err != nil {
 		return nil, err
 	}
 
-	l.web, err = web.NewServer(ss, l.statusWeb, true)
+	l.web, err = internalHttp.NewServer(ws, l.statusWeb, true)
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +87,8 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 type Launcher struct {
 	debug            bool
 	asset            transport.AssetClient
-	web              *web.Server
-	redirector       *web.Redirector
+	web              *internalHttp.Server
+	redirector       *internalHttp.Redirector
 	statusWeb        chan error
 	statusRedirector chan error
 }
@@ -121,8 +128,5 @@ func main() {
 	}
 
 	err = l.Launch()
-	if e, ok := err.(*erres.Error); ok {
-		log.Fatal(e.String())
-	}
 	log.Fatalln(err)
 }

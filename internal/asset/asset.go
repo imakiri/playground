@@ -19,10 +19,16 @@ func (s *Service) Get(_ context.Context, _ *transport.Request) (*transport.Asset
 	if ass.Index, err = ioutil.ReadFile("assets/index.html"); err != nil {
 		return nil, err
 	}
-	if ass.CSS, err = ioutil.ReadFile("assets/style.css"); err != nil {
+	if ass.Css, err = ioutil.ReadFile("assets/style.css"); err != nil {
 		return nil, err
 	}
 	if ass.Ico, err = ioutil.ReadFile("assets/ico.png"); err != nil {
+		return nil, err
+	}
+	if ass.Home, err = ioutil.ReadFile("assets/home.html"); err != nil {
+		return nil, err
+	}
+	if ass.Gorum, err = ioutil.ReadFile("assets/gorum.html"); err != nil {
 		return nil, err
 	}
 

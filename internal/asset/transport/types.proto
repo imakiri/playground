@@ -8,7 +8,9 @@ message Request {}
 
 message Assets {
   bytes Index = 1;
-  bytes CSS = 2;
+  bytes Css = 2;
   bytes Ico = 3;
+  bytes Home = 4;
+  bytes Gorum = 5;
 }
 
