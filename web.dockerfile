@@ -12,9 +12,9 @@ COPY go.sum .
 RUN go mod download
 
 COPY internal/asset/transport internal/asset/transport
-COPY internal/http internal/http
+COPY pkg/http internal/http
 COPY internal/web internal/web
-COPY internal/utils internal/utils
+COPY pkg/utils internal/utils
 COPY cmd cmd
 
 RUN go build -o launcher ./cmd/web/main.go

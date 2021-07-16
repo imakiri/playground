@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package types;
+
+option go_package = "github.com/imakiri/gorum/internal/web/transport";
+
+message Request {}
+
+message Content {
+  bytes Main = 1;
+  bytes Index = 2;
+  bytes StaticCss = 3;
+  bytes StaticIco = 4;
+  bytes GorumMain = 5;
+  bytes GorumIndex = 6;
+}
+

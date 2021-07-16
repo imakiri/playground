@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	"github.com/imakiri/gorum/internal/asset"
-	"github.com/imakiri/gorum/internal/asset/transport"
+	"github.com/imakiri/gorum/internal/web"
+	"github.com/imakiri/gorum/internal/web/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"log"
@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	path_cert = "secrets/asset/server.crt"
-	path_key  = "secrets/asset/server.key"
+	path_cert = "secrets/content/server.crt"
+	path_key  = "secrets/content/server.key"
 )
 
 func NewLauncher(certPath string, keyPath string) (*Launcher, error) {
@@ -24,11 +24,11 @@ func NewLauncher(certPath string, keyPath string) (*Launcher, error) {
 	}
 	l.server = grpc.NewServer(grpc.Creds(creds))
 
-	var service *asset.Service
-	if service, err = asset.NewService(); err != nil {
+	var service transport.ContentServer
+	if service, err = web.NewContentService(); err != nil {
 		return nil, err
 	}
-	transport.RegisterAssetServer(l.server, service)
+	transport.RegisterContentServer(l.server, service)
 
 	return l, err
 }
@@ -51,7 +51,7 @@ const (
 )
 
 func main() {
-	var port = flag.String("port", port, "port of asset server")
+	var port = flag.String("port", port, "port of content server")
 	flag.Parse()
 
 	var l, err = NewLauncher(path_cert, path_key)

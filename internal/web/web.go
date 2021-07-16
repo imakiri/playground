@@ -2,81 +2,121 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/asset/transport"
-	"github.com/imakiri/gorum/internal/utils"
+	"github.com/imakiri/gorum/internal/web/content"
+	"github.com/imakiri/gorum/internal/web/transport"
+	"github.com/imakiri/gorum/pkg/utils"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 )
 
-func ise(w http.ResponseWriter, err error) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusInternalServerError)
+const path = "internal/web/content/"
 
-	_, _ = w.Write([]byte(err.Error()))
+type contentService struct {
+	transport.UnimplementedContentServer
 }
 
-func push(p http.Pusher) error {
+func (s *contentService) Get(context.Context, *transport.Request) (*transport.Content, error) {
+	var c = new(transport.Content)
 	var err error
-	if err = p.Push("/assets/css", nil); err != nil {
-		return err
+
+	if c.Main, err = ioutil.ReadFile(path + "main.html"); err != nil {
+		return nil, err
 	}
-	if err = p.Push("/assets/ico", nil); err != nil {
-		return err
+	if c.Index, err = ioutil.ReadFile(path + "index.html"); err != nil {
+		return nil, err
+	}
+	if c.StaticCss, err = ioutil.ReadFile(path + "static/style.css"); err != nil {
+		return nil, err
+	}
+	if c.StaticIco, err = ioutil.ReadFile(path + "static/ico.png"); err != nil {
+		return nil, err
+	}
+	if c.GorumMain, err = ioutil.ReadFile(path + "gorum/main.html"); err != nil {
+		return nil, err
+	}
+	if c.GorumIndex, err = ioutil.ReadFile(path + "gorum/index.html"); err != nil {
+		return nil, err
 	}
 
-	return err
+	fmt.Println("content/get")
+	return c, nil
+}
+
+func NewContentService() (*contentService, error) {
+	var s = new(contentService)
+
+	var _, err = s.Get(context.Background(), new(transport.Request))
+	if err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }
 
 type webService struct {
-	serviceAsset transport.AssetClient
-	assets       *transport.Assets
-	template     struct {
-		home  *template.Template
-		gorum *template.Template
+	debug    bool
+	services struct {
+		content transport.ContentClient
 	}
-	router *mux.Router
+	content *content.Content
+	router  *mux.Router
 }
 
 func (s *webService) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	if s.debug {
+		var err = s.load()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 	s.router.ServeHTTP(writer, request)
 }
 
 func (s *webService) load() error {
-	var assets, err = s.serviceAsset.Get(context.Background(), &transport.Request{})
+	var raw, err = s.services.content.Get(context.Background(), &transport.Request{})
 	if err != nil {
 		return err
 	}
-	s.assets = assets
 
-	s.template.home = template.New("root")
-	if s.template.home, err = s.template.home.Parse(string(s.assets.Index)); err != nil {
+	s.content = new(content.Content)
+	s.content.Static.Css = raw.StaticCss
+	s.content.Static.Ico = raw.StaticIco
+	s.content.Index = template.New("index")
+
+	if s.content.Index, err = s.content.Index.Parse(string(raw.Main)); err != nil {
 		return err
 	}
-	if s.template.home, err = s.template.home.Parse(string(s.assets.Home)); err != nil {
+	if s.content.Index, err = s.content.Index.Parse(string(raw.Index)); err != nil {
 		return err
 	}
 
-	s.template.gorum = template.New("gorum")
-	if s.template.gorum, err = s.template.gorum.Parse(string(s.assets.Index)); err != nil {
+	s.content.Gorum.Index = template.New("index")
+	if s.content.Gorum.Index, err = s.content.Gorum.Index.Parse(string(raw.Main)); err != nil {
 		return err
 	}
-	if s.template.gorum, err = s.template.gorum.Parse(string(s.assets.Gorum)); err != nil {
+	if s.content.Gorum.Index, err = s.content.Gorum.Index.Parse(string(raw.GorumMain)); err != nil {
+		return err
+	}
+	if s.content.Gorum.Index, err = s.content.Gorum.Index.Parse(string(raw.GorumIndex)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func NewWebService(asset transport.AssetClient) (*webService, error) {
-	if utils.IsNil(asset) {
+func NewWebService(debug bool, contentClient transport.ContentClient) (*webService, error) {
+	if utils.IsNil(contentClient) {
 		return nil, erres.NilArgument
 	}
 
 	var s = new(webService)
+	s.debug = debug
 	s.router = mux.NewRouter()
-	s.serviceAsset = asset
+	s.services.content = contentClient
 
 	var err = s.load()
 	if err != nil {
@@ -84,8 +124,8 @@ func NewWebService(asset transport.AssetClient) (*webService, error) {
 	}
 
 	s.router.HandleFunc("/", s.root)
-	s.router.HandleFunc("/assets/css", s.rootAssetsCss)
-	s.router.HandleFunc("/assets/ico", s.rootAssetsIco)
+	s.router.HandleFunc("/static/css", s.rootStaticCss)
+	s.router.HandleFunc("/static/ico", s.rootStaticIco)
 	s.router.HandleFunc("/gorum", s.rootGorum)
 
 	return s, nil

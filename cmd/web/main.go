@@ -5,9 +5,9 @@ import (
 	"crypto/x509"
 	"flag"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/asset/transport"
-	internalHttp "github.com/imakiri/gorum/internal/http"
 	"github.com/imakiri/gorum/internal/web"
+	"github.com/imakiri/gorum/internal/web/transport"
+	pkgHttp "github.com/imakiri/gorum/pkg/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
@@ -15,11 +15,13 @@ import (
 	"net/http"
 )
 
+const path_ca = "secrets/web/ca.crt"
+
 func connect(domain string, port string) (*grpc.ClientConn, error) {
 	var err error
 	var ca []byte
 
-	if ca, err = ioutil.ReadFile("secrets/ca/ca.crt"); err != nil {
+	if ca, err = ioutil.ReadFile(path_ca); err != nil {
 		return nil, err
 	}
 
@@ -49,21 +51,21 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 	l.statusWeb = make(chan error)
 	l.statusRedirector = make(chan error)
 
-	var cc, err = connect(domain, port)
+	var conn, err = connect(domain, port)
 	if err != nil {
 		return nil, err
 	}
 
-	var ass = transport.NewAssetClient(cc)
+	var cc = transport.NewContentClient(conn)
 
 	var ws http.Handler
-	ws, err = web.NewWebService(ass)
+	ws, err = web.NewWebService(debug, cc)
 	if err != nil {
 		return nil, err
 	}
 
 	if l.debug {
-		l.web, err = internalHttp.NewServer(ws, l.statusWeb, false)
+		l.web, err = pkgHttp.NewServer(ws, l.statusWeb, false)
 		if err != nil {
 			return nil, err
 		}
@@ -71,12 +73,12 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 		return &l, err
 	}
 
-	l.redirector, err = internalHttp.NewRedirector(l.statusRedirector)
+	l.redirector, err = pkgHttp.NewRedirector(l.statusRedirector)
 	if err != nil {
 		return nil, err
 	}
 
-	l.web, err = internalHttp.NewServer(ws, l.statusWeb, true)
+	l.web, err = pkgHttp.NewServer(ws, l.statusWeb, true)
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +88,9 @@ func NewLauncher(debug bool, domain string, port string) (*Launcher, error) {
 
 type Launcher struct {
 	debug            bool
-	asset            transport.AssetClient
-	web              *internalHttp.Server
-	redirector       *internalHttp.Redirector
+	content          transport.Content
+	web              *pkgHttp.Server
+	redirector       *pkgHttp.Redirector
 	statusWeb        chan error
 	statusRedirector chan error
 }

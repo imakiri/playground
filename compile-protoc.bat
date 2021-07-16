@@ -1,2 +1,2 @@
-protoc --go_out=./internal/asset/transport --go_opt=module=github.com/imakiri/gorum/internal/asset/transport ./internal/asset/transport/types.proto
-protoc -I ./internal --go-grpc_out=./internal/asset/transport --go-grpc_opt=module=github.com/imakiri/gorum/internal/asset/transport ./internal/asset/transport/asset.proto
+protoc --go_out=./internal/web/transport --go_opt=module=github.com/imakiri/gorum/internal/web/transport ./internal/web/transport/types.proto
+protoc -I ./internal --go-grpc_out=./internal/web/transport --go-grpc_opt=module=github.com/imakiri/gorum/internal/web/transport ./internal/web/transport/service.proto

@@ -3,7 +3,7 @@ package data
 import (
 	"github.com/imakiri/erres"
 	"github.com/imakiri/gorum/internal/types"
-	"github.com/imakiri/gorum/internal/utils"
+	"github.com/imakiri/gorum/pkg/utils"
 	"github.com/jmoiron/sqlx"
 )
 

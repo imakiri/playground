@@ -2,34 +2,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Slab:wght@900&family=Roboto:wght@900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
 
-html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #d9d9d9;
-    height: 100%;
-    font-family: "Open Sans", serif;
-    display: flex;
-    flex-flow: column;
+html {
+    height: 100vh;
+    width: 100vw;
+    min-width: 864px;
+    max-height: 100%;
+    max-width: 100%;
 }
 
-.header {
-    position: fixed;
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Open Sans", serif;
+    overflow-x: auto;
+}
+
+p {
+    margin: inherit;
+}
+
+.main {
+    height: 100%;
     width: 100%;
     display: flex;
+    flex-flow: column;
+    background-color: #d9d9d9;
+}
+
+/* Here comes the header */
+
+.header {
+    box-sizing: border-box;
+    flex: 0 0 72px;
+    width: 100%;
     color: #18b4b4;
-    height: 72px;
     background-color: rgba(0, 0, 0, 0.9);
     box-shadow: 0 4px;
+    display: flex;
+    z-index: 10;
 }
 
 .header-space {
-    flex: auto;
+    flex: 1 0 auto;
 }
 
 .header-center {
+    box-sizing: border-box;
     display: flex;
     font-family: 'Bebas Neue', sans-serif;
-    flex: 0 0 1440px;
+    flex: 0 1 1440px;
+    height: 100%;
 }
 
 .header-button {
@@ -53,13 +76,69 @@ html, body {
 }
 
 .header-button-home:hover,
-.header-button:hover,
+.header-button:hover {
+    background-color: #ff8622;
+    color: #d9d9d9;
+    text-shadow: 1px 1px rgba(0, 0, 0, 0.9);
+}
+
 .header-button-home-active,
 .header-button-active {
     background-color: #18b4b4;
     color: #d9d9d9;
     text-shadow: 1px 1px rgba(0, 0, 0, 0.9);
 }
+
+/* Here comes the body */
+
+.body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/*.body-gorum {*/
+/*    display: flex;*/
+/*    height: 100%;*/
+/*    width: 100%;*/
+/*}*/
+
+.body-gorum-menu {
+    display: flex;
+    flex: 0 0 288px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.body-gorum-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.body-gorum-account {
+    display: flex;
+    flex: 0 0 288px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.body-gorum-content-underConstruction {
+    display: inline-grid;
+    flex: 1 0 100%;
+    align-items: center;
+    justify-items: center;
+}
+
+.body-gorum-content-text {
+    display: flex;
+    flex: 1 0 auto;
+}
+
+/* Here comes something else */
 
 .name {
     font-size: 36px;
@@ -97,8 +176,4 @@ html, body {
     text-align: center;
     color: #18b4b4;
     box-shadow: 0 -4px;
-}
-
-p {
-    margin: inherit;
 }

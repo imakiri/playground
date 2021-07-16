@@ -8,7 +8,8 @@ import (
 
 func (s *webService) rootGorum(w http.ResponseWriter, r *http.Request) {
 	var t = time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("[%s] /root/gorum hit by ip:%s\n", t, r.RemoteAddr)
+	//fmt.Printf("[%s] /root/gorum hit by ip:%s\n", t, r.Header["X-Forwarded-For"])
+	fmt.Printf("[%s] /gorum hit by ip:%s\n", t, r.RemoteAddr)
 
 	w.Header().Set("Content-Type", "text/html")
 
@@ -19,7 +20,7 @@ func (s *webService) rootGorum(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var err = s.template.gorum.ExecuteTemplate(w, "gorum", nil)
+	var err = s.content.Gorum.Index.ExecuteTemplate(w, "index", nil)
 	if err != nil {
 		ise(w, err)
 		return

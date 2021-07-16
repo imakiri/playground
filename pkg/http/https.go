@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	"github.com/imakiri/erres"
-	"github.com/imakiri/gorum/internal/utils"
+	"github.com/imakiri/gorum/pkg/utils"
 	"golang.org/x/net/http2"
 	"log"
 	"net"

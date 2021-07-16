@@ -8,6 +8,7 @@ import (
 
 func (s *webService) root(w http.ResponseWriter, r *http.Request) {
 	var t = time.Now().Format("2006-01-02 15:04:05")
+	//fmt.Printf("[%s] / hit by ip:%s\n", t, r.Header["X-Forwarded-For"])
 	fmt.Printf("[%s] / hit by ip:%s\n", t, r.RemoteAddr)
 
 	w.Header().Set("Content-Type", "text/html")
@@ -19,7 +20,7 @@ func (s *webService) root(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var err = s.template.home.ExecuteTemplate(w, "root", nil)
+	var err = s.content.Index.ExecuteTemplate(w, "index", nil)
 	if err != nil {
 		ise(w, err)
 		return

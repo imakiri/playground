@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package content;
+
+option go_package = "github.com/imakiri/gorum/internal/web/transport";
+
+import "web/transport/types.proto";
+
+service Content {
+  rpc Get(types.Request) returns (types.Content);
+}

@@ -3,6 +3,7 @@ module github.com/imakiri/gorum
 go 1.16
 
 require (
+    github.com/elastic/go-elasticsearch/v8 v8.0.0-20210708134649-33f644c8e327
 	github.com/aidarkhanov/nanoid v1.0.8 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1

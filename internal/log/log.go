@@ -2,11 +2,13 @@ package log
 
 import (
 	"context"
+	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/jackc/pgx/v4"
 	"go.uber.org/zap"
 )
 
 type Service struct {
+	client *elasticsearch.Client
 	*zap.Logger
 }
 
@@ -29,8 +31,38 @@ func (s Service) Log(_ context.Context, level pgx.LogLevel, msg string, data map
 
 func NewService() (*Service, error) {
 	var service = new(Service)
-
 	var err error
+	var conf = elasticsearch.Config{
+		Addresses:             nil,
+		Username:              "",
+		Password:              "",
+		CloudID:               "",
+		APIKey:                "",
+		ServiceToken:          "",
+		Header:                nil,
+		CACert:                nil,
+		RetryOnStatus:         nil,
+		DisableRetry:          false,
+		EnableRetryOnTimeout:  false,
+		MaxRetries:            0,
+		CompressRequestBody:   false,
+		DiscoverNodesOnStart:  false,
+		DiscoverNodesInterval: 0,
+		EnableMetrics:         false,
+		EnableDebugLogger:     false,
+		DisableMetaHeader:     false,
+		RetryBackoff:          nil,
+		Transport:             nil,
+		Logger:                nil,
+		Selector:              nil,
+		ConnectionPoolFunc:    nil,
+	}
+
+	service.client, err = elasticsearch.NewClient(conf)
+	if err != nil {
+		return nil, err
+	}
+
 	if service.Logger, err = zap.NewDevelopment(); err != nil {
 		return nil, err
 	}
